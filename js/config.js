@@ -8,8 +8,8 @@ const SHD_CONFIG = {
   redbubble: '',
   tipLine: 'SHEDITHERS is free. If it made something you love, buy the artist a drink ♥',
   drinks: [
-    { label: 'SODA', emoji: '🥤', amount: 3 },
-    { label: 'COFFEE', emoji: '☕', amount: 5 },
+    { label: 'SLUSHY', emoji: '🍧', amount: 3 },
+    { label: 'FRUIT CUP', emoji: '🍓', amount: 5 },
     { label: 'COCKTAIL', emoji: '🍹', amount: 10 },
     { label: 'ROUND FOR THE STUDIO', emoji: '🍾', amount: 25 },
   ],
