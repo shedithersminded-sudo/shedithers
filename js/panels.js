@@ -238,6 +238,8 @@ function paramCtl(f, q) {
     ta.addEventListener('keydown', e => e.stopPropagation());
     return h('div', { class: 'ctl' }, h('div', { class: 'ctl-h' }, h('label', null, q.l + ' — Enter for new line')), ta);
   }
+  if (q.t === 'tex') return texPicker(f, q);
+  if (q.t === 'img' && f.id === 'texture' && f.p.type !== 'custom') return h('div');
   if (q.t === 'img') {
     const imgs = S.library.filter(x => x.type === 'image');
     const sel = h('select', { onchange: e => { if (e.target.value === '__new') { _imgPick.fx = f; $('#imgLayerIn').click(); e.target.value = f.p.img || ''; return; } f.p.img = e.target.value; changed(true); } },

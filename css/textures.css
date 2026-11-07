@@ -1,0 +1,12 @@
+/* texture swatch picker */
+.tex-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.tex-sw{position:relative;padding:0;aspect-ratio:1;border:1px solid var(--ln2);background:#000;overflow:hidden;border-radius:6px;transition:transform .15s,border-color .15s,box-shadow .15s}
+.tex-sw img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:auto;transition:transform .4s}
+.tex-sw span{position:absolute;left:0;right:0;bottom:0;padding:2px 3px;font:600 7px/1.1 var(--mono);letter-spacing:.04em;color:#eef2e6;background:linear-gradient(transparent,rgba(0,0,0,.85));text-align:left}
+.tex-sw:hover{transform:translateY(-1px);border-color:var(--pink)}
+.tex-sw:hover img{transform:scale(1.15)}
+.tex-sw.on{border-color:var(--acid);box-shadow:0 0 0 1px var(--acid),0 0 10px rgba(212,255,0,.35)}
+.tex-sw.on span{color:var(--acid)}
+.fx-cat.cat-texture h4{color:var(--xray,#5fe0c0)}
+.skin-chrome .tex-sw{border:2px solid #4a5157;box-shadow:inset 0 0 0 1px #0b0d0e}
+.skin-chrome .tex-sw.on{border-color:var(--acid)}

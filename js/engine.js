@@ -589,7 +589,126 @@ EFFECTS.push({ id: 'ghost', cat: 'light', name: 'Ghost Drift', desc: 'Drifting s
   R('blur', 'Ghost softness', 0, 40, 5, 0.5, 'px'), SEL('src', 'Ghost from', [['full', 'WHOLE IMAGE'], ['bright', 'HIGHLIGHTS'], ['dark', 'SHADOWS / INK']], 'full'),
   C('tint', 'Ghost tint', '#bfe8ff'), R('tintAmt', 'Tint amount', 0, 100, 40, 1, '%'), R('chroma', 'Spectral split', 0, 30, 3, 0.5, 'px'),
   SEL('blendg', 'Combine', ['screen', 'lighten', 'add', 'average'], 'screen'), R('trail', 'Motion trails', 0, 98, 55, 1, '%'), R('speed', 'Drift speed', 0, 5, 0.8, 0.05), ANIM()], fn: ghostFx });
-const CATS = [['layer', 'Layers'], ['light', 'Light'], ['dither', 'Dithering'], ['pixel', 'Pixel'], ['glitch', 'Glitch'], ['image', 'Image'], ['halftone', 'Halftone']];
+/* ---------- TEXTURES: procedural materials + bump/specular light shader ---------- */
+const TEXTURES = [['grain', 'FILM GRAIN'], ['paper', 'PAPER'], ['canvas', 'CANVAS'], ['concrete', 'CONCRETE'], ['grunge', 'GRUNGE'], ['rust', 'RUST'], ['metal', 'BRUSHED METAL'], ['scratch', 'SCRATCH + DUST'], ['crt', 'CRT MASK'], ['lcd', 'LCD GRID'], ['carbon', 'CARBON FIBER'], ['static', 'TV STATIC'], ['xerox', 'XEROX TONER'], ['holo', 'HOLO FOIL'], ['marble', 'MARBLE'], ['cells', 'CELLS'], ['crumple', 'CRUMPLED'], ['glitter', 'GLITTER'], ['custom', 'YOUR IMAGE']];
+function fbm(u, v, oct, seed) { let s = 0, a = 0.5, n = 0; for (let o = 0; o < oct; o++) { s += vnoise2(u, v, seed + o * 17) * a; n += a; u *= 2.03; v *= 2.03; a *= 0.5; } return s / n; }
+function worley(u, v, seed) { const xi = Math.floor(u), yi = Math.floor(v); let f1 = 9, f2 = 9; for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) { const cx = xi + i, cy = yi + j, px2 = cx + hash2(cx, cy, seed), py2 = cy + hash2(cx, cy, seed + 1), d = (px2 - u) ** 2 + (py2 - v) ** 2; if (d < f1) { f2 = f1; f1 = d; } else if (d < f2) f2 = d; } return [Math.sqrt(f1), Math.sqrt(f2)]; }
+const sstep = (a, b, x) => { const t = clamp((x - a) / ((b - a) || 1e-6), 0, 1); return t * t * (3 - 2 * t); };
+/* returns height 0..1; writes colour (0..1) into col when the material has its own colour, else leaves col[3]=0 */
+function texSample(type, u, v, d, oct, seed, fr, t, col, x, y) {
+  col[3] = 0;
+  switch (type) {
+    case 'grain': return 0.5 + (hash2(x, y, seed + fr * 131) - 0.5) * (0.4 + d) + (vnoise2(u, v, seed) - 0.5) * 0.25;
+    case 'paper': return clamp(0.58 + (fbm(u * 0.35, v * 0.35, oct, seed) - 0.5) * 0.55 + (vnoise2(u * 0.12, v * 2.6, seed + 9) - 0.5) * 0.35 * d + (hash2(x, y, seed) - 0.5) * 0.06, 0, 1);
+    case 'canvas': { const over = ((Math.floor(u) + Math.floor(v)) & 1), th = over ? 0.5 + 0.5 * Math.sin(frac(v) * Math.PI) : 0.5 + 0.5 * Math.sin(frac(u) * Math.PI); return clamp(th * 0.7 + (vnoise2(u * 2, v * 2, seed) - 0.5) * 0.35 * d + 0.15, 0, 1); }
+    case 'concrete': { let h = 0.35 + fbm(u * 0.25, v * 0.25, oct, seed) * 0.45 + (hash2(x, y, seed) - 0.5) * 0.12; if (hash2(Math.floor(u * 1.5), Math.floor(v * 1.5), seed + 3) < d * 0.05) h *= 0.35; return clamp(h, 0, 1); }
+    case 'grunge': { const n = fbm(u * 0.18, v * 0.18, oct, seed), b = sstep(0.62 - d * 0.35, 0.7 - d * 0.35, n); return clamp(0.62 - b * 0.55 + (fbm(u * 1.5, v * 1.5, 3, seed + 5) - 0.5) * 0.3, 0, 1); }
+    case 'rust': { const n = fbm(u * 0.22, v * 0.22, oct, seed), r = 1 - Math.abs(fbm(u * 0.6, v * 0.6, 4, seed + 3) * 2 - 1), m = sstep(0.42 - d * 0.3, 0.6 - d * 0.3, n); const h = clamp(0.3 + n * 0.5 + r * 0.25 * m, 0, 1); col[0] = 0.25 + m * (0.45 + r * 0.25); col[1] = 0.12 + m * (0.12 + r * 0.18); col[2] = 0.08 + m * 0.04; col[3] = 1; return h; }
+    case 'metal': { const s = vnoise2(u * 0.02, v * 3.2, seed) * 0.55 + vnoise2(u * 0.006, v * 12, seed + 4) * 0.3 + (hash2(Math.floor(u * 0.05), y, seed) - 0.5) * 0.25 * d; const h = clamp(0.35 + s * 0.55, 0, 1); col[0] = col[1] = col[2] = 0.45 + h * 0.5; col[2] += 0.03; col[3] = 1; return h; }
+    case 'scratch': { let h = 0.5; const r = Math.floor(v * 0.6 + vnoise(u * 0.004, seed) * 4); if (hash2(r, 0, seed) < d * 0.18 && frac(v * 0.6 + vnoise(u * 0.004, seed) * 4) < 0.07 && vnoise(u * 0.012 + r * 7.3, seed + 1) > 0.55) h = 0.95; if (hash2(Math.floor(u * 0.8), Math.floor(v * 0.8), seed + 2) < d * 0.012) h = hash2(x, y, seed) > 0.5 ? 0.98 : 0.05; return h; }
+    case 'crt': { const ch = Math.floor(frac(u / 3) * 3), gap = frac(v) > 0.78 || frac(u) > 0.85; col[0] = ch === 0 ? 1 : 0.12; col[1] = ch === 1 ? 1 : 0.12; col[2] = ch === 2 ? 1 : 0.12; if (gap) col[0] = col[1] = col[2] = 0.05; col[3] = 1; return gap ? 0.15 : 0.7; }
+    case 'lcd': return (frac(u) < 0.12 + d * 0.15 || frac(v) < 0.12 + d * 0.15) ? 0.18 : 0.66 + (hash2(Math.floor(u), Math.floor(v), seed) - 0.5) * 0.08;
+    case 'carbon': { const cx = Math.floor(u / 2), cy = Math.floor(v / 2), dir = (cx + cy) & 1, g = dir ? frac(u / 2) : frac(v / 2), h = 0.2 + 0.55 * Math.sin(g * Math.PI); col[0] = col[1] = col[2] = 0.05 + h * 0.32; col[3] = 1; return h; }
+    case 'static': { const band = sstep(0.55, 0.9, vnoise(v * 0.04 + t * 4, seed)); return clamp(hash2(x, y, seed + fr * 977) * (0.7 + d * 0.3) + band * 0.35 - 0.05, 0, 1); }
+    case 'xerox': { const n = fbm(u * 0.08, v * 0.08, oct, seed), speck = hash2(x, y, seed + 5) < (0.02 + d * 0.12) * sstep(0.35, 0.75, n), streak = vnoise(u * 0.03, seed + 8) > 0.86 - d * 0.1; return speck ? 0.03 : streak ? 0.32 : 0.82 + (hash2(x >> 1, y >> 1, seed) - 0.5) * 0.08; }
+    case 'holo': { const n = fbm(u * 0.12, v * 0.12, oct, seed), c2 = hueRGB(n * 1.6 + (u + v) * 0.004 * d + t * 0.08); col[0] = 0.55 + c2[0] * 0.45; col[1] = 0.55 + c2[1] * 0.45; col[2] = 0.55 + c2[2] * 0.45; col[3] = 1; return 0.55 + n * 0.4; }
+    case 'marble': { const w2 = Math.sin((u * 0.04 + v * 0.015 + fbm(u * 0.12, v * 0.12, oct, seed) * (3 + d * 6)) * Math.PI), vein = Math.pow(1 - Math.abs(w2), 10); return clamp(0.86 - vein * 0.7 + (fbm(u * 0.5, v * 0.5, 3, seed + 3) - 0.5) * 0.12, 0, 1); }
+    case 'cells': { const [f1, f2] = worley(u * 0.12, v * 0.12, seed); return clamp(sstep(0.0, 0.06 + d * 0.15, f2 - f1) * 0.7 + f1 * 0.3, 0, 1); }
+    case 'crumple': { const wx = fbm(u * 0.05, v * 0.05, 3, seed) * 4, r = 1 - Math.abs(fbm(u * 0.09 + wx, v * 0.09 - wx, oct, seed + 2) * 2 - 1); return clamp(0.25 + Math.pow(r, 1.5 + d * 3) * 0.75, 0, 1); }
+    case 'glitter': { const cx = Math.floor(u), cy = Math.floor(v); if (hash2(cx, cy, seed) < d * 0.08) { const fx = frac(u) - 0.5, fy = frac(v) - 0.5, tw = 0.5 + 0.5 * Math.sin(t * 6 + hash2(cx, cy, seed + 1) * 40), s = Math.max(0, 1 - (Math.abs(fx) * Math.abs(fy)) * 60 - Math.hypot(fx, fy) * 2.2) * tw; const hc = hueRGB(hash2(cx, cy, seed + 2)); col[0] = 0.8 + hc[0] * 0.2; col[1] = 0.8 + hc[1] * 0.2; col[2] = 0.8 + hc[2] * 0.2; col[3] = s > 0.02 ? 1 : 0; return 0.5 + s * 0.5; } return 0.5; }
+    default: return 0.5;
+  }
+}
+function textureFx(s, d, w, h, p, c) {
+  const N = w * h, draft = p.quality === 'draft', oct = draft ? 3 : p.quality === 'ultra' ? 7 : 5, step = draft ? 2 : 1;
+  const tw = Math.ceil(w / step), th = Math.ceil(h / step), Hm = new Float32Array(tw * th), Cm = new Float32Array(tw * th * 3);
+  const sc = Math.max(0.2, p.scale * c.S) / step, ang = p.rot * Math.PI / 180, ca = Math.cos(ang), sa = Math.sin(ang), dens = p.density / 100;
+  const t = c.video && p.anim ? c.t : 0, dr = t * p.drift * 20 * c.S, con = p.con / 100, bri = p.bri / 100, tint = hex(p.tint).map(v => v / 255), ta = p.tintAmt / 100;
+  const custom = p.type === 'custom' ? p._tex : null, col = [0, 0, 0, 0];
+  for (let y = 0; y < th; y++) for (let x = 0; x < tw; x++) {
+    const X = x * step, Y = y * step, rx = (X * ca + Y * sa) / sc + dr / sc, ry = (-X * sa + Y * ca) / sc;
+    let hv, cr, cg, cb;
+    if (custom) { const k = (Math.min(h - 1, Y) * w + Math.min(w - 1, X)) * 4; cr = custom[k] / 255; cg = custom[k + 1] / 255; cb = custom[k + 2] / 255; hv = 0.2126 * cr + 0.7152 * cg + 0.0722 * cb; }
+    else { hv = texSample(p.type, rx, ry, dens, oct, c.seed, c.frame, t, col, X, Y); if (col[3]) { cr = col[0]; cg = col[1]; cb = col[2]; } else cr = cg = cb = hv; }
+    hv = clamp((hv - 0.5) * con + 0.5 + bri, 0, 1);
+    cr = (cr - 0.5) * con + 0.5 + bri; cg = (cg - 0.5) * con + 0.5 + bri; cb = (cb - 0.5) * con + 0.5 + bri;
+    if (ta) { const l = (cr + cg + cb) / 3; cr += (tint[0] * l * 1.6 - cr) * ta; cg += (tint[1] * l * 1.6 - cg) * ta; cb += (tint[2] * l * 1.6 - cb) * ta; }
+    const i = y * tw + x; Hm[i] = hv; Cm[i * 3] = clamp(cr, 0, 1); Cm[i * 3 + 1] = clamp(cg, 0, 1); Cm[i * 3 + 2] = clamp(cb, 0, 1);
+  }
+  const bf = BLENDS[p.tmode] || BLENDS.overlay, op = p.opacity / 100;
+  const az = p.lang * Math.PI / 180, el = p.lelev * Math.PI / 180, Lx = Math.cos(el) * Math.cos(az), Ly = Math.cos(el) * Math.sin(az), Lz = Math.sin(el);
+  const Hx = Lx, Hy = Ly, Hz = Lz + 1, hl = Math.hypot(Hx, Hy, Hz), relief = p.relief / 100 * 6, ls = p.light / 100, spA = p.spec / 100, shin = 4 + p.shine * 1.2, lc = hex(p.lcol);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const tx = Math.min(tw - 1, (x / step) | 0), ty = Math.min(th - 1, (y / step) | 0), i = ty * tw + tx;
+    const hL = Hm[ty * tw + Math.max(0, tx - 1)], hR = Hm[ty * tw + Math.min(tw - 1, tx + 1)], hU = Hm[Math.max(0, ty - 1) * tw + tx], hD = Hm[Math.min(th - 1, ty + 1) * tw + tx];
+    let nx = (hL - hR) * relief, ny = (hU - hD) * relief, nz = 1; const nl = Math.hypot(nx, ny, nz); nx /= nl; ny /= nl; nz /= nl;
+    const ndl = nx * Lx + ny * Ly + nz * Lz, shade = 1 + ls * (ndl - Lz) * 1.6, spec = spA * Math.pow(Math.max(0, (nx * Hx + ny * Hy + nz * Hz) / hl), shin);
+    const k = (y * w + x) * 4;
+    for (let q = 0; q < 3; q++) {
+      const base = s[k + q], tc = Cm[i * 3 + q] * 255, bl = bf(base, tc), mixed = base + (bl - base) * op;
+      d[k + q] = mixed * shade + spec * lc[q];
+    }
+  }
+}
+EFFECTS.push({ id: 'texture', cat: 'texture', name: 'Texture', desc: 'Materials with a light shader — grain, paper, metal, holo…', params: [
+  { k: 'type', l: 'Material', t: 'tex', def: 'paper', o: TEXTURES }, { k: 'img', l: 'Your texture image', t: 'img', def: '' },
+  SEL('quality', 'Texture quality', [['draft', 'DRAFT'], ['high', 'HIGH'], ['ultra', 'ULTRA']], 'high'),
+  R('opacity', 'Opacity', 0, 100, 70, 1, '%'), R('density', 'Density', 0, 100, 50, 1, '%'), R('scale', 'Scale', 1, 300, 24, 1, 'px'), R('rot', 'Rotation', 0, 180, 0, 1, '°'),
+  R('con', 'Contrast', 0, 300, 110, 1, '%'), R('bri', 'Brightness', -50, 50, 0, 1, '%'), C('tint', 'Tint', '#ff4fa3'), R('tintAmt', 'Tint amount', 0, 100, 0, 1, '%'),
+  SEL('tmode', 'Blend', [['overlay', 'OVERLAY'], ['softlight', 'SOFT LIGHT'], ['multiply', 'MULTIPLY'], ['screen', 'SCREEN'], ['hardlight', 'HARD LIGHT'], ['add', 'ADD'], ['difference', 'DIFFERENCE']], 'overlay'),
+  R('light', 'Light / relief shading', 0, 200, 60, 1, '%'), R('relief', 'Relief depth', 0, 300, 100, 1, '%'), R('lang', 'Light angle', 0, 360, 225, 1, '°'), R('lelev', 'Light height', 5, 90, 45, 1, '°'),
+  R('spec', 'Shine (specular)', 0, 300, 40, 1, '%'), R('shine', 'Shine tightness', 0, 100, 40, 1, '%'), C('lcol', 'Light color', '#ffffff'),
+  R('drift', 'Drift speed', 0, 5, 0, 0.05), SEED(), ANIM()], fn: textureFx });
+function texSwatch(type, size, seed) {
+  const out = new Uint8ClampedArray(size * size * 4), col = [0, 0, 0, 0], sc = type === 'grain' || type === 'static' ? 1.5 : type === 'crt' || type === 'lcd' ? 3 : type === 'glitter' ? 6 : 5;
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) { const hv = texSample(type, x / sc, y / sc, 0.5, 4, seed || 7, 0, 0.6, col, x, y), k = (y * size + x) * 4; const r = col[3] ? col[0] : hv, g = col[3] ? col[1] : hv, b = col[3] ? col[2] : hv; out[k] = r * 255; out[k + 1] = g * 255; out[k + 2] = b * 255; out[k + 3] = 255; }
+  return out;
+}
+
+/* ---------- BACKGROUND REMOVER: edge-detected / colour key / AI mask → alpha ---------- */
+function bgRemoveFx(s, d, w, h, p, c) {
+  const N = w * h; let A = new Float32Array(N);   // alpha 0..1 (1 = keep)
+  if (p.mode === 'ai-person' || p.mode === 'ai-object') {
+    const m = p._ai; if (!m || m.length !== N) return;  // AI mask not ready yet → leave image untouched
+    const th = p.aith / 100; for (let i = 0; i < N; i++) A[i] = sstep(th - 0.15, th + 0.15, m[i] / 255);
+  } else {
+    let keys;
+    if (p.mode === 'color') keys = [hex(p.key)];
+    else { // sample the border, take the dominant quantised colours
+      const bins = new Map(), add = k => { const q = ((s[k] >> 4) << 8) | ((s[k + 1] >> 4) << 4) | (s[k + 2] >> 4), e = bins.get(q) || [0, 0, 0, 0]; e[0] += s[k]; e[1] += s[k + 1]; e[2] += s[k + 2]; e[3]++; bins.set(q, e); };
+      for (let x = 0; x < w; x += 2) { add(x * 4); add(((h - 1) * w + x) * 4); } for (let y = 0; y < h; y += 2) { add(y * w * 4); add((y * w + w - 1) * 4); }
+      const tot = [...bins.values()].reduce((a, e) => a + e[3], 0);
+      keys = [...bins.values()].sort((a, b) => b[3] - a[3]).filter((e, i) => i === 0 || e[3] > tot * 0.12).slice(0, 3).map(e => [e[0] / e[3], e[1] / e[3], e[2] / e[3]]);
+    }
+    const tol = p.tol * 2.2, soft = Math.max(1, p.soft * 2.2), bgv = new Float32Array(N);
+    for (let i = 0, k = 0; i < N; i++, k += 4) { let md = 1e9; for (const kc of keys) { const dr = s[k] - kc[0], dg = s[k + 1] - kc[1], db = s[k + 2] - kc[2], dd = Math.sqrt(dr * dr * 0.3 + dg * dg * 0.59 + db * db * 0.11) * 1.7; if (dd < md) md = dd; } bgv[i] = 1 - sstep(tol, tol + soft, md); }
+    if (p.connected) { // flood from the image border through background-like pixels so the subject's interior stays
+      const reg = new Uint8Array(N), q = new Int32Array(N); let qh = 0, qt = 0; const push = i => { if (!reg[i] && bgv[i] > 0.35) { reg[i] = 1; q[qt++] = i; } };
+      for (let x = 0; x < w; x++) { push(x); push((h - 1) * w + x); } for (let y = 0; y < h; y++) { push(y * w); push(y * w + w - 1); }
+      while (qh < qt) { const i = q[qh++], x = i % w; if (x > 0) push(i - 1); if (x < w - 1) push(i + 1); if (i >= w) push(i - w); if (i < N - w) push(i + w); }
+      for (let i = 0; i < N; i++) A[i] = reg[i] ? 1 - bgv[i] : 1;
+    } else for (let i = 0; i < N; i++) A[i] = 1 - bgv[i];
+  }
+  // choke / grow + feather
+  const blurA = (r) => { if (r < 1) return; boxF(A, w, h, r, 0, 1); boxF(A, w, h, r, 1, 1); };
+  if (p.choke) { blurA(Math.abs(p.choke) * c.S); const sh = p.choke > 0 ? 0.25 : -0.25; for (let i = 0; i < N; i++) A[i] = sstep(0.5 + sh - 0.12, 0.5 + sh + 0.12, A[i]); }
+  if (p.feather > 0) blurA(p.feather * c.S);
+  if (p.invert) for (let i = 0; i < N; i++) A[i] = 1 - A[i];
+  // despill: pull edge colours away from the removed colour
+  const ds = p.despill / 100, bgc = hex(p.bgcol), blurred = p.replace === 'blur' ? blur(s, w, h, p.bgblur * c.S) : null;
+  for (let i = 0, k = 0; i < N; i++, k += 4) {
+    const a = clamp(A[i], 0, 1);
+    if (ds && a > 0 && a < 1) { const l = lum(s[k], s[k + 1], s[k + 2]); for (let q2 = 0; q2 < 3; q2++) d[k + q2] = s[k + q2] + (l - s[k + q2]) * ds * (1 - a); }
+    if (p.replace === 'transparent') d[k + 3] = s[k + 3] * a;
+    else { const bg = p.replace === 'blur' ? [blurred[k], blurred[k + 1], blurred[k + 2]] : bgc; for (let q2 = 0; q2 < 3; q2++) d[k + q2] = bg[q2] + (d[k + q2] - bg[q2]) * a; d[k + 3] = 255; }
+  }
+}
+EFFECTS.push({ id: 'bgremove', cat: 'layer', name: 'Background Remover', desc: 'Auto edge detect, colour key, or AI cutout', params: [
+  SEL('mode', 'Detect', [['auto', 'AUTO (EDGES)'], ['color', 'COLOR KEY'], ['ai-person', 'AI · PEOPLE'], ['ai-object', 'AI · OBJECTS']], 'auto'),
+  C('key', 'Key color (color key)', '#ffffff'), R('tol', 'Tolerance', 0, 100, 18, 1, '%'), R('soft', 'Edge softness', 0, 100, 12, 1, '%'), B('connected', 'Only background touching edges', true),
+  R('aith', 'AI confidence', 5, 95, 50, 1, '%'), R('choke', 'Shrink / grow edge', -20, 20, 0, 1, 'px'), R('feather', 'Feather', 0, 30, 1, 0.5, 'px'), R('despill', 'Despill edges', 0, 100, 30, 1, '%'), B('invert', 'Invert (keep background)', false),
+  SEL('replace', 'New background', [['transparent', 'TRANSPARENT'], ['color', 'COLOR'], ['blur', 'BLUR']], 'transparent'), C('bgcol', 'Background color', '#ff4fa3'), R('bgblur', 'Background blur', 1, 80, 18, 1, 'px')], fn: bgRemoveFx });
+const CATS = [['layer', 'Layers'], ['light', 'Light'], ['texture', 'Textures'], ['dither', 'Dithering'], ['pixel', 'Pixel'], ['glitch', 'Glitch'], ['image', 'Image'], ['halftone', 'Halftone']];
 const MAP = {}; EFFECTS.forEach(e => MAP[e.id] = e);
 function defaults(def) { const o = {}; def.params.forEach(q => o[q.k] = q.def); return o; }
 const BLENDS = {
@@ -617,6 +736,6 @@ function run(img, w, h, stack, ctx, onProg) {
   }
   return cur;
 }
-return { EFFECTS, MAP, CATS, PALETTES, defaults, run, hex, BLENDS };
+return { EFFECTS, MAP, CATS, PALETTES, defaults, run, hex, BLENDS, TEXTURES, texSwatch };
 }
 if (typeof self !== 'undefined' && typeof window === 'undefined' && typeof importScripts === 'function') { /* worker context handled by app */ }

@@ -171,8 +171,10 @@ function palColors(id) { if (!id) return null; const c = S.palettes.find(p => p.
 function resolveP(f, t, w, hh) {
   const def = E.MAP[f.id], p = Object.assign({}, f.p);
   if (f.keys) for (const k in f.keys) if (k !== 'mix' && f.keys[k].length && isTimed()) p[k] = interp(f.keys[k], t);
+  if (f.id === 'bgremove' && w && String(p.mode).startsWith('ai-') && typeof aiMask === 'function') p._ai = aiMask(p.mode, w, hh);
   for (const q of def.params) {
     if (q.t === 'p' && String(p[q.k]).startsWith('c_')) p._pal = palColors(p[q.k]) || ['#000000', '#ffffff'];
+    if (q.t === 'img' && w && f.id === 'texture') { if (p.type === 'custom' && typeof texTilePixels === 'function') p._tex = texTilePixels(p, w, hh); continue; }
     if (q.t === 'img' && w && typeof layerPixels === 'function') p._img = layerPixels(p, w, hh);
     if (q.t === 'txt' && w && typeof textPixels === 'function') p._img = textPixels(p, w, hh);
   }
@@ -195,6 +197,7 @@ function randomizeFx(f) {
     if (q.k === 'seed') { f.p.seed = Math.floor(Math.random() * 9999); continue; }
     if (q.t === 'r') { const span = q.max - q.min, base = q.def; let v = Math.random() < 0.5 ? q.min + Math.random() * span : base + (Math.random() - 0.5) * span * 0.5; v = Math.round(clampN(v, q.min, q.max) / q.step) * q.step; f.p[q.k] = +v.toFixed(3); }
     else if (q.t === 's') f.p[q.k] = q.o[Math.floor(Math.random() * q.o.length)][0];
+    else if (q.t === 'tex') f.p[q.k] = q.o[Math.floor(Math.random() * (q.o.length - 1))][0];
     else if (q.t === 'b' && q.k !== 'anim') f.p[q.k] = Math.random() < 0.5;
     else if (q.t === 'c') f.p[q.k] = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
     else if (q.t === 'p') { const ids = ['mono', 'gray', 'rgb', ...Object.keys(E.PALETTES), ...S.palettes.map(p => p.id)]; f.p[q.k] = ids[Math.floor(Math.random() * ids.length)]; }
