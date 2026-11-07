@@ -52,6 +52,8 @@
       <div class="readout"><span>RENDER</span><b id="roMs">—</b></div>
       <div class="readout"><span>FX</span><b id="roFx">00</b></div>
       <div class="heart" data-tip="SHEDITHERS LOVES YOU"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg></div>
+      <button class="btn ghost pinkt hidden" id="btnTip" data-tip="Buy the artist a drink (Cash App)">♥ TIP</button>
+      <button class="btn ghost hidden" id="btnShop" data-tip="Stickers &amp; prints on Redbubble">SHOP</button>
       <button class="btn ghost hidden" id="btnInstall" data-tip="Install SHEDITHERS as an app">INSTALL</button>
       <button class="btn ghost" id="btnShare" data-tip="Share SHEDITHERS with friends">♥ SHARE</button>
       <button class="btn ghost" id="btnSettings" data-tip="Settings"><svg><use href="#i-gear"/></svg></button>
@@ -125,6 +127,10 @@
               <button class="btn primary" id="emImport"><svg><use href="#i-import"/></svg>IMPORT MEDIA</button>
               <button class="btn" id="emReel">LOAD ARTIST REEL</button>
               <button class="btn" id="emCollage">LOAD COLLAGE</button>
+            </div>
+            <div class="row" style="margin-top:8px">
+              <button class="btn pink hidden" id="emTip">♥ BUY ME A DRINK</button>
+              <button class="btn hidden" id="emShop">STICKERS &amp; PRINTS</button>
             </div>
             <div class="quote">“BECOMING AND UNBECOMING SO I CAN BECOME WHO I ALWAYS HAVE BEEN AND NEVER WAS”</div>
           </div>
@@ -258,6 +264,8 @@
 <script src="js/gif.js"></script>
 <script src="js/brush.js"></script>
 <script src="js/export.js"></script>
+<script src="js/config.js"></script>
+<script src="js/support.js"></script>
 <script src="js/boot.js"></script>
 </body>
 </html>

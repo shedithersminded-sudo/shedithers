@@ -31,7 +31,7 @@ function openImageExport() {
   let blob = null, token = 0, url = null;
   const prevBox = h('div', { class: 'ex-prev checker' }), img = h('img'); prevBox.append(img);
   const prog = h('div', { class: 'prog' }, h('i')), status = h('div', { class: 'ex-status' }, 'READY');
-  const name = h('input', { class: 'inp', value: (S.name || 'shedithers').toLowerCase(), spellcheck: false });
+  const name = h('input', { class: 'inp', value: o.lastName || (S.name || 'shedithers').toLowerCase(), spellcheck: false }); o.lastName = '';
   const cw = h('input', { class: 'inp', type: 'number', min: 1, max: 16384, value: o.cw }), ch = h('input', { class: 'inp', type: 'number', min: 1, max: 16384, value: o.ch });
   let lock = true; const lockB = h('button', { class: 'tbtn on', 'data-tip': 'Lock aspect ratio', onclick: () => { lock = !lock; lockB.classList.toggle('on', lock); } }, '⛓');
   cw.onchange = () => { o.cw = +cw.value; if (lock) { o.ch = Math.round(o.cw * d.h / d.w); ch.value = o.ch; } rerender(); };
@@ -67,7 +67,9 @@ function openImageExport() {
     h('div', null,
       h('div', { class: 'field' }, h('label', null, 'Format'), seg([['png', 'PNG'], ['jpeg', 'JPG'], ['webp', 'WEBP']], o.fmt, v => { o.fmt = v; rerender(); })),
       h('div', { class: 'field' }, h('label', null, 'Resolution'), seg([['doc', 'ORIGINAL'], ['scale', 'SCALE'], ['custom', 'CUSTOM']], o.res, v => { o.res = v; rerender(); }), scaleRow, customRow,
-        h('div', { class: 'btnrow', style: { marginTop: '6px' } }, [[50, '½×'], [100, '1×'], [200, '2×'], [400, '4×']].map(([s, l]) => h('button', { class: 'tbtn', onclick: () => { o.res = 'scale'; o.scale = s; md.close(); openImageExport(); } }, l)))),
+        h('div', { class: 'btnrow', style: { marginTop: '6px' } }, [[50, '½×'], [100, '1×'], [200, '2×'], [400, '4×']].map(([s, l]) => h('button', { class: 'tbtn', onclick: () => { o.res = 'scale'; o.scale = s; md.close(); openImageExport(); } }, l))),
+        h('label', { style: { marginTop: '10px' } }, 'Print-ready for Redbubble'),
+        h('div', { class: 'print-presets' }, [['STICKER', 2800, 2800, 'max 2800 px'], ['T-SHIRT', 4500, 5400, '4500×5400'], ['POSTER / PRINT', 7632, 10800, '7632×10800']].map(([l, W, H, sub]) => h('button', { 'data-tip': `Scale up to fit ${W}×${H} as transparent PNG`, onclick: () => { const k = Math.min(W / d.w, H / d.h); o.res = 'custom'; o.cw = Math.round(d.w * k); o.ch = Math.round(d.h * k); o.fmt = 'png'; o.alpha = true; name.value = `${(S.name || 'shedithers').toLowerCase()}_${l.split(' ')[0].toLowerCase()}`; EX.img.lastName = name.value; md.close(); openImageExport(); } }, l, h('small', null, sub))))),
       h('div', { class: 'field' }, qRow), h('div', { class: 'field' }, alphaRow, bgRow),
       h('div', { class: 'field' }, h('label', null, 'File name'), name)));
   const md = openModal({ title: 'EXPORT IMAGE', sub: `${S.stack.filter(f => f.on).length} FX · ${d.w}×${d.h} DOC`, body, foot: [h('button', { class: 'btn pink', 'data-tip': 'Animate this picture, add sound, export MP4 / GIF', onclick: () => { md.close(); setMotion(true); openVideoExport(); } }, '▶ ANIMATE · GIF / MP4'), h('span', { class: 'note' }, 'Processed in a background worker.'), h('button', { class: 'btn', onclick: () => md.close() }, 'CANCEL'), h('button', { class: 'btn', onclick: () => { if (blob) shareBlob(blob, `${name.value.trim() || 'shedithers'}.${EXT[o.fmt]}`); } }, '♥ SHARE'), h('button', { class: 'btn primary', id: 'exGo', disabled: true, onclick: go, html: '<svg><use href="#i-export"/></svg>EXPORT' })], onClose: () => { token++; if (url) setTimeout(() => URL.revokeObjectURL(url), 5000); } });

@@ -486,3 +486,22 @@ input:not([type=range]):not([type=color]):not([type=checkbox]),textarea{cursor:t
 .logo .mark,.boot-mark svg{color:var(--pink)!important;filter:drop-shadow(0 0 5px rgba(255,79,163,.55))}
 .logo:hover .mark{transform:scale(1.15)}
 .boot-mark svg{width:56px;height:56px}
+/* support: tips + shop */
+.btn.pinkt{color:var(--pink)}.btn.pinkt:hover{color:#000;background:var(--pink);border-color:var(--pink)}
+.tip-head{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+.tip-heart svg{width:46px;height:46px;color:var(--pink);filter:drop-shadow(0 0 8px rgba(255,79,163,.6));animation:beat 2.4s infinite}
+.tip-head p{font:500 11px/1.6 var(--mono);letter-spacing:.06em;color:var(--tx)}
+.drinks{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
+.drink{display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 6px;border:1px solid var(--ln2);background:var(--bg0);transition:all .15s}
+.drink:hover{border-color:var(--pink);background:var(--pinkD);transform:translateY(-2px)}
+.drink i{font-style:normal;font-size:24px}
+.drink b{font:700 12px var(--cond);letter-spacing:.14em}
+.drink span{font:500 13px var(--mono);color:var(--acid)}
+.tip-row{display:flex;gap:8px;flex-wrap:wrap}.tip-row .btn{flex:1;justify-content:center}
+.tip-scan{display:flex;gap:14px;align-items:center;margin-top:14px;padding-top:14px;border-top:1px dashed var(--ln)}
+.tip-qr{width:120px;height:120px;flex:none;background:#fff;display:grid;place-items:center;padding:4px}
+.tip-qr svg{width:100%;height:100%}
+.print-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:6px}
+.print-presets button{padding:6px 2px;border:1px solid var(--ln);background:var(--bg0);font:600 10px var(--cond);letter-spacing:.12em;color:var(--tx2);line-height:1.3}
+.print-presets button small{display:block;font:400 8.5px var(--mono);color:var(--tx3);letter-spacing:0}
+.print-presets button:hover{border-color:var(--pink);color:var(--pink)}
