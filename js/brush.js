@@ -109,3 +109,41 @@ $('#brFill').onclick = () => { const f = selFx(); if (f) maskOp(f, 'fill'); else
 $('#brClear').onclick = () => { const f = selFx(); if (f) maskOp(f, 'clear'); else toast('Select a layer', 'err'); };
 $('#brInv').onclick = () => { const f = selFx(); if (f) maskOp(f, 'invert'); else toast('Select a layer', 'err'); };
 $('#brShow').onclick = e => { BR.show = !BR.show; e.currentTarget.classList.toggle('on', BR.show); drawMaskOverlay(); };
+
+/* ---- text layers ---- */
+const TEXTPX = new Map(), FONTWAIT = new Set();
+function textFont(p, px) { return `${p.italic ? 'italic ' : ''}${p.weight || 700} ${Math.max(1, px).toFixed(1)}px "${p.font}", "Barlow Condensed", sans-serif`; }
+function textPixels(p, w, hh) {
+  const k = w / Math.max(1, docDims().w), size = p.size * k, font = textFont(p, size);
+  const key = JSON.stringify([p.text, p.font, p.weight, p.italic, p.case, p.align, p.x, p.y, p.rot, p.spacing, p.lineh, p.fill, p.stroke, p.strokeW, p.glowC, p.glow, size.toFixed(2), w, hh]);
+  if (TEXTPX.has(key)) return TEXTPX.get(key);
+  if (document.fonts && !document.fonts.check(font) && !FONTWAIT.has(p.font)) { FONTWAIT.add(p.font); document.fonts.load(font).then(() => { TEXTPX.clear(); requestRender(); }).catch(() => { }); }
+  let txt = String(p.text || ''); if (p.case === 'upper') txt = txt.toUpperCase(); else if (p.case === 'lower') txt = txt.toLowerCase();
+  const lines = txt.split('\n'), c = h_canvas(w, hh), cx = c.getContext('2d', { willReadFrequently: true });
+  cx.font = font; cx.textBaseline = 'middle'; cx.textAlign = p.align || 'center';
+  if ('letterSpacing' in cx) cx.letterSpacing = (p.spacing * k).toFixed(1) + 'px';
+  const lh = size * p.lineh / 100, widths = lines.map(l => cx.measureText(l).width), bw = Math.max(1, ...widths), bh = lh * lines.length;
+  cx.translate(p.x / 100 * w, p.y / 100 * hh); cx.rotate(p.rot * Math.PI / 180);
+  const ax = p.align === 'left' ? -bw / 2 : p.align === 'right' ? bw / 2 : 0;
+  const draw = (fn) => lines.forEach((l, i) => fn(l, ax, -bh / 2 + lh * (i + 0.5)));
+  cx.lineJoin = 'round'; cx.miterLimit = 2;
+  if (p.glow > 0) { cx.shadowColor = p.glowC; cx.shadowBlur = p.glow * k; cx.fillStyle = p.glowC; draw((l, x, y) => cx.fillText(l, x, y)); draw((l, x, y) => cx.fillText(l, x, y)); cx.shadowBlur = 0; cx.shadowColor = 'transparent'; }
+  if (p.strokeW > 0) { cx.strokeStyle = p.stroke; cx.lineWidth = p.strokeW * 2 * k; draw((l, x, y) => cx.strokeText(l, x, y)); }
+  cx.fillStyle = p.fill; draw((l, x, y) => cx.fillText(l, x, y));
+  const a = cx.getImageData(0, 0, w, hh).data; if (TEXTPX.size > 16) TEXTPX.clear(); TEXTPX.set(key, a); return a;
+}
+/* Text tool: click the picture to drop a text layer there; drag to move the selected one. */
+let textDrag = null;
+function docPct(e) { const r = cvA.getBoundingClientRect(); return { x: clampN((e.clientX - r.left) / r.width * 100, 0, 100), y: clampN((e.clientY - r.top) / r.height * 100, 0, 100) }; }
+function textDown(e) {
+  const pt = docPct(e); let f = selFx();
+  if (!f || f.id !== 'text') { f = addFx('text', null, { x: +pt.x.toFixed(1), y: +pt.y.toFixed(1), size: Math.round(Math.max(24, docDims().w / 9)) }); setTimeout(() => { const ta = $('.fx.sel textarea'); if (ta) { ta.focus(); ta.select(); } }, 60); return; }
+  textDrag = { f, sx: pt.x - f.p.x, sy: pt.y - f.p.y }; textMove(e);
+}
+function textMove(e) { if (!textDrag) return; const pt = docPct(e); textDrag.f.p.x = +clampN(pt.x - textDrag.sx, 0, 100).toFixed(1); textDrag.f.p.y = +clampN(pt.y - textDrag.sy, 0, 100).toFixed(1); syncControls(); requestRender(); }
+window.addEventListener('mousemove', textMove);
+window.addEventListener('mouseup', () => { if (textDrag) { textDrag = null; H.commit(); } });
+(function patchSetTool() {
+  const base = setTool;
+  setTool = function (t) { base(t); viewport.classList.toggle('texting', t === 'text'); if (t === 'text') { const f = selFx(); toast(f && f.id === 'text' ? 'Drag on the picture to move your text · edit words in the TEXT layer' : 'Click the picture where you want text', 'info', 3000); } };
+})();

@@ -505,3 +505,14 @@ input:not([type=range]):not([type=color]):not([type=checkbox]),textarea{cursor:t
 .print-presets button{padding:6px 2px;border:1px solid var(--ln);background:var(--bg0);font:600 10px var(--cond);letter-spacing:.12em;color:var(--tx2);line-height:1.3}
 .print-presets button small{display:block;font:400 8.5px var(--mono);color:var(--tx3);letter-spacing:0}
 .print-presets button:hover{border-color:var(--pink);color:var(--pink)}
+/* text layers, rail links, suggestion box */
+#viewport.texting{cursor:text}
+.txt-edit{height:auto;min-height:58px;padding:6px 8px;resize:vertical;font:500 12px/1.4 var(--mono);color:var(--tx)}
+.rail-link{height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--tx3);transition:color .15s;margin-top:auto}
+#railTiktok:not(.hidden)+.rail-link{margin-top:0}
+.rail-link:hover{color:var(--pink)}
+.rail-link svg{width:17px;height:17px}
+.rail-link i{font:500 7.5px var(--mono);font-style:normal;letter-spacing:.1em}
+.rail-link+.rail-foot,.rail-link~.rail-foot{margin-top:0}
+.sug-msg{height:auto;min-height:120px;padding:8px;resize:vertical;font:500 12px/1.5 var(--mono)}
+#rail{overflow-y:auto;scrollbar-width:none}#rail::-webkit-scrollbar{display:none}

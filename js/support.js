@@ -22,11 +22,50 @@ function openTip() {
   qrSVG(cashURL()).then(svg => { qr.innerHTML = svg || '<span class="note">QR UNAVAILABLE OFFLINE</span>'; });
 }
 function openShop() { if (!rbUser()) return toast('Shop is not set up yet', 'info'); openExt(shopURL()); }
+const tiktokUser = () => { const t = String(CFG.tiktok || '').trim().replace(/^https?:\/\/(www\.)?tiktok\.com\/@?/i, '').replace(/^@/, '').split(/[/?#]/)[0]; return /^[A-Za-z0-9_.]{2,24}$/.test(t) ? t : ''; };
+const tiktokURL = () => `https://www.tiktok.com/@${tiktokUser()}`;
+function openTiktok() { if (tiktokUser()) openExt(tiktokURL()); }
+let lastSuggest = 0;
+function openSuggest() {
+  const to = String(CFG.email || '').trim(); if (!to) return toast('Suggestions are not set up yet', 'info');
+  let kind = 'IDEA';
+  const kinds = h('div', { class: 'seg', style: { width: '100%' } }, ['IDEA', 'BUG', 'LOVE NOTE', 'COLLAB'].map((k, i) => h('button', { class: i ? '' : 'on', style: { flex: 1 }, onclick: e => { kind = k; $$('button', kinds).forEach(b => b.classList.toggle('on', b === e.currentTarget)); } }, k)));
+  const name = h('input', { class: 'inp', maxLength: 60, placeholder: 'optional', spellcheck: false });
+  const reply = h('input', { class: 'inp', type: 'email', maxLength: 120, placeholder: 'optional — only if you want a reply', spellcheck: false });
+  const msg = h('textarea', { class: 'inp sug-msg', maxLength: 2000, placeholder: 'What should SHEDITHERS do next? New effects, bugs, ideas, love…' });
+  const honey = h('input', { type: 'text', name: '_honey', tabIndex: -1, autocomplete: 'off', style: { position: 'absolute', left: '-9999px' } });
+  const count = h('span', { class: 'note' }, '0 / 2000'); msg.addEventListener('input', () => count.textContent = `${msg.value.length} / 2000`);
+  const status = h('div', { class: 'ex-status' });
+  const mailto = () => `mailto:${to}?subject=${encodeURIComponent('SHEDITHERS ' + kind.toLowerCase())}&body=${encodeURIComponent(msg.value + (name.value ? '\n\n— ' + name.value : ''))}`;
+  const send = async () => {
+    const text = msg.value.trim(); if (text.length < 3) { msg.focus(); status.textContent = 'WRITE A MESSAGE FIRST'; return; }
+    if (honey.value) return; if (Date.now() - lastSuggest < 45000) { status.textContent = 'THANKS — PLEASE WAIT A MOMENT BEFORE SENDING ANOTHER'; return; }
+    if (reply.value && !reply.checkValidity()) { reply.focus(); status.textContent = 'THAT EMAIL LOOKS OFF — FIX IT OR LEAVE IT BLANK'; return; }
+    sendBtn.disabled = true; status.textContent = 'SENDING…';
+    try {
+      const r = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(to), { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ _subject: `SHEDITHERS ${kind.toLowerCase()} ♥`, _template: 'table', _captcha: 'false', type: kind, name: name.value.trim() || 'anonymous', email: reply.value.trim() || 'not given', message: text, sent_from: location.href }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || String(j.success) === 'false') throw new Error(j.message || 'HTTP ' + r.status);
+      lastSuggest = Date.now(); md.close(); toast('Suggestion sent — thank you ♥');
+    } catch (e) { sendBtn.disabled = false; status.innerHTML = ''; status.append('COULD NOT SEND (' + e.message + '). ', h('a', { href: mailto(), style: { color: 'var(--pink)' } }, 'EMAIL IT INSTEAD ▸')); }
+  };
+  const sendBtn = h('button', { class: 'btn primary', onclick: send }, '✉ SEND');
+  const body = h('div', { style: { position: 'relative' } }, honey,
+    h('p', { class: 'note', style: { marginBottom: '12px', color: 'var(--tx2)' } }, 'Tell the artist what you want next. Every message is read ♥'),
+    h('div', { class: 'field' }, h('label', null, 'Type'), kinds),
+    h('div', { class: 'field' }, h('label', null, 'Message'), msg, count),
+    h('div', { class: 'row2', style: { gap: '10px' } }, h('div', { class: 'field', style: { flex: 1 } }, h('label', null, 'Your name'), name), h('div', { class: 'field', style: { flex: 1.4 } }, h('label', null, 'Your email'), reply)), status);
+  const md = openModal({ title: 'SUGGESTION BOX', sub: 'STRAIGHT TO THE ARTIST', cls: 'sm', body, foot: [h('a', { class: 'note', href: mailto(), onclick: e => { e.currentTarget.href = mailto(); }, style: { marginRight: 'auto', color: 'var(--tx3)' } }, 'or open your email app'), h('button', { class: 'btn', onclick: () => md.close() }, 'CANCEL'), sendBtn] });
+  md.el.style.width = 'min(560px,94vw)'; setTimeout(() => msg.focus(), 40);
+}
 function supportUI() {
-  const tip = !!cashtag(), shop = !!rbUser();
+  const tip = !!cashtag(), shop = !!rbUser(), tt = !!tiktokUser();
+  $('#railTiktok').classList.toggle('hidden', !tt); $('#emTiktok').classList.toggle('hidden', !tt);
+  $('#railSuggest').classList.toggle('hidden', !CFG.email); $('#emSuggest').classList.toggle('hidden', !CFG.email);
   $('#btnTip').classList.toggle('hidden', !tip); $('#btnShop').classList.toggle('hidden', !shop);
   $('#emTip').classList.toggle('hidden', !tip); $('#emShop').classList.toggle('hidden', !shop);
 }
+$('#railTiktok').onclick = openTiktok; $('#emTiktok').onclick = openTiktok; $('#railSuggest').onclick = openSuggest; $('#emSuggest').onclick = openSuggest;
 $('#btnTip').onclick = openTip; $('#btnShop').onclick = openShop; $('#emTip').onclick = openTip; $('#emShop').onclick = openShop;
 supportUI();
 /* gentle nudge after a successful export (at most once per session) */

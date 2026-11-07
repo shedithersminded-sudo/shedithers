@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SHEDITHERS — Dither Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Bebas+Neue&family=UnifrakturMaguntia&family=Rubik+Glitch&family=Permanent+Marker&family=Special+Elite&family=VT323&family=Monoton&family=Creepster&family=Pacifico&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/app.css">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#070807">
@@ -69,6 +69,8 @@
       <button data-tab="presets" data-tip="Presets"><svg><use href="#i-preset"/></svg><i>04</i></button>
       <button data-tab="projects" data-tip="Recent projects"><svg><use href="#i-folder"/></svg><i>05</i></button>
       <button data-tab="history" data-tip="Export history"><svg><use href="#i-clock"/></svg><i>06</i></button>
+      <button class="rail-link hidden" id="railTiktok" data-tip="SHEDITHERS on TikTok"><svg viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 11-3-3.46V8a6.5 6.5 0 106 6.44V8.7a7 7 0 004 1.3V7a4 4 0 01-4-4z" fill="currentColor"/></svg><i>TIKTOK</i></button>
+      <button class="rail-link" id="railSuggest" data-tip="Send a suggestion to the artist"><svg viewBox="0 0 24 24"><path d="M4 4h16v12H9l-5 4z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h5" stroke="currentColor" stroke-width="1.6"/></svg><i>IDEAS</i></button>
       <div class="rail-foot"><span id="railClock">00:00</span></div>
     </nav>
     <aside id="left"><div class="ph"><b id="leftTitle">IMPORT</b><span id="leftMeta"></span></div><div id="leftBody" class="scroll"></div></aside>
@@ -83,7 +85,7 @@
           <button class="tbtn" id="z100" data-tip="Actual pixels · 0">1:1</button>
         </div>
         <div class="grp">
-          <div class="seg small tool-seg" id="toolSeg"><button data-v="move" class="on" data-tip="Move / pan · V">✥ MOVE</button><button data-v="brush" data-tip="Brush mask on selected layer · B">✎ BRUSH</button></div>
+          <div class="seg small tool-seg" id="toolSeg"><button data-v="move" class="on" data-tip="Move / pan · V">✥ MOVE</button><button data-v="brush" data-tip="Brush mask on selected layer · B">✎ BRUSH</button><button data-v="text" data-tip="Click the picture to add or move text · T">T TEXT</button></div>
           <button class="tbtn" id="btnMotion" data-tip="Animate this still + add sound (TikTok-style)">▶ MOTION</button>
         </div>
         <div class="grp">
@@ -131,6 +133,8 @@
             <div class="row" style="margin-top:8px">
               <button class="btn pink hidden" id="emTip">♥ BUY ME A DRINK</button>
               <button class="btn hidden" id="emShop">STICKERS &amp; PRINTS</button>
+              <button class="btn hidden" id="emTiktok">♪ TIKTOK</button>
+              <button class="btn" id="emSuggest">✉ SUGGEST</button>
             </div>
             <div class="quote">“BECOMING AND UNBECOMING SO I CAN BECOME WHO I ALWAYS HAVE BEEN AND NEVER WAS”</div>
           </div>

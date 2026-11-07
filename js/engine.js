@@ -534,7 +534,61 @@ EFFECTS.push(
     fn: (s, d, w, h, p, c) => { const im = p._img; if (!im || im.length !== s.length) return; const am = new Uint8Array(w * h); for (let i = 0, j = 0; i < am.length; i++, j += 4) { am[i] = im[j + 3]; if (im[j + 3]) { d[j] = im[j]; d[j + 1] = im[j + 1]; d[j + 2] = im[j + 2]; } } c.alphaMask = am; } },
   { id: 'fill', cat: 'layer', name: 'Color Fill', desc: 'Solid or gradient layer (use blend modes)', params: [SEL('type', 'Type', ['solid', 'linear', 'radial'], 'linear'), C('a', 'Color A', '#ff4fa3'), C('b', 'Color B', '#0b0c0b'), R('ang', 'Angle', 0, 360, 90, 1, '°')],
     fn: (s, d, w, h, p) => { const A2 = hex(p.a), B2 = hex(p.b), an = p.ang * Math.PI / 180, ca = Math.cos(an), sa = Math.sin(an), ext = Math.abs(w * ca) + Math.abs(h * sa); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let t2 = 0; if (p.type === 'linear') t2 = clamp(((x - w / 2) * ca + (y - h / 2) * sa) / ext + 0.5, 0, 1); else if (p.type === 'radial') t2 = clamp(Math.hypot(x / w - 0.5, y / h - 0.5) * 1.414, 0, 1); const k = (y * w + x) * 4; for (let q = 0; q < 3; q++) d[k + q] = A2[q] + (B2[q] - A2[q]) * t2; } } },
+  { id: 'text', cat: 'layer', name: 'Text', desc: 'Type on your art — fonts, outline, glow', params: [
+    { k: 'text', l: 'Text', t: 'txt', def: 'SHEDITHERS' }, SEL('font', 'Font', [['Barlow Condensed', 'CONDENSED'], ['Bebas Neue', 'BEBAS'], ['UnifrakturMaguntia', 'GOTHIC'], ['Rubik Glitch', 'GLITCH'], ['Permanent Marker', 'MARKER'], ['Special Elite', 'TYPEWRITER'], ['VT323', 'PIXEL'], ['Monoton', 'NEON TUBE'], ['Creepster', 'CREEPY'], ['Pacifico', 'SCRIPT'], ['JetBrains Mono', 'MONO'], ['Georgia', 'SERIF']], 'Barlow Condensed'),
+    R('size', 'Size', 6, 800, 140, 1, 'px'), SEL('weight', 'Weight', [['400', 'REGULAR'], ['700', 'BOLD'], ['900', 'BLACK']], '700'), B('italic', 'Italic', false), SEL('case', 'Case', [['as', 'AS TYPED'], ['upper', 'UPPER'], ['lower', 'lower']], 'as'),
+    SEL('align', 'Align', ['left', 'center', 'right'], 'center'), R('x', 'Position X', 0, 100, 50, 0.5, '%'), R('y', 'Position Y', 0, 100, 50, 0.5, '%'), R('rot', 'Rotation', -180, 180, 0, 1, '°'),
+    R('spacing', 'Letter spacing', -20, 100, 4, 1, 'px'), R('lineh', 'Line height', 60, 250, 105, 1, '%'),
+    C('fill', 'Fill', '#ff4fa3'), C('stroke', 'Outline', '#070807'), R('strokeW', 'Outline width', 0, 40, 0, 0.5, 'px'), C('glowC', 'Glow color', '#ff4fa3'), R('glow', 'Glow', 0, 120, 18, 1, 'px')],
+    fn: (s, d, w, h, p, c) => overlayImg(d, w, h, p, c) },
 );
+function overlayImg(d, w, h, p, c) { const im = p._img; if (!im || im.length !== d.length) return; const am = new Uint8Array(w * h); for (let i = 0, j = 0; i < am.length; i++, j += 4) { am[i] = im[j + 3]; if (im[j + 3]) { d[j] = im[j]; d[j + 1] = im[j + 1]; d[j + 2] = im[j + 2]; } } c.alphaMask = am; }
+
+/* ---------- GHOST DRIFT: drifting translucent echoes + motion trails ---------- */
+function ghostFx(s, d, w, h, p, c) {
+  const N = w * h, anim = c.video && p.anim, t = anim ? c.t * p.speed : 0, phase = anim ? frac(t * 0.35) : 0.5;
+  const g = p.blur > 0 ? blur(s, w, h, p.blur * c.S) : s;
+  const key = new Float32Array(N);
+  for (let i = 0, j = 0; i < N; i++, j += 4) { const l = lum(g[j], g[j + 1], g[j + 2]) / 255; key[i] = p.src === 'bright' ? clamp((l - 0.4) / 0.4, 0, 1) : p.src === 'dark' ? clamp((0.6 - l) / 0.4, 0, 1) : 1; }
+  const tint = hex(p.tint), ta = p.tintAmt / 100, st = p.str / 100, a0 = p.angle * Math.PI / 180, dist = p.dist * c.S, chs = p.chroma * c.S, fade = p.fade / 100, n = p.copies | 0;
+  const acc = new Float32Array(N * 3), cx = w / 2, cy = h / 2, mode = p.blendg;
+  let wsum = 0;
+  for (let k = 1; k <= n; k++) {
+    const ke = k - 1 + phase;
+    const ang = a0 + (p.curve / 100) * ke * 0.35 + (p.wobble / 100) * 0.6 * Math.sin(t * 1.3 + k * 0.9);
+    const r = dist * ke * (1 + (p.wobble / 100) * 0.35 * Math.sin(t * 1.7 + k * 1.3));
+    const ox = Math.cos(ang) * r, oy = Math.sin(ang) * r, sc = 1 + p.scale / 100 * ke, dx = Math.cos(ang), dy = Math.sin(ang);
+    let wt = st * Math.pow(fade, ke) * clamp(ke * 2, 0.15, 1); if (k === n) wt *= (1 - phase * 0.9);
+    if (wt < 0.004) continue; wsum += wt;
+    const co = chs * (0.4 + ke * 0.3);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const bx = cx + (x - cx - ox) / sc, by = cy + (y - cy - oy) / sc, i = y * w + x;
+      for (let q = 0; q < 3; q++) {
+        const sh = q === 0 ? co : q === 2 ? -co : 0, sx = Math.round(bx + dx * sh), sy = Math.round(by + dy * sh);
+        if (sx < 0 || sy < 0 || sx >= w || sy >= h) continue;
+        const si = sy * w + sx, v = (g[si * 4 + q] + (tint[q] - g[si * 4 + q]) * ta) / 255 * key[si] * wt, ai = i * 3 + q;
+        acc[ai] = mode === 'screen' ? 1 - (1 - acc[ai]) * (1 - v) : mode === 'lighten' ? Math.max(acc[ai], v) : acc[ai] + v;
+      }
+    }
+  }
+  const prev = c.prev && c.prev.length === s.length && p.trail > 0 ? c.prev : null, tr = p.trail / 100;
+  const tx = Math.round(Math.cos(a0) * dist * 0.12), ty = Math.round(Math.sin(a0) * dist * 0.12);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x, j = i * 4;
+    for (let q = 0; q < 3; q++) {
+      const b = s[j + q] / 255; let a = acc[i * 3 + q]; if (mode === 'average') a = a / Math.max(1, wsum) * st;
+      let o = mode === 'screen' ? 1 - (1 - b) * (1 - a) : mode === 'lighten' ? Math.max(b, a) : mode === 'add' ? b + a : b * (1 - st * 0.5) + a * 0.5;
+      if (prev) { const px2 = clamp(x - tx, 0, w - 1), py2 = clamp(y - ty, 0, h - 1), pv = prev[(py2 * w + px2) * 4 + q] / 255 * tr; if (pv > o) o = o + (pv - o) * 0.85; }
+      d[j + q] = o * 255;
+    }
+  }
+}
+EFFECTS.push({ id: 'ghost', cat: 'light', name: 'Ghost Drift', desc: 'Drifting spectral echoes + motion trails', params: [
+  R('copies', 'Echo copies', 1, 16, 6), R('dist', 'Drift distance', 0, 300, 22, 1, 'px'), R('angle', 'Drift direction', 0, 360, 330, 1, '°'), R('curve', 'Drift curve', 0, 100, 35, 1, '%'),
+  R('wobble', 'Wobble', 0, 100, 40, 1, '%'), R('scale', 'Expand', -20, 20, 2.5, 0.5, '%'), R('fade', 'Echo fade', 10, 95, 68, 1, '%'), R('str', 'Ghost strength', 0, 200, 85, 1, '%'),
+  R('blur', 'Ghost softness', 0, 40, 5, 0.5, 'px'), SEL('src', 'Ghost from', [['full', 'WHOLE IMAGE'], ['bright', 'HIGHLIGHTS'], ['dark', 'SHADOWS / INK']], 'full'),
+  C('tint', 'Ghost tint', '#bfe8ff'), R('tintAmt', 'Tint amount', 0, 100, 40, 1, '%'), R('chroma', 'Spectral split', 0, 30, 3, 0.5, 'px'),
+  SEL('blendg', 'Combine', ['screen', 'lighten', 'add', 'average'], 'screen'), R('trail', 'Motion trails', 0, 98, 55, 1, '%'), R('speed', 'Drift speed', 0, 5, 0.8, 0.05), ANIM()], fn: ghostFx });
 const CATS = [['layer', 'Layers'], ['light', 'Light'], ['dither', 'Dithering'], ['pixel', 'Pixel'], ['glitch', 'Glitch'], ['image', 'Image'], ['halftone', 'Halftone']];
 const MAP = {}; EFFECTS.forEach(e => MAP[e.id] = e);
 function defaults(def) { const o = {}; def.params.forEach(q => o[q.k] = q.def); return o; }

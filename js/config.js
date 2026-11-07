@@ -6,6 +6,10 @@ const SHD_CONFIG = {
   cashapp: '$olace6',
   // Your Redbubble username (from redbubble.com/people/USERNAME), e.g. 'shedithers'
   redbubble: '',
+  // Your TikTok handle (without @)
+  tiktok: 'shedithers',
+  // Where the suggestion box sends messages
+  email: 'shedithersminded@gmail.com',
   tipLine: 'SHEDITHERS is free. If it made something you love, buy the artist a drink ♥',
   drinks: [
     { label: 'SLUSHY', emoji: '🍧', amount: 3 },

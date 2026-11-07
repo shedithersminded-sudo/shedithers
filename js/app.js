@@ -174,6 +174,7 @@ function resolveP(f, t, w, hh) {
   for (const q of def.params) {
     if (q.t === 'p' && String(p[q.k]).startsWith('c_')) p._pal = palColors(p[q.k]) || ['#000000', '#ffffff'];
     if (q.t === 'img' && w && typeof layerPixels === 'function') p._img = layerPixels(p, w, hh);
+    if (q.t === 'txt' && w && typeof textPixels === 'function') p._img = textPixels(p, w, hh);
   }
   return p;
 }
@@ -181,7 +182,7 @@ function resolveStack(t, stack, w, hh) {
   stack = stack || S.override || S.stack;
   return stack.filter(f => f.on && E.MAP[f.id]).map(f => ({ id: f.id, mix: valAt(f, 'mix', t), p: resolveP(f, t, w, hh), blend: f.blend || 'normal', mask: w && typeof maskArray === 'function' ? maskArray(f, w, hh) : null }));
 }
-const hasMosh = st => st.some(f => f.id === 'datamosh');
+const hasMosh = st => st.some(f => f.id === 'datamosh' || (f.id === 'ghost' && (f.p.trail ?? 55) > 0));
 function selFx() { return S.stack.find(f => f.uid === S.sel) || null; }
 function addFx(id, at, p) { const f = mkFx(id, p); if (!f) return; if (at == null || at > S.stack.length) S.stack.push(f); else S.stack.splice(at, 0, f); S.sel = f.uid; changed(true); toast(`${E.MAP[id].name.toUpperCase()} added to stack`, 'info', 1600); return f; }
 function removeFx(u) { const i = S.stack.findIndex(f => f.uid === u); if (i < 0) return; const [f] = S.stack.splice(i, 1); if (S.sel === u) S.sel = (S.stack[i] || S.stack[i - 1] || {}).uid || null; changed(true); toast(`${E.MAP[f.id].name.toUpperCase()} removed`, 'info', 1500); }
@@ -265,6 +266,7 @@ viewport.addEventListener('mousedown', e => {
   if (e.target.closest('#wipe span')) { wipeDrag = true; e.preventDefault(); return; }
   if (e.target.closest('#empty')) return;
   if (S.tool === 'brush' && e.button === 0 && !e.altKey && typeof brushDown === 'function') { e.preventDefault(); brushDown(e); return; }
+  if (S.tool === 'text' && e.button === 0 && !e.altKey && typeof textDown === 'function') { e.preventDefault(); textDown(e); return; }
   pan = { x: e.clientX - V.x, y: e.clientY - V.y }; viewport.classList.add('panning'); e.preventDefault();
 });
 window.addEventListener('mousemove', e => {
@@ -433,6 +435,7 @@ window.addEventListener('keydown', e => {
   switch (k) {
     case ' ': if (isTimed()) { e.preventDefault(); togglePlay(); } break;
     case 'v': case 'V': setTool('move'); break;
+    case 't': case 'T': setTool(S.tool === 'text' ? 'move' : 'text'); break;
     case 'x': case 'X': if (S.tool === 'brush') $$('#brushMode button').find(b => b.dataset.v !== BR.mode).click(); break;
     case '[': if (S.tool === 'brush') { BR.size = Math.max(2, Math.round(BR.size * 0.8)); $('#brSize').value = BR.size; $('#brSize').oninput(); } break;
     case ']': if (S.tool === 'brush') { BR.size = Math.min(600, Math.round(BR.size * 1.25)); $('#brSize').value = BR.size; $('#brSize').oninput(); } break;
@@ -461,6 +464,6 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => { if (e.key === '\\' && holdOrig) { setCmp(holdOrig); holdOrig = null; } });
 function selectRel(d) { if (!S.stack.length) return; const i = S.stack.findIndex(f => f.uid === S.sel); S.sel = S.stack[clampN(i + d, 0, S.stack.length - 1)].uid; renderStack(); }
-const SHORTCUTS = [['Import media', 'Ctrl+O'], ['Save project', 'Ctrl+S'], ['Export', 'Ctrl+E'], ['Undo / Redo', 'Ctrl+Z / Ctrl+Shift+Z'], ['Copy / paste effect', 'Ctrl+C / Ctrl+V'], ['Duplicate effect', 'Ctrl+D'], ['Delete effect', 'Del'], ['Toggle effect', 'H'], ['Randomize effect / stack', 'R / Shift+R'], ['Select prev / next', '↑ / ↓'], ['Move effect up / down', 'Alt+↑ / Alt+↓'], ['Cycle preview mode', 'C'], ['Hold to see original', '\\'], ['Brush tool / Move tool', 'B / V'], ['Brush paint / erase', 'X'], ['Brush size', '[ / ]'], ['Fit / 100% zoom', 'F / 0'], ['Zoom in / out', '+ / −'], ['Fullscreen', 'Shift+F'], ['Play / pause', 'Space'], ['Step frame (×10)', '← → (Shift)'], ['Set in / out point', 'I / O'], ['Keyframe intensity', 'K'], ['Jump to in / out', 'Home / End'], ['This list', '?']];
+const SHORTCUTS = [['Import media', 'Ctrl+O'], ['Save project', 'Ctrl+S'], ['Export', 'Ctrl+E'], ['Undo / Redo', 'Ctrl+Z / Ctrl+Shift+Z'], ['Copy / paste effect', 'Ctrl+C / Ctrl+V'], ['Duplicate effect', 'Ctrl+D'], ['Delete effect', 'Del'], ['Toggle effect', 'H'], ['Randomize effect / stack', 'R / Shift+R'], ['Select prev / next', '↑ / ↓'], ['Move effect up / down', 'Alt+↑ / Alt+↓'], ['Cycle preview mode', 'C'], ['Hold to see original', '\\'], ['Brush / Text / Move tool', 'B / T / V'], ['Brush paint / erase', 'X'], ['Brush size', '[ / ]'], ['Fit / 100% zoom', 'F / 0'], ['Zoom in / out', '+ / −'], ['Fullscreen', 'Shift+F'], ['Play / pause', 'Space'], ['Step frame (×10)', '← → (Shift)'], ['Set in / out point', 'I / O'], ['Keyframe intensity', 'K'], ['Jump to in / out', 'Home / End'], ['This list', '?']];
 function openShortcuts() { openModal({ title: 'KEYBOARD SHORTCUTS', sub: 'INPUT MAP', body: h('div', { class: 'kbd-grid' }, SHORTCUTS.map(([a, b]) => h('div', null, h('span', null, a), h('kbd', null, b)))) }); }
 setInterval(() => { const d = new Date(); $('#railClock').textContent = d.toTimeString().slice(0, 5); }, 10000);

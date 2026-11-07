@@ -230,6 +230,13 @@ function layerRow(f) {
   return wrap;
 }
 function paramCtl(f, q) {
+  if (q.t === 'txt') {
+    const ta = h('textarea', { class: 'inp txt-edit', rows: 3, spellcheck: false, value: f.p[q.k] || '' });
+    ta.addEventListener('input', () => { f.p[q.k] = ta.value; changed(false, true); });
+    ta.addEventListener('change', () => H.commit());
+    ta.addEventListener('keydown', e => e.stopPropagation());
+    return h('div', { class: 'ctl' }, h('div', { class: 'ctl-h' }, h('label', null, q.l + ' — Enter for new line')), ta);
+  }
   if (q.t === 'img') {
     const imgs = S.library.filter(x => x.type === 'image');
     const sel = h('select', { onchange: e => { if (e.target.value === '__new') { _imgPick.fx = f; $('#imgLayerIn').click(); e.target.value = f.p.img || ''; return; } f.p.img = e.target.value; changed(true); } },
