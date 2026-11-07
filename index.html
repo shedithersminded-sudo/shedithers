@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHEDITHERS — Dither Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#070807">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+</head>
+<body>
+<div id="boot">
+  <canvas id="bootArt"></canvas>
+  <div class="boot-inner">
+    <div class="boot-mark"><svg viewBox="0 0 40 40"><use href="#i-mark"/></svg></div>
+    <div class="boot-title">SHEDITHERS</div>
+    <div class="boot-sub">EXPERIMENTAL MEDIA WORKSTATION // DITHER LAB</div>
+    <div class="boot-quote" id="bootQuote"></div>
+    <div class="boot-bar"><i></i></div>
+    <div class="boot-log" id="bootLog"></div>
+  </div>
+  <div class="boot-skip">CLICK TO SKIP</div>
+</div>
+
+<div id="app">
+  <header id="top">
+    <div class="logo" title="SHEDITHERS LOVES YOU">
+      <svg class="mark" viewBox="0 0 40 40"><use href="#i-mark"/></svg>
+      <div class="wordmark"><b>SHEDITHERS</b><span>DITHER LAB · BUILD 1.0</span></div>
+    </div>
+    <div class="proj">
+      <label>PROJECT</label>
+      <input id="projName" spellcheck="false" maxlength="48" placeholder="NO_IDENTITY">
+      <span id="saveState" class="pill">ERROR: NO IDENTITY</span>
+    </div>
+    <div class="tb">
+      <button class="ib" id="btnUndo" data-tip="Undo · Ctrl+Z"><svg><use href="#i-undo"/></svg></button>
+      <button class="ib" id="btnRedo" data-tip="Redo · Ctrl+Shift+Z"><svg><use href="#i-redo"/></svg></button>
+      <span class="sep"></span>
+      <button class="ib" id="btnSave" data-tip="Save project · Ctrl+S"><svg><use href="#i-save"/></svg></button>
+      <span class="sep"></span>
+      <div class="seg" id="cmpSeg" data-tip="Preview mode · C to cycle">
+        <button data-v="off" class="on">RESULT</button><button data-v="wipe">WIPE</button><button data-v="split">SPLIT</button><button data-v="orig">ORIGINAL</button>
+      </div>
+    </div>
+    <div class="sys">
+      <div class="readout"><span>RES</span><b id="roRes">—</b></div>
+      <div class="readout"><span>RENDER</span><b id="roMs">—</b></div>
+      <div class="readout"><span>FX</span><b id="roFx">00</b></div>
+      <div class="heart" data-tip="SHEDITHERS LOVES YOU"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg></div>
+      <button class="btn ghost hidden" id="btnInstall" data-tip="Install SHEDITHERS as an app">INSTALL</button>
+      <button class="btn ghost" id="btnShare" data-tip="Share SHEDITHERS with friends">♥ SHARE</button>
+      <button class="btn ghost" id="btnSettings" data-tip="Settings"><svg><use href="#i-gear"/></svg></button>
+      <button class="btn primary" id="btnExport" data-tip="Export · Ctrl+E"><svg><use href="#i-export"/></svg>EXPORT</button>
+    </div>
+  </header>
+
+  <div id="main">
+    <nav id="rail">
+      <button data-tab="import" class="on" data-tip="Import media · Ctrl+O"><svg><use href="#i-import"/></svg><i>01</i></button>
+      <button data-tab="library" data-tip="Image library"><svg><use href="#i-grid"/></svg><i>02</i></button>
+      <button data-tab="effects" data-tip="Effects library"><svg><use href="#i-fx"/></svg><i>03</i></button>
+      <button data-tab="presets" data-tip="Presets"><svg><use href="#i-preset"/></svg><i>04</i></button>
+      <button data-tab="projects" data-tip="Recent projects"><svg><use href="#i-folder"/></svg><i>05</i></button>
+      <button data-tab="history" data-tip="Export history"><svg><use href="#i-clock"/></svg><i>06</i></button>
+      <div class="rail-foot"><span id="railClock">00:00</span></div>
+    </nav>
+    <aside id="left"><div class="ph"><b id="leftTitle">IMPORT</b><span id="leftMeta"></span></div><div id="leftBody" class="scroll"></div></aside>
+
+    <section id="center">
+      <div id="viewTools">
+        <div class="grp">
+          <button class="ib" id="zOut" data-tip="Zoom out · −"><svg><use href="#i-minus"/></svg></button>
+          <button class="zlabel" id="zLabel" data-tip="Zoom presets">100%</button>
+          <button class="ib" id="zIn" data-tip="Zoom in · +"><svg><use href="#i-plus"/></svg></button>
+          <button class="tbtn" id="zFit" data-tip="Fit to screen · F">FIT</button>
+          <button class="tbtn" id="z100" data-tip="Actual pixels · 0">1:1</button>
+        </div>
+        <div class="grp">
+          <div class="seg small tool-seg" id="toolSeg"><button data-v="move" class="on" data-tip="Move / pan · V">✥ MOVE</button><button data-v="brush" data-tip="Brush mask on selected layer · B">✎ BRUSH</button></div>
+          <button class="tbtn" id="btnMotion" data-tip="Animate this still + add sound (TikTok-style)">▶ MOTION</button>
+        </div>
+        <div class="grp">
+          <span class="lbl">BG</span>
+          <div class="seg small" id="bgSeg"><button data-v="checker" class="on" data-tip="Transparency checkerboard">▦</button><button data-v="black" data-tip="Black">■</button><button data-v="gray" data-tip="Gray">■</button><button data-v="white" data-tip="White">□</button></div>
+        </div>
+        <div class="grp right">
+          <button class="tbtn" id="btnRandAll" data-tip="Randomize whole stack · Shift+R">RANDOMIZE</button>
+          <button class="ib" id="btnFull" data-tip="Fullscreen preview · Shift+F"><svg><use href="#i-full"/></svg></button>
+        </div>
+      </div>
+      <div id="brushBar">
+        <span class="lbl">✎ MASK BRUSH</span>
+        <div class="seg small" id="brushMode"><button data-v="paint" class="on" data-tip="Paint effect in · hold Alt to pan">PAINT</button><button data-v="erase" data-tip="Erase effect away · X toggles">ERASE</button></div>
+        <label>SIZE<input type="range" id="brSize" min="2" max="600" value="80"><b id="brSizeV">80</b></label>
+        <label>HARDNESS<input type="range" id="brHard" min="0" max="100" value="55"><b id="brHardV">55</b></label>
+        <label>FLOW<input type="range" id="brFlow" min="1" max="100" value="80"><b id="brFlowV">80</b></label>
+        <button class="tbtn" id="brFill" data-tip="Effect everywhere">FILL</button>
+        <button class="tbtn" id="brClear" data-tip="Effect nowhere">CLEAR</button>
+        <button class="tbtn" id="brInv" data-tip="Invert mask">INVERT</button>
+        <button class="tbtn pink on" id="brShow" data-tip="Show mask overlay">OVERLAY</button>
+        <span id="brushTarget">NO LAYER SELECTED</span>
+      </div>
+      <div id="viewport" class="bg-checker">
+        <div id="stage">
+          <div class="cv-wrap" id="wrapBefore"><canvas id="cvBefore"></canvas><span class="cv-tag">ORIGINAL</span></div>
+          <div class="cv-wrap" id="wrapAfter"><canvas id="cvAfter"></canvas><canvas id="cvMask"></canvas><span class="cv-tag">PROCESSED</span></div>
+          <div id="wipe"><i></i><span>◀ ▶</span></div>
+        </div>
+        <div id="empty">
+          <canvas id="artFeed"></canvas>
+          <div class="hud tl">ARTIST FEED // 01M.MP4<br><span id="feedState">SIGNAL ACQUIRING…</span></div>
+          <div class="hud tr">SECTOR 06 // UH<br>LAT 00.000 · LON 00.000</div>
+          <div class="hud bl">ERROR: NO IDENTITY</div>
+          <div class="hud br" id="feedClock">00:00:00</div>
+          <div class="empty-card">
+            <div class="badge-heart"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg><div><s>Shedithers</s><b>LOVES YOU</b></div></div>
+            <h1>DROP MEDIA TO BEGIN</h1>
+            <p>PNG · JPG · WEBP · TIFF · MP4 · WEBM · MOV</p>
+            <div class="row">
+              <button class="btn primary" id="emImport"><svg><use href="#i-import"/></svg>IMPORT MEDIA</button>
+              <button class="btn" id="emReel">LOAD ARTIST REEL</button>
+              <button class="btn" id="emCollage">LOAD COLLAGE</button>
+            </div>
+            <div class="quote">“BECOMING AND UNBECOMING SO I CAN BECOME WHO I ALWAYS HAVE BEEN AND NEVER WAS”</div>
+          </div>
+        </div>
+        <div id="dropOverlay"><div>RELEASE TO IMPORT<span>FILES WILL BE ADDED TO THE LIBRARY</span></div></div>
+        <div id="brushRing"></div>
+        <div id="busy"><i></i><span id="busyText">PROCESSING</span></div>
+        <div class="corner c1"></div><div class="corner c2"></div><div class="corner c3"></div><div class="corner c4"></div>
+      </div>
+      <div id="viewStatus">
+        <span>X <b id="sx">—</b></span><span>Y <b id="sy">—</b></span><span>RGB <b id="srgb">—</b></span><i class="swatch" id="sswatch"></i>
+        <span class="flex"></span>
+        <span id="sMedia">NO MEDIA</span><span>PREVIEW <b id="sProxy">—</b></span><span class="live"><i></i><b id="sState">IDLE</b></span>
+      </div>
+      <div id="timeline" class="hidden">
+        <div class="transport">
+          <button class="ib" id="tStart" data-tip="To in-point · Home"><svg><use href="#i-start"/></svg></button>
+          <button class="ib" id="tBack" data-tip="Previous frame · ←"><svg><use href="#i-stepb"/></svg></button>
+          <button class="ib play" id="tPlay" data-tip="Play / pause · Space"><svg><use href="#i-play"/></svg></button>
+          <button class="ib" id="tFwd" data-tip="Next frame · →"><svg><use href="#i-stepf"/></svg></button>
+          <button class="ib" id="tEnd" data-tip="To out-point · End"><svg><use href="#i-end"/></svg></button>
+          <button class="ib tog on" id="tLoop" data-tip="Loop in/out range"><svg><use href="#i-loop"/></svg></button>
+          <button class="ib tog" id="tMute" data-tip="Audio (preview only)"><svg><use href="#i-mute"/></svg></button>
+          <div class="tc"><b id="tCur">00:00:00</b><span>/</span><span id="tDur">00:00:00</span></div>
+          <label class="tl-field">SPEED<select id="tSpeed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="4">4×</option></select></label>
+          <label class="tl-field">FPS<select id="tFps"><option>6</option><option>8</option><option>12</option><option>15</option><option selected>24</option><option>25</option><option>30</option><option>60</option></select></label>
+          <label class="tl-field motion-only">LENGTH<input id="stillDur" class="tl-num" type="number" min="0.5" max="600" step="0.5">S</label>
+          <span class="tl-meta"><span class="video-only" style="display:inline">SRC <b id="tSrcFps">—</b> · </span>CLIP <b id="tClip">—</b></span>
+          <span class="flex"></span>
+          <button class="tbtn" id="tIn" data-tip="Set in-point at playhead · I">SET IN</button>
+          <button class="tbtn" id="tOut" data-tip="Set out-point at playhead · O">SET OUT</button>
+          <button class="tbtn" id="tKey" data-tip="Keyframe intensity of selected effect · K">◆ KEY</button>
+        </div>
+        <div class="soundbar">
+          <button class="tbtn pink" id="sndAdd" data-tip="Attach an audio file (MP3, WAV, M4A, OGG)">♪ ADD SOUND</button>
+          <span class="snd-name" id="sndName">NO SOUNDTRACK</span>
+          <label class="tl-field">START AT<input id="sndStart" class="tl-num" type="number" min="0" step="0.1" value="0">S</label>
+          <label class="tl-field">VOL<input id="sndVol" type="range" min="0" max="200" value="100"><b id="sndVolV" style="font:500 10px var(--mono);color:var(--pink)">100</b></label>
+          <button class="tbtn video-only" id="sndOrig" data-tip="Include the video's own audio">ORIGINAL AUDIO: ON</button>
+          <button class="tbtn" id="sndDel" data-tip="Remove soundtrack">REMOVE</button>
+          <span class="flex"></span>
+          <button class="tbtn" id="vert916" data-tip="Crop the canvas to vertical 9:16">9:16 VERTICAL</button>
+          <button class="tbtn pink" id="tExport" data-tip="Export MP4 / WEBM / GIF">EXPORT CLIP ▸</button>
+        </div>
+        <div class="tracks" id="tracks">
+          <div class="ruler" id="ruler"><canvas id="rulerCv"></canvas></div>
+          <div class="clip" id="clipTrack"><canvas id="thumbStrip"></canvas><div class="dim l" id="dimL"></div><div class="dim r" id="dimR"></div><div class="trim in" id="trimIn"></div><div class="trim out" id="trimOut"></div></div>
+          <div class="clip snd" id="sndTrack"><canvas id="waveCv"></canvas></div>
+          <div id="keyLanes"></div>
+          <div class="playhead" id="playhead"><i></i></div>
+        </div>
+      </div>
+    </section>
+
+    <aside id="right">
+      <div class="rtabs"><button data-rt="stack" class="on">LAYERS</button><button data-rt="canvas">CANVAS</button></div>
+      <div id="rStack" class="rpane">
+        <div class="stack-head">
+          <div><b id="stackCount">00</b><span>LAYERS · PROCESS ORDER ↓</span></div>
+          <div class="grp">
+            <button class="ib" id="stAdd" data-tip="Add effect"><svg><use href="#i-plus"/></svg></button>
+            <button class="ib" id="stSave" data-tip="Save stack as preset"><svg><use href="#i-preset"/></svg></button>
+            <button class="ib" id="stReset" data-tip="Reset entire stack to defaults"><svg><use href="#i-reset"/></svg></button>
+            <button class="ib" id="stClear" data-tip="Remove all effects"><svg><use href="#i-trash"/></svg></button>
+          </div>
+        </div>
+        <div id="stackList" class="scroll"></div>
+      </div>
+      <div id="rCanvas" class="rpane hidden scroll"></div>
+    </aside>
+  </div>
+</div>
+
+<div id="ctx" class="ctx hidden"></div>
+<div id="tip" class="tip hidden"></div>
+<div id="toasts"></div>
+<div id="modalRoot"></div>
+<input type="file" id="fileIn" multiple accept="image/png,image/jpeg,image/webp,image/tiff,.tif,.tiff,video/mp4,video/webm,video/quicktime,.mov" hidden>
+<input type="file" id="audioIn" accept="audio/*,.mp3,.wav,.m4a,.ogg,.aac,.flac,.opus" hidden>
+<input type="file" id="imgLayerIn" accept="image/*,.tif,.tiff" hidden>
+<input type="file" id="jsonIn" accept=".json,application/json" hidden>
+<div class="fx-overlay scan"></div><div class="fx-overlay grain"></div>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="i-mark" viewBox="0 0 40 40"><path d="M4 4h32v32H4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 8h4v4H8zM16 8h4v4h-4zM24 8h4v4h-4zM12 12h4v4h-4zM20 12h4v4h-4zM8 16h4v4H8zM16 16h4v4h-4zM12 20h4v4h-4zM8 24h4v4H8z" fill="currentColor"/><path d="M28 28l4 4M32 22v10H22" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.2 0 3.6 1.2 4.4 2.5.8-1.3 2.2-2.5 4.4-2.5 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="currentColor"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 7L4 12l5 5M4 12h11a5 5 0 010 10h-3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-redo" viewBox="0 0 24 24"><path d="M15 7l5 5-5 5M20 12H9a5 5 0 000 10h3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M4 4h13l3 3v13H4zM8 4v5h8V4M7 20v-6h10v6" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-export" viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5M4 14v7h16v-7" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-import" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 14v7h16v-7" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-fx" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.6"/><rect x="6" y="4" width="3" height="4" fill="currentColor"/><rect x="14" y="10" width="3" height="4" fill="currentColor"/><rect x="9" y="16" width="3" height="4" fill="currentColor"/></symbol>
+    <symbol id="i-preset" viewBox="0 0 24 24"><path d="M4 4h16v16H4z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 9h16M9 9v11" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v12H3z" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3 3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-full" viewBox="0 0 24 24"><path d="M3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 108-8H7M7 1L4 4l3 3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-dup" viewBox="0 0 24 24"><path d="M8 8h12v12H8zM4 16V4h12" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><path d="M4 4h16v16H4z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></symbol>
+    <symbol id="i-grip" viewBox="0 0 24 24"><path d="M9 5h2v2H9zM13 5h2v2h-2zM9 11h2v2H9zM13 11h2v2h-2zM9 17h2v2H9zM13 17h2v2h-2z" fill="currentColor"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" fill="currentColor"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></symbol>
+    <symbol id="i-start" viewBox="0 0 24 24"><path d="M5 4v16M19 4L8 12l11 8z" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-end" viewBox="0 0 24 24"><path d="M19 4v16M5 4l11 8-11 8z" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-stepb" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-stepf" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-loop" viewBox="0 0 24 24"><path d="M4 12V9a3 3 0 013-3h12l-3-3M20 12v3a3 3 0 01-3 3H5l3 3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 9a4 4 0 010 6M18.5 6.5a7.5 7.5 0 010 11" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><path d="M8 8h12v12H8z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 16V4h12" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-paste" viewBox="0 0 24 24"><path d="M6 5h12v16H6zM9 3h6v4H9z" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<script src="js/engine.js"></script>
+<script src="js/presets.js"></script>
+<script src="js/util.js"></script>
+<script src="js/app.js"></script>
+<script src="js/panels.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/gif.js"></script>
+<script src="js/brush.js"></script>
+<script src="js/export.js"></script>
+<script src="js/boot.js"></script>
+</body>
+</html>

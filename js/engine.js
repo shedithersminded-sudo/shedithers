@@ -1,0 +1,568 @@
+/* SHEDITHERS — processing engine.
+ * Pure functions over RGBA Uint8ClampedArray buffers. The whole function is serialized
+ * with toString() into Web Workers, and also called on the main thread for metadata. */
+function SHD_ENGINE() {
+'use strict';
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lum = (r, g, b) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
+const TAU = Math.PI * 2;
+function rng(seed) { let a = (seed | 0) ^ 0x9e3779b9; return function () { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function hash2(x, y, s) { let h = (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) + Math.imul(s | 0, 1442695041)) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296; }
+function vnoise(x, s) { const i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f); const a = hash2(i, 0, s), b = hash2(i + 1, 0, s); return a + (b - a) * u; }
+function vnoise2(x, y, s) { const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi, u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy); const a = hash2(xi, yi, s), b = hash2(xi + 1, yi, s), c = hash2(xi, yi + 1, s), d = hash2(xi + 1, yi + 1, s); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
+function hex(h) { h = String(h || '#000').replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); const n = parseInt(h.slice(0, 6), 16) || 0; return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+const px = (v, c) => Math.max(1, Math.round(v * c.S));
+const frac = x => x - Math.floor(x);
+
+/* ---------- param descriptors ---------- */
+const R = (k, l, min, max, def, step, u) => ({ k, l, t: 'r', min, max, def, step: step || 1, u: u || '' });
+const SEL = (k, l, o, def) => ({ k, l, t: 's', o: o.map(x => Array.isArray(x) ? x : [x, String(x).toUpperCase()]), def });
+const B = (k, l, def) => ({ k, l, t: 'b', def: !!def });
+const C = (k, l, def) => ({ k, l, t: 'c', def });
+const PAL = (k, l, def) => ({ k, l, t: 'p', def });
+const SEED = () => R('seed', 'Seed', 0, 9999, 1337);
+const ANIM = (d) => B('anim', 'Animate on video', d !== false);
+
+const PALETTES = {
+  mono: { n: '1-BIT MONO', c: ['#000000', '#ffffff'] },
+  acid: { n: 'ACID TERMINAL', c: ['#0a0b0a', '#2b2f27', '#7d8a3a', '#d4ff00'] },
+  phosphor: { n: 'PHOSPHOR', c: ['#020703', '#0d3a12', '#1f8a2c', '#5cff6a'] },
+  amber: { n: 'AMBER CRT', c: ['#0a0500', '#4a2400', '#b36200', '#ffb000'] },
+  handheld: { n: 'HANDHELD 4', c: ['#0f380f', '#306230', '#8bac0f', '#9bbc0f'] },
+  cga: { n: 'CGA 1', c: ['#000000', '#55ffff', '#ff55ff', '#ffffff'] },
+  sepia: { n: 'SEPIA PRINT', c: ['#1b120b', '#5a3e2b', '#a47c55', '#e8d9b9'] },
+  blueprint: { n: 'BLUEPRINT', c: ['#0a1a3a', '#1f3f7a', '#6f9bd8', '#e6f0ff'] },
+  vapor: { n: 'VAPOR', c: ['#1a1033', '#ff2a6d', '#05d9e8', '#d1f7ff'] },
+  infra: { n: 'INFRARED', c: ['#000000', '#3b0f70', '#b5367a', '#fb8861', '#fcfdbf'] },
+  news: { n: 'NEWSPRINT', c: ['#1a1a1a', '#e8e2d0'] },
+  deep: { n: 'DEEP SPACE', c: ['#02030a', '#0b1a3d', '#2a4b8d', '#8fb3ff', '#e9f1ff'] },
+  ega16: { n: '16-COLOR', c: ['#000000', '#0000aa', '#00aa00', '#00aaaa', '#aa0000', '#aa00aa', '#aa5500', '#aaaaaa', '#555555', '#5555ff', '#55ff55', '#55ffff', '#ff5555', '#ff55ff', '#ffff55', '#ffffff'] },
+};
+
+/* ---------- shared helpers ---------- */
+function quantizer(p) {
+  const mode = p.pal || 'mono', n = clamp((p.colors | 0) || 2, 2, 256);
+  if (mode === 'gray') { const st = 255 / (n - 1); return { spread: st, q(o, r, g, b) { const v = Math.round(clamp(lum(r, g, b), 0, 255) / st) * st; o[0] = o[1] = o[2] = v; } }; }
+  if (mode === 'rgb') { const L = Math.max(2, Math.round(Math.cbrt(n))) - 1, st = 255 / L; return { spread: st, q(o, r, g, b) { o[0] = Math.round(clamp(r, 0, 255) / st) * st; o[1] = Math.round(clamp(g, 0, 255) / st) * st; o[2] = Math.round(clamp(b, 0, 255) / st) * st; } }; }
+  const cols = ((p._pal && p._pal.length) ? p._pal : (PALETTES[mode] || PALETTES.mono).c).map(hex);
+  const N = cols.length, lut = new Int16Array(32768).fill(-1);
+  return {
+    spread: 255 / (Math.max(2, Math.cbrt(N)) - 1),
+    q(o, r, g, b) {
+      r = clamp(r, 0, 255) | 0; g = clamp(g, 0, 255) | 0; b = clamp(b, 0, 255) | 0;
+      const key = (r >> 3) << 10 | (g >> 3) << 5 | (b >> 3);
+      let idx = lut[key];
+      if (idx < 0) {
+        const cr = (r & 248) + 4, cg = (g & 248) + 4, cb = (b & 248) + 4; let best = 1e12;
+        for (let i = 0; i < N; i++) { const c = cols[i], rm = (cr + c[0]) / 2, dr = cr - c[0], dg = cg - c[1], db = cb - c[2]; const d = (2 + rm / 256) * dr * dr + 4 * dg * dg + (2 + (255 - rm) / 256) * db * db; if (d < best) { best = d; idx = i; } }
+        lut[key] = idx;
+      }
+      const c = cols[idx]; o[0] = c[0]; o[1] = c[1]; o[2] = c[2];
+    }
+  };
+}
+function grid(src, w, h, p, c) {
+  const bs = Math.max(1, Math.round((p.size || 1) * c.S)), gw = Math.ceil(w / bs), gh = Math.ceil(h / bs), buf = new Float32Array(gw * gh * 3);
+  const con = (p.con ?? 100) / 100, add = (p.bri || 0) * 1.28 + (50 - (p.thr ?? 50)) * 2.55, nz = (p.noise || 0) * 2.55, Rn = nz ? rng(c.seed + 77) : null;
+  for (let gy = 0; gy < gh; gy++) {
+    const y0 = gy * bs, y1 = Math.min(h, y0 + bs);
+    for (let gx = 0; gx < gw; gx++) {
+      const x0 = gx * bs, x1 = Math.min(w, x0 + bs); let r = 0, g = 0, b = 0, n = 0;
+      if (bs === 1) { const k = (y0 * w + x0) * 4; r = src[k]; g = src[k + 1]; b = src[k + 2]; n = 1; }
+      else for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { const k = (y * w + x) * 4; r += src[k]; g += src[k + 1]; b += src[k + 2]; n++; }
+      const i = (gy * gw + gx) * 3, ns = nz ? (Rn() - 0.5) * nz : 0;
+      buf[i] = (r / n - 128) * con + 128 + add + ns; buf[i + 1] = (g / n - 128) * con + 128 + add + ns; buf[i + 2] = (b / n - 128) * con + 128 + add + ns;
+    }
+  }
+  return { bs, gw, gh, buf };
+}
+function ungrid(dst, w, h, G, out) {
+  const { bs, gw } = G;
+  for (let y = 0; y < h; y++) { const row = ((y / bs) | 0) * gw; for (let x = 0; x < w; x++) { const i = (row + ((x / bs) | 0)) * 3, k = (y * w + x) * 4; dst[k] = out[i]; dst[k + 1] = out[i + 1]; dst[k + 2] = out[i + 2]; } }
+}
+function ordered(src, dst, w, h, p, c, map) {
+  const G = grid(src, w, h, p, c), Q = quantizer(p), o = [0, 0, 0], sp = Q.spread * ((p.spread ?? 100) / 100);
+  const { gw, gh, buf } = G, out = new Uint8ClampedArray(gw * gh * 3);
+  for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
+    const i = (y * gw + x) * 3, t = (map(x, y) - 0.5) * sp;
+    Q.q(o, buf[i] + t, buf[i + 1] + t, buf[i + 2] + t); out[i] = o[0]; out[i + 1] = o[1]; out[i + 2] = o[2];
+  }
+  ungrid(dst, w, h, G, out);
+}
+const KERNELS = {
+  fs: { d: 16, p: [[1, 0, 7], [-1, 1, 3], [0, 1, 5], [1, 1, 1]] },
+  atkinson: { d: 8, p: [[1, 0, 1], [2, 0, 1], [-1, 1, 1], [0, 1, 1], [1, 1, 1], [0, 2, 1]] },
+  jarvis: { d: 48, p: [[1, 0, 7], [2, 0, 5], [-2, 1, 3], [-1, 1, 5], [0, 1, 7], [1, 1, 5], [2, 1, 3], [-2, 2, 1], [-1, 2, 3], [0, 2, 5], [1, 2, 3], [2, 2, 1]] },
+  stucki: { d: 42, p: [[1, 0, 8], [2, 0, 4], [-2, 1, 2], [-1, 1, 4], [0, 1, 8], [1, 1, 4], [2, 1, 2], [-2, 2, 1], [-1, 2, 2], [0, 2, 4], [1, 2, 2], [2, 2, 1]] },
+  burkes: { d: 32, p: [[1, 0, 8], [2, 0, 4], [-2, 1, 2], [-1, 1, 4], [0, 1, 8], [1, 1, 4], [2, 1, 2]] },
+  sierra: { d: 32, p: [[1, 0, 5], [2, 0, 3], [-2, 1, 2], [-1, 1, 4], [0, 1, 5], [1, 1, 4], [2, 1, 2], [-1, 2, 2], [0, 2, 3], [1, 2, 2]] },
+  sierralite: { d: 4, p: [[1, 0, 2], [-1, 1, 1], [0, 1, 1]] },
+};
+function diffuse(src, dst, w, h, p, c, K) {
+  const G = grid(src, w, h, p, c), Q = quantizer(p), o = [0, 0, 0], { gw, gh, buf } = G, out = new Uint8ClampedArray(gw * gh * 3);
+  const pts = K.p, np = pts.length, str = (p.diff ?? 100) / 100 / K.d, serp = !!p.serp;
+  for (let y = 0; y < gh; y++) {
+    const rev = serp && (y & 1);
+    for (let xi = 0; xi < gw; xi++) {
+      const x = rev ? gw - 1 - xi : xi, i = (y * gw + x) * 3;
+      const r = buf[i], g = buf[i + 1], b = buf[i + 2];
+      Q.q(o, r, g, b); out[i] = o[0]; out[i + 1] = o[1]; out[i + 2] = o[2];
+      const er = clamp(r - o[0], -255, 255) * str, eg = clamp(g - o[1], -255, 255) * str, eb = clamp(b - o[2], -255, 255) * str;
+      for (let k = 0; k < np; k++) {
+        const pt = pts[k], nx = x + (rev ? -pt[0] : pt[0]), ny = y + pt[1];
+        if (nx < 0 || nx >= gw || ny >= gh) continue;
+        const j = (ny * gw + nx) * 3, wt = pt[2]; buf[j] += er * wt; buf[j + 1] += eg * wt; buf[j + 2] += eb * wt;
+      }
+    }
+  }
+  ungrid(dst, w, h, G, out);
+}
+function bayerMatrix(n) {
+  let m = [[0]];
+  while (m.length < n) { const s = m.length, nm = []; for (let y = 0; y < s * 2; y++) { nm[y] = []; for (let x = 0; x < s * 2; x++) nm[y][x] = m[y % s][x % s] * 4 + [[0, 2], [3, 1]][(y / s) | 0][(x / s) | 0]; } m = nm; }
+  const N = n * n; return m.map(r => r.map(v => (v + 0.5) / N));
+}
+const BAYER = { 2: bayerMatrix(2), 4: bayerMatrix(4), 8: bayerMatrix(8), 16: bayerMatrix(16) };
+let BN = null;
+function blueNoise() {
+  if (BN) return BN;
+  const N = 64, NN = N * N, A = new Float32Array(NN), r = rng(4242); for (let i = 0; i < NN; i++) A[i] = r();
+  const kr = 3, sig = 1.5, ker = []; for (let i = -kr; i <= kr; i++) ker.push(Math.exp(-i * i / (2 * sig * sig))); const ks = ker.reduce((a, b) => a + b, 0);
+  const T = new Float32Array(NN), U = new Float32Array(NN), idx = new Array(NN);
+  for (let it = 0; it < 8; it++) {
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let i = -kr; i <= kr; i++) s += A[y * N + ((x + i + N) % N)] * ker[i + kr]; T[y * N + x] = s / ks; }
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let i = -kr; i <= kr; i++) s += T[((y + i + N) % N) * N + x] * ker[i + kr]; U[y * N + x] = s / ks; }
+    for (let i = 0; i < NN; i++) { A[i] = A[i] - U[i]; idx[i] = i; }
+    idx.sort((a, b) => A[a] - A[b]); for (let k = 0; k < NN; k++) A[idx[k]] = (k + 0.5) / NN;
+  }
+  return BN = A;
+}
+function clusterMap(cell) {
+  const v = [], n = cell * cell;
+  for (let y = 0; y < cell; y++) for (let x = 0; x < cell; x++) { const u = (x + 0.5) / cell * TAU, w = (y + 0.5) / cell * TAU; v.push([-(Math.cos(u) + Math.cos(w)) + (x * 0.001 + y * 0.0007), y * cell + x]); }
+  v.sort((a, b) => b[0] - a[0]); const m = new Float32Array(n); v.forEach((e, k) => m[e[1]] = (k + 0.5) / n); return m;
+}
+function boxPass(s, d, w, h, r, horiz) {
+  const ia = 1 / (r + r + 1);
+  if (horiz) {
+    for (let y = 0; y < h; y++) { const row = y * w * 4; for (let ch = 0; ch < 4; ch++) { let acc = 0; for (let i = -r; i <= r; i++) acc += s[row + clamp(i, 0, w - 1) * 4 + ch]; for (let x = 0; x < w; x++) { d[row + x * 4 + ch] = acc * ia; acc += s[row + Math.min(x + r + 1, w - 1) * 4 + ch] - s[row + Math.max(x - r, 0) * 4 + ch]; } } }
+  } else {
+    const st = w * 4;
+    for (let x = 0; x < w; x++) for (let ch = 0; ch < 4; ch++) { const base = x * 4 + ch; let acc = 0; for (let i = -r; i <= r; i++) acc += s[clamp(i, 0, h - 1) * st + base]; for (let y = 0; y < h; y++) { d[y * st + base] = acc * ia; acc += s[Math.min(y + r + 1, h - 1) * st + base] - s[Math.max(y - r, 0) * st + base]; } }
+  }
+}
+function blur(src, w, h, rad) {
+  const a = new Uint8ClampedArray(src); if (rad < 0.5) return a;
+  const r = Math.max(1, Math.round(rad / 1.6)), b = new Uint8ClampedArray(src.length);
+  for (let i = 0; i < 3; i++) { boxPass(a, b, w, h, r, true); boxPass(b, a, w, h, r, false); }
+  return a;
+}
+function lutApply(s, d, lut) { for (let i = 0; i < s.length; i += 4) { d[i] = lut[s[i]]; d[i + 1] = lut[s[i + 1]]; d[i + 2] = lut[s[i + 2]]; } }
+function mkLut(f) { const l = new Uint8ClampedArray(256); for (let i = 0; i < 256; i++) l[i] = f(i); return l; }
+function samp(s, w, h, x, y, ch) { x = x < 0 ? 0 : x >= w ? w - 1 : x | 0; y = y < 0 ? 0 : y >= h ? h - 1 : y | 0; return s[(y * w + x) * 4 + ch]; }
+function shiftRow(s, d, w, y, off, wrap) { const row = y * w * 4; for (let x = 0; x < w; x++) { let sx = x - off; sx = wrap ? ((sx % w) + w) % w : clamp(sx, 0, w - 1); const a = row + x * 4, b = row + sx * 4; d[a] = s[b]; d[a + 1] = s[b + 1]; d[a + 2] = s[b + 2]; d[a + 3] = s[b + 3]; } }
+function shiftCol(s, d, w, h, x, off, wrap) { for (let y = 0; y < h; y++) { let sy = y - off; sy = wrap ? ((sy % h) + h) % h : clamp(sy, 0, h - 1); const a = (y * w + x) * 4, b = (sy * w + x) * 4; d[a] = s[b]; d[a + 1] = s[b + 1]; d[a + 2] = s[b + 2]; d[a + 3] = s[b + 3]; } }
+function wave(kind, n, seed) { switch (kind) { case 'square': return Math.sin(n * TAU) >= 0 ? 1 : -1; case 'saw': return frac(n) * 2 - 1; case 'noise': return vnoise(n * 4, seed) * 2 - 1; case 'steps': return (Math.floor(vnoise(n * 2, seed) * 6) / 5) * 2 - 1; default: return Math.sin(n * TAU); } }
+function coverage(shape, dark, du, dv, cs, ds) {
+  if (dark <= 0.001) return 0; let r, dd;
+  switch (shape) {
+    case 'square': r = Math.sqrt(dark) * cs * 0.5 * ds; dd = Math.max(Math.abs(du), Math.abs(dv)); break;
+    case 'diamond': r = Math.sqrt(dark) * cs * ds; dd = Math.abs(du) + Math.abs(dv); break;
+    case 'line': r = dark * cs * 0.5 * ds; dd = Math.abs(dv); break;
+    case 'cross': r = dark * cs * 0.3 * ds; dd = Math.min(Math.abs(du), Math.abs(dv)); break;
+    case 'ellipse': r = Math.sqrt(dark) * cs * 0.62 * ds; dd = Math.sqrt(du * du * 0.6 + dv * dv * 1.6); break;
+    default: r = Math.sqrt(dark) * cs * 0.7071 * ds; dd = Math.sqrt(du * du + dv * dv);
+  }
+  return clamp(r - dd + 0.5, 0, 1) * Math.min(1, r * 2);
+}
+function halftone(s, d, w, h, p, c) {
+  const cs = Math.max(2, p.cell * c.S), ang = p.angle * Math.PI / 180, ca = Math.cos(ang), sa = Math.sin(ang), ds = p.dot / 100, con = p.con / 100;
+  const ink = hex(p.ink), pap = hex(p.paper), srcCol = p.color === 'source', bl = blur(s, w, h, cs / 3), inv = !!p.inv;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const u = x * ca + y * sa, v = -x * sa + y * ca, cu = (Math.floor(u / cs) + 0.5) * cs, cv = (Math.floor(v / cs) + 0.5) * cs;
+    const sx = clamp(Math.round(cu * ca - cv * sa), 0, w - 1), sy = clamp(Math.round(cu * sa + cv * ca), 0, h - 1), k = (sy * w + sx) * 4;
+    let l = clamp((lum(bl[k], bl[k + 1], bl[k + 2]) / 255 - 0.5) * con + 0.5, 0, 1); const dark = inv ? l : 1 - l;
+    const cv2 = coverage(p.shape, dark, u - cu, v - cv, cs, ds), o = (y * w + x) * 4;
+    const ir = srcCol ? bl[k] : ink[0], ig = srcCol ? bl[k + 1] : ink[1], ib = srcCol ? bl[k + 2] : ink[2];
+    d[o] = pap[0] + (ir - pap[0]) * cv2; d[o + 1] = pap[1] + (ig - pap[1]) * cv2; d[o + 2] = pap[2] + (ib - pap[2]) * cv2;
+  }
+}
+function keyOf(kind, r, g, b) {
+  switch (kind) {
+    case 'hue': { const mx = Math.max(r, g, b), mn = Math.min(r, g, b), dl = mx - mn; if (!dl) return 0; let hh = mx === r ? ((g - b) / dl) % 6 : mx === g ? (b - r) / dl + 2 : (r - g) / dl + 4; return ((hh * 60 + 360) % 360) / 360 * 255; }
+    case 'sat': { const mx = Math.max(r, g, b), mn = Math.min(r, g, b); return mx ? (mx - mn) / mx * 255 : 0; }
+    case 'r': return r; case 'g': return g; case 'b': return b;
+    default: return lum(r, g, b);
+  }
+}
+
+/* ---------- dither param sets ---------- */
+const DP = () => [PAL('pal', 'Palette', 'mono'), R('colors', 'Colors', 2, 256, 2), R('thr', 'Threshold', 0, 100, 50), R('size', 'Pattern size', 1, 64, 1, 1, 'px'), R('con', 'Contrast', 0, 200, 100, 1, '%'), R('bri', 'Brightness', -100, 100, 0), R('noise', 'Noise', 0, 100, 0)];
+const ORD = (extra) => [...DP(), R('spread', 'Spread', 0, 200, 100, 1, '%'), ...(extra || [])];
+const ED = (extra) => [...DP(), R('diff', 'Diffusion', 0, 100, 100, 1, '%'), B('serp', 'Serpentine scan', true), ...(extra || [])];
+const HTP = (shape, cell, ang) => [R('cell', 'Frequency (cell)', 2, 80, cell, 1, 'px'), R('dot', 'Dot size', 10, 200, 100, 1, '%'), R('angle', 'Screen angle', 0, 180, ang, 1, '°'), R('con', 'Contrast', 0, 300, 100, 1, '%'), SEL('shape', 'Pattern', ['circle', 'square', 'diamond', 'line', 'ellipse', 'cross'], shape), B('inv', 'Invert pattern', false), SEL('color', 'Ink mode', [['ink', 'INK'], ['source', 'SOURCE']], 'ink'), C('ink', 'Ink', '#0b0c0b'), C('paper', 'Paper', '#f2f2ea')];
+
+/* ---------- effect library ---------- */
+const EFFECTS = [
+  // DITHER
+  { id: 'fs', cat: 'dither', name: 'Floyd–Steinberg', desc: 'Classic error diffusion', params: ED(), fn: (s, d, w, h, p, c) => diffuse(s, d, w, h, p, c, KERNELS.fs) },
+  { id: 'atkinson', cat: 'dither', name: 'Atkinson', desc: 'Partial diffusion, crisp highlights', params: ED(), fn: (s, d, w, h, p, c) => diffuse(s, d, w, h, p, c, KERNELS.atkinson) },
+  { id: 'diffusion', cat: 'dither', name: 'Error Diffusion+', desc: 'Jarvis / Stucki / Burkes / Sierra', params: ED([SEL('kern', 'Kernel', ['jarvis', 'stucki', 'burkes', 'sierra', ['sierralite', 'SIERRA LITE']], 'jarvis')]), fn: (s, d, w, h, p, c) => diffuse(s, d, w, h, p, c, KERNELS[p.kern] || KERNELS.jarvis) },
+  { id: 'bayer', cat: 'dither', name: 'Ordered Bayer', desc: 'Selectable matrix order', params: ORD([SEL('m', 'Matrix', [['2', '2×2'], ['4', '4×4'], ['8', '8×8'], ['16', '16×16']], '4')]), fn: (s, d, w, h, p, c) => { const M = BAYER[p.m] || BAYER[4], n = M.length; ordered(s, d, w, h, p, c, (x, y) => M[y % n][x % n]); } },
+  { id: 'bayer2', cat: 'dither', name: 'Bayer 2×2', desc: 'Coarse ordered pattern', params: ORD(), fn: (s, d, w, h, p, c) => ordered(s, d, w, h, p, c, (x, y) => BAYER[2][y & 1][x & 1]) },
+  { id: 'bayer4', cat: 'dither', name: 'Bayer 4×4', desc: 'Standard ordered pattern', params: ORD(), fn: (s, d, w, h, p, c) => ordered(s, d, w, h, p, c, (x, y) => BAYER[4][y & 3][x & 3]) },
+  { id: 'bayer8', cat: 'dither', name: 'Bayer 8×8', desc: 'Fine ordered pattern', params: ORD(), fn: (s, d, w, h, p, c) => ordered(s, d, w, h, p, c, (x, y) => BAYER[8][y & 7][x & 7]) },
+  { id: 'random', cat: 'dither', name: 'Random', desc: 'White-noise threshold', params: ORD([SEED(), ANIM()]), fn: (s, d, w, h, p, c) => ordered(s, d, w, h, p, c, (x, y) => hash2(x, y, c.seed)) },
+  { id: 'bluenoise', cat: 'dither', name: 'Blue Noise', desc: 'Void-and-cluster style mask', params: ORD([R('ox', 'Mask offset X', 0, 63, 0), R('oy', 'Mask offset Y', 0, 63, 0)]), fn: (s, d, w, h, p, c) => { const A = blueNoise(); ordered(s, d, w, h, p, c, (x, y) => A[((y + p.oy) & 63) * 64 + ((x + p.ox) & 63)]); } },
+  { id: 'htdither', cat: 'dither', name: 'Halftone Dither', desc: 'Rotated screen threshold', params: ORD([R('cell', 'Screen cell', 2, 32, 6), R('angle', 'Screen angle', 0, 90, 45, 1, '°')]), fn: (s, d, w, h, p, c) => { const cs = p.cell, a = p.angle * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a); ordered(s, d, w, h, p, c, (x, y) => { const u = (x * ca + y * sa) / cs * TAU, v = (-x * sa + y * ca) / cs * TAU; return clamp(0.5 - 0.25 * (Math.cos(u) + Math.cos(v)), 0, 0.999); }); } },
+  { id: 'dotdither', cat: 'dither', name: 'Dot Dither', desc: 'Clustered-dot ordered', params: ORD([R('cell', 'Dot cell', 3, 24, 6)]), fn: (s, d, w, h, p, c) => { const n = p.cell | 0, M = clusterMap(n); ordered(s, d, w, h, p, c, (x, y) => M[(y % n) * n + (x % n)]); } },
+  { id: 'crosshatch', cat: 'dither', name: 'Crosshatch', desc: 'Engraved line layers', params: [R('spacing', 'Line spacing', 2, 40, 6, 1, 'px'), R('width', 'Line width', 0.5, 10, 1, 0.5, 'px'), R('thr', 'Threshold', 0, 100, 50), R('con', 'Contrast', 0, 200, 100, 1, '%'), SEL('layers', 'Layers', [['2', '2'], ['3', '3'], ['4', '4']], '4'), C('ink', 'Ink', '#0b0c0b'), C('paper', 'Paper', '#e9eadf')],
+    fn: (s, d, w, h, p, c) => {
+      const sp = Math.max(2, p.spacing * c.S), lw = Math.max(0.5, p.width * c.S), ink = hex(p.ink), pap = hex(p.paper), con = p.con / 100, b = (50 - p.thr) / 100, L = +p.layers;
+      const T = [0.82, 0.62, 0.42, 0.22].map(v => v + b);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const k = (y * w + x) * 4, l = (lum(s[k], s[k + 1], s[k + 2]) / 255 - 0.5) * con + 0.5;
+        const on = (l < T[0] && ((x + y) % sp) < lw) || (L > 1 && l < T[1] && (((x - y) % sp + sp) % sp) < lw) || (L > 2 && l < T[2] && ((y + sp / 2) % sp) < lw) || (L > 3 && l < T[3] && ((x + sp / 2) % sp) < lw);
+        const col = on ? ink : pap; d[k] = col[0]; d[k + 1] = col[1]; d[k + 2] = col[2];
+      }
+    } },
+
+  // PIXEL
+  { id: 'pixelate', cat: 'pixel', name: 'Pixelate', desc: 'Mosaic blocks', params: [R('size', 'Pixel size', 1, 100, 8, 1, 'px'), R('hs', 'Horizontal scale', 25, 400, 100, 1, '%'), R('vs', 'Vertical scale', 25, 400, 100, 1, '%'), SEL('shape', 'Pixel shape', ['square', 'circle', 'diamond', 'rounded'], 'square'), SEL('blend', 'Pixel blending', [['avg', 'AVERAGE'], ['center', 'NEAREST']], 'avg'), R('gap', 'Gap', 0, 50, 0, 1, '%'), C('bg', 'Gap color', '#000000')],
+    fn: (s, d, w, h, p, c) => {
+      const bw = px(p.size * p.hs / 100, c), bh = px(p.size * p.vs / 100, c), gap = p.gap / 100, bg = hex(p.bg), sh = p.shape;
+      for (let by = 0; by < h; by += bh) for (let bx = 0; bx < w; bx += bw) {
+        const x1 = Math.min(w, bx + bw), y1 = Math.min(h, by + bh); let r = 0, g = 0, b = 0, a = 0, n = 0;
+        if (p.blend === 'center') { const k = (Math.min(h - 1, by + (bh >> 1)) * w + Math.min(w - 1, bx + (bw >> 1))) * 4; r = s[k]; g = s[k + 1]; b = s[k + 2]; a = s[k + 3]; n = 1; }
+        else for (let y = by; y < y1; y++) for (let x = bx; x < x1; x++) { const k = (y * w + x) * 4; r += s[k]; g += s[k + 1]; b += s[k + 2]; a += s[k + 3]; n++; }
+        r /= n; g /= n; b /= n; a /= n;
+        const hw = bw / 2, hh = bh / 2, inner = 1 - gap;
+        for (let y = by; y < y1; y++) for (let x = bx; x < x1; x++) {
+          const u = (x - bx + 0.5 - hw) / hw, v = (y - by + 0.5 - hh) / hh; let ins;
+          if (sh === 'circle') ins = u * u + v * v <= inner * inner; else if (sh === 'diamond') ins = Math.abs(u) + Math.abs(v) <= inner; else if (sh === 'rounded') { const q = Math.max(0, Math.abs(u) - inner * 0.6), t = Math.max(0, Math.abs(v) - inner * 0.6); ins = Math.abs(u) <= inner && Math.abs(v) <= inner && q * q + t * t <= (inner * 0.4) ** 2; } else ins = Math.abs(u) <= inner && Math.abs(v) <= inner;
+          const k = (y * w + x) * 4;
+          if (ins) { d[k] = r; d[k + 1] = g; d[k + 2] = b; d[k + 3] = a; } else { d[k] = bg[0]; d[k + 1] = bg[1]; d[k + 2] = bg[2]; d[k + 3] = 255; }
+        }
+      }
+    } },
+  { id: 'pixelsort', cat: 'pixel', name: 'Pixel Sort', desc: 'Sort spans by brightness/hue', params: [SEL('dir', 'Direction', [['h', 'HORIZONTAL'], ['v', 'VERTICAL']], 'h'), SEL('key', 'Sort by', [['luma', 'LUMA'], ['hue', 'HUE'], ['sat', 'SATURATION'], ['r', 'RED'], ['g', 'GREEN'], ['b', 'BLUE']], 'luma'), R('lo', 'Lower threshold', 0, 100, 25), R('hi', 'Upper threshold', 0, 100, 80), R('len', 'Max span', 1, 100, 100, 1, '%'), B('rev', 'Reverse order', false)],
+    fn: (s, d, w, h, p, c) => {
+      const vert = p.dir === 'v', L = vert ? h : w, M = vert ? w : h, lo = p.lo * 2.55, hi = p.hi * 2.55, maxl = Math.max(2, Math.round(L * p.len / 100));
+      const keys = new Uint8Array(w * h); for (let i = 0, j = 0; i < keys.length; i++, j += 4) keys[i] = keyOf(p.key, s[j], s[j + 1], s[j + 2]);
+      const tmp = new Float64Array(L), pos = vert ? (m, l) => l * w + m : (m, l) => m * w + l;
+      const sortSpan = (m, a, b) => {
+        const n = b - a; if (n < 2) return;
+        for (let k = 0; k < n; k++) tmp[k] = keys[pos(m, a + k)] * 1e7 + k;
+        const sub = tmp.subarray(0, n); sub.sort();
+        for (let j = 0; j < n; j++) { const k = sub[p.rev ? n - 1 - j : j] % 1e7, si = pos(m, a + k) * 4, di = pos(m, a + j) * 4; d[di] = s[si]; d[di + 1] = s[si + 1]; d[di + 2] = s[si + 2]; d[di + 3] = s[si + 3]; }
+      };
+      for (let m = 0; m < M; m++) { let st = -1; for (let l = 0; l <= L; l++) { const inn = l < L && (() => { const kv = keys[pos(m, l)]; return kv >= lo && kv <= hi; })(); if (inn && st < 0) st = l; if (st >= 0 && (!inn || l - st >= maxl)) { sortSpan(m, st, l); st = inn ? l : -1; } } }
+    } },
+  { id: 'displace', cat: 'pixel', name: 'Pixel Displacement', desc: 'Offset blocks of pixels', params: [R('block', 'Block size', 2, 128, 16, 1, 'px'), R('amount', 'Amount', 0, 200, 24, 1, 'px'), R('density', 'Density', 0, 100, 50, 1, '%'), SEL('mode', 'Field', [['random', 'RANDOM'], ['flow', 'FLOW'], ['horizontal', 'HORIZ ONLY']], 'random'), SEED(), ANIM()],
+    fn: (s, d, w, h, p, c) => {
+      const bs = px(p.block, c), am = p.amount * c.S, den = p.density / 100;
+      for (let by = 0; by < h; by += bs) for (let bx = 0; bx < w; bx += bs) {
+        const gx = bx / bs, gy = by / bs; if (hash2(gx, gy, c.seed + 9) > den) continue;
+        let dx, dy; if (p.mode === 'flow') { const a = vnoise2(gx * 0.15, gy * 0.15, c.seed) * TAU * 2; dx = Math.cos(a) * am; dy = Math.sin(a) * am; } else { dx = (hash2(gx, gy, c.seed) - 0.5) * 2 * am; dy = p.mode === 'horizontal' ? 0 : (hash2(gx, gy, c.seed + 1) - 0.5) * 2 * am; }
+        dx = Math.round(dx); dy = Math.round(dy);
+        for (let y = by; y < Math.min(h, by + bs); y++) for (let x = bx; x < Math.min(w, bx + bs); x++) { const k = (y * w + x) * 4, sx = clamp(x + dx, 0, w - 1), sy = clamp(y + dy, 0, h - 1), j = (sy * w + sx) * 4; d[k] = s[j]; d[k + 1] = s[j + 1]; d[k + 2] = s[j + 2]; d[k + 3] = s[j + 3]; }
+      }
+    } },
+  { id: 'stretch', cat: 'pixel', name: 'Pixel Stretch', desc: 'Smear a scanline outward', params: [SEL('dir', 'Direction', ['down', 'up', 'right', 'left'], 'down'), R('pos', 'Start position', 0, 100, 55, 1, '%'), R('len', 'Length', 0, 100, 30, 1, '%'), R('jag', 'Jagged edge', 0, 100, 40, 1, '%'), R('jw', 'Jag width', 1, 64, 6, 1, 'px'), SEED()],
+    fn: (s, d, w, h, p, c) => {
+      const vertDir = p.dir === 'down' || p.dir === 'up', L = vertDir ? h : w, M = vertDir ? w : h, p0 = Math.round(p.pos / 100 * (L - 1)), len = p.len / 100 * L, jw = px(p.jw, c), sign = (p.dir === 'down' || p.dir === 'right') ? 1 : -1;
+      for (let m = 0; m < M; m++) {
+        const ln = Math.round(len * (1 - hash2((m / jw) | 0, 0, c.seed) * p.jag / 100));
+        const si = vertDir ? (p0 * w + m) * 4 : (m * w + p0) * 4;
+        for (let t = 1; t <= ln; t++) { const l = p0 + t * sign; if (l < 0 || l >= L) break; const k = vertDir ? (l * w + m) * 4 : (m * w + l) * 4; d[k] = s[si]; d[k + 1] = s[si + 1]; d[k + 2] = s[si + 2]; d[k + 3] = s[si + 3]; }
+      }
+    } },
+  { id: 'blocks', cat: 'pixel', name: 'Pixel Blocks', desc: 'Random corrupted rectangles', params: [R('count', 'Block count', 0, 300, 40), R('min', 'Min size', 2, 200, 8, 1, 'px'), R('max', 'Max size', 2, 400, 80, 1, 'px'), SEL('mode', 'Mode', ['mixed', 'shift', 'invert', 'swap', 'solid', 'repeat'], 'mixed'), SEED(), ANIM()],
+    fn: (s, d, w, h, p, c) => {
+      const r = rng(c.seed), modes = ['shift', 'invert', 'swap', 'solid', 'repeat'];
+      for (let i = 0; i < p.count; i++) {
+        const bw = px(p.min + r() * Math.max(0, p.max - p.min), c), bh = px(p.min + r() * r() * Math.max(0, p.max - p.min), c), bx = (r() * w) | 0, by = (r() * h) | 0, mode = p.mode === 'mixed' ? modes[(r() * 5) | 0] : p.mode, off = ((r() - 0.5) * bw * 2) | 0;
+        const x1 = Math.min(w, bx + bw), y1 = Math.min(h, by + bh), ck = (by * w + bx) * 4, sol = [s[ck], s[ck + 1], s[ck + 2]];
+        for (let y = by; y < y1; y++) for (let x = bx; x < x1; x++) {
+          const k = (y * w + x) * 4;
+          if (mode === 'shift') { const j = (y * w + clamp(x + off, 0, w - 1)) * 4; d[k] = s[j]; d[k + 1] = s[j + 1]; d[k + 2] = s[j + 2]; }
+          else if (mode === 'invert') { d[k] = 255 - s[k]; d[k + 1] = 255 - s[k + 1]; d[k + 2] = 255 - s[k + 2]; }
+          else if (mode === 'swap') { d[k] = s[k + 2]; d[k + 1] = s[k]; d[k + 2] = s[k + 1]; }
+          else if (mode === 'solid') { d[k] = sol[0]; d[k + 1] = sol[1]; d[k + 2] = sol[2]; }
+          else { const j = (by * w + x) * 4; d[k] = s[j]; d[k + 1] = s[j + 1]; d[k + 2] = s[j + 2]; }
+        }
+      }
+    } },
+  { id: 'subpixel', cat: 'pixel', name: 'RGB Pixel Separation', desc: 'LCD sub-pixel triads', params: [R('size', 'Cell size', 3, 60, 9, 1, 'px'), R('grid', 'Grid darkness', 0, 100, 60, 1, '%'), R('glow', 'Glow', 0, 100, 25, 1, '%'), R('bright', 'Boost', 50, 300, 140, 1, '%'), SEL('layout', 'Layout', [['stripe', 'STRIPE'], ['offset', 'OFFSET']], 'stripe')],
+    fn: (s, d, w, h, p, c) => {
+      const cs = Math.max(3, Math.round(p.size * c.S)), sw = cs / 3, gl = p.glow / 100, gd = 1 - p.grid / 100, bo = p.bright / 100, gh = Math.max(1, Math.round(cs / 6));
+      for (let by = 0; by < h + cs; by += cs) for (let bx0 = 0; bx0 < w; bx0 += cs) {
+        const ofs = p.layout === 'offset' && ((bx0 / cs) & 1) ? cs >> 1 : 0, by0 = by - ofs; let r = 0, g = 0, b = 0, n = 0;
+        for (let y = Math.max(0, by0); y < Math.min(h, by0 + cs); y++) for (let x = bx0; x < Math.min(w, bx0 + cs); x++) { const k = (y * w + x) * 4; r += s[k]; g += s[k + 1]; b += s[k + 2]; n++; }
+        if (!n) continue; const av = [r / n * bo, g / n * bo, b / n * bo];
+        for (let y = Math.max(0, by0); y < Math.min(h, by0 + cs); y++) for (let x = bx0; x < Math.min(w, bx0 + cs); x++) {
+          const ch = Math.min(2, ((x - bx0) / sw) | 0), k = (y * w + x) * 4, edge = (y - by0) >= cs - gh || ((x - bx0) % sw) < 0.75 ? gd : 1;
+          for (let q = 0; q < 3; q++) d[k + q] = (q === ch ? av[q] : av[q] * gl) * edge;
+        }
+      }
+    } },
+
+  // GLITCH
+  { id: 'rgbsplit', cat: 'glitch', name: 'RGB Split', desc: 'Offset color channels', params: [R('r', 'Red channel offset', -100, 100, 12, 1, 'px'), R('g', 'Green channel offset', -100, 100, 0, 1, 'px'), R('b', 'Blue channel offset', -100, 100, -12, 1, 'px'), R('hx', 'Horizontal displacement', -100, 100, 100, 1, '%'), R('vy', 'Vertical displacement', -100, 100, 0, 1, '%'), SEL('edge', 'Edges', ['clamp', 'wrap'], 'clamp')],
+    fn: (s, d, w, h, p, c) => {
+      const o = [p.r, p.g, p.b].map(v => [Math.round(v * p.hx / 100 * c.S), Math.round(v * p.vy / 100 * c.S)]), wrap = p.edge === 'wrap';
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4; for (let ch = 0; ch < 3; ch++) { let sx = x - o[ch][0], sy = y - o[ch][1]; if (wrap) { sx = ((sx % w) + w) % w; sy = ((sy % h) + h) % h; } else { sx = clamp(sx, 0, w - 1); sy = clamp(sy, 0, h - 1); } d[k + ch] = s[(sy * w + sx) * 4 + ch]; } }
+    } },
+  { id: 'chroma', cat: 'glitch', name: 'Chromatic Aberration', desc: 'Radial lens fringing', params: [R('str', 'Strength', -100, 100, 25), R('cx', 'Center X', 0, 100, 50, 1, '%'), R('cy', 'Center Y', 0, 100, 50, 1, '%'), R('fall', 'Edge falloff', 0, 300, 100, 1, '%')],
+    fn: (s, d, w, h, p, c) => {
+      const k0 = p.str / 1000, cx = p.cx / 100 * w, cy = p.cy / 100 * h, md = Math.hypot(Math.max(cx, w - cx), Math.max(cy, h - cy)), pw = p.fall / 100;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const dx = x - cx, dy = y - cy, f = k0 * Math.pow(Math.hypot(dx, dy) / md, pw) * 1.5, k = (y * w + x) * 4;
+        d[k] = samp(s, w, h, cx + dx * (1 - f), cy + dy * (1 - f), 0); d[k + 2] = samp(s, w, h, cx + dx * (1 + f), cy + dy * (1 + f), 2);
+      }
+    } },
+  { id: 'distort', cat: 'glitch', name: 'Digital Distortion', desc: 'Torn slices + channel tears', params: [R('slices', 'Slice count', 0, 80, 14), R('shift', 'Max shift', 0, 300, 60, 1, 'px'), R('hmax', 'Max slice height', 1, 200, 30, 1, 'px'), B('chan', 'Channel tear', true), R('crush', 'Color crush', 0, 100, 0, 1, '%'), SEED(), ANIM()],
+    fn: (s, d, w, h, p, c) => {
+      const r = rng(c.seed), tmp = new Uint8ClampedArray(d);
+      for (let i = 0; i < p.slices; i++) {
+        const y0 = (r() * h) | 0, hh = px(1 + r() * p.hmax, c), off = Math.round((r() - 0.5) * 2 * p.shift * c.S), ch = p.chan && r() < 0.5 ? (r() * 3) | 0 : -1, lv = 2 + ((1 - p.crush / 100) * 30 | 0);
+        for (let y = y0; y < Math.min(h, y0 + hh); y++) {
+          shiftRow(s, tmp, w, y, off, true);
+          const row = y * w * 4;
+          for (let x = 0; x < w; x++) { const k = row + x * 4; for (let q = 0; q < 3; q++) { let v = ch >= 0 && q !== ch ? s[k + q] : tmp[k + q]; if (p.crush) v = Math.round(v / 255 * (lv - 1)) / (lv - 1) * 255; d[k + q] = v; } }
+        }
+      }
+    } },
+  { id: 'hdisp', cat: 'glitch', name: 'Horizontal Displacement', desc: 'Wave-shift rows', params: [R('amp', 'Amplitude', 0, 300, 24, 1, 'px'), R('freq', 'Frequency', 0.1, 60, 6, 0.1), R('phase', 'Phase', 0, 360, 0, 1, '°'), SEL('wave', 'Waveform', ['sine', 'square', 'saw', 'noise', 'steps'], 'noise'), R('speed', 'Speed', 0, 10, 1, 0.1), SEL('edge', 'Edges', ['wrap', 'clamp'], 'wrap'), SEED(), ANIM()],
+    fn: (s, d, w, h, p, c) => { const ph = p.phase / 360 + (c.video && p.anim ? c.t * p.speed : 0), amp = p.amp * c.S; for (let y = 0; y < h; y++) shiftRow(s, d, w, y, Math.round(wave(p.wave, y / h * p.freq + ph, c.seed) * amp), p.edge === 'wrap'); } },
+  { id: 'vdisp', cat: 'glitch', name: 'Vertical Displacement', desc: 'Wave-shift columns', params: [R('amp', 'Amplitude', 0, 300, 24, 1, 'px'), R('freq', 'Frequency', 0.1, 60, 6, 0.1), R('phase', 'Phase', 0, 360, 0, 1, '°'), SEL('wave', 'Waveform', ['sine', 'square', 'saw', 'noise', 'steps'], 'sine'), R('speed', 'Speed', 0, 10, 1, 0.1), SEL('edge', 'Edges', ['wrap', 'clamp'], 'wrap'), SEED(), ANIM()],
+    fn: (s, d, w, h, p, c) => { const ph = p.phase / 360 + (c.video && p.anim ? c.t * p.speed : 0), amp = p.amp * c.S; for (let x = 0; x < w; x++) shiftCol(s, d, w, h, x, Math.round(wave(p.wave, x / w * p.freq + ph, c.seed) * amp), p.edge === 'wrap'); } },
+  { id: 'interference', cat: 'glitch', name: 'Signal Interference', desc: 'Rolling bands + tearing', params: [R('str', 'Strength', 0, 100, 50, 1, '%'), R('bands', 'Band count', 0, 40, 4, 0.5), R('tear', 'Line tearing', 0, 100, 30, 1, '%'), R('noise', 'Static', 0, 100, 25, 1, '%'), R('speed', 'Roll speed', 0, 10, 1.5, 0.1), C('tint', 'Interference tint', '#d4ff00'), SEED(), ANIM()],
+    fn: (s, d, w, h, p, c) => {
+      const t = c.video && p.anim ? c.t * p.speed * 0.25 : 0, st = p.str / 100, tint = hex(p.tint), nz = p.noise * 1.6;
+      for (let y = 0; y < h; y++) {
+        const band = Math.sin((y / h * p.bands + t) * TAU), mod = 1 + band * st * 0.35, glow = Math.pow(Math.max(0, band), 12) * st;
+        let off = 0; const hr = hash2((y / Math.max(1, 3 * c.S)) | 0, 3, c.seed); if (hr < p.tear / 100 * 0.12) off = Math.round((hash2(y, 5, c.seed) - 0.5) * w * 0.15 * st);
+        shiftRow(s, d, w, y, off, true);
+        const row = y * w * 4;
+        for (let x = 0; x < w; x++) { const k = row + x * 4, n = nz ? (hash2(x, y, c.seed + 3) - 0.5) * nz : 0; d[k] = d[k] * mod + tint[0] * glow * 0.5 + n; d[k + 1] = d[k + 1] * mod + tint[1] * glow * 0.5 + n; d[k + 2] = d[k + 2] * mod + tint[2] * glow * 0.5 + n; }
+      }
+    } },
+  { id: 'scanlines', cat: 'glitch', name: 'Scanlines', desc: 'CRT raster lines', params: [R('spacing', 'Spacing', 2, 24, 3, 1, 'px'), R('thick', 'Thickness', 5, 95, 40, 1, '%'), R('dark', 'Darkness', 0, 100, 55, 1, '%'), R('bloom', 'Bloom', 0, 100, 15, 1, '%'), SEL('orient', 'Orientation', ['horizontal', 'vertical'], 'horizontal'), R('offset', 'Offset', 0, 24, 0, 1, 'px')],
+    fn: (s, d, w, h, p, c) => {
+      const sp = Math.max(2, p.spacing * c.S), th = sp * p.thick / 100, dk = 1 - p.dark / 100, bl = 1 + p.bloom / 100, vert = p.orient === 'vertical', of = p.offset * c.S;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const q = ((vert ? x : y) + of) % sp, m = q < th ? dk : bl, k = (y * w + x) * 4; d[k] = s[k] * m; d[k + 1] = s[k + 1] * m; d[k + 2] = s[k + 2] * m; }
+    } },
+  { id: 'datamosh', cat: 'glitch', name: 'Datamosh', desc: 'Macroblock smear (uses prior frame on video)', params: [R('block', 'Macroblock', 4, 64, 16, 1, 'px'), R('amount', 'Corruption', 0, 100, 45, 1, '%'), R('drift', 'Motion drift', 0, 100, 18, 1, 'px'), R('crush', 'Block crush', 0, 100, 40, 1, '%'), B('prev', 'Use previous frame', true), SEED(), ANIM()],
+    fn: (s, d, w, h, p, c) => {
+      const bs = px(p.block, c), am = p.amount / 100, dr = p.drift * c.S, cr = p.crush / 100, ref = p.prev && c.prev && c.prev.length === s.length ? c.prev : s;
+      for (let by = 0; by < h; by += bs) for (let bx = 0; bx < w; bx += bs) {
+        const gx = bx / bs, gy = by / bs; if (hash2(gx, gy, c.seed) > am) continue;
+        const a = vnoise2(gx * 0.2, gy * 0.2, c.seed + 5) * TAU * 2, dx = Math.round(Math.cos(a) * dr), dy = Math.round(Math.sin(a) * dr);
+        const x1 = Math.min(w, bx + bs), y1 = Math.min(h, by + bs); let r = 0, g = 0, b = 0, n = 0;
+        for (let y = by; y < y1; y++) for (let x = bx; x < x1; x++) { const j = (clamp(y + dy, 0, h - 1) * w + clamp(x + dx, 0, w - 1)) * 4; r += ref[j]; g += ref[j + 1]; b += ref[j + 2]; n++; }
+        r /= n; g /= n; b /= n;
+        for (let y = by; y < y1; y++) for (let x = bx; x < x1; x++) { const k = (y * w + x) * 4, j = (clamp(y + dy, 0, h - 1) * w + clamp(x + dx, 0, w - 1)) * 4; d[k] = ref[j] + (r - ref[j]) * cr; d[k + 1] = ref[j + 1] + (g - ref[j + 1]) * cr; d[k + 2] = ref[j + 2] + (b - ref[j + 2]) * cr; }
+      }
+    } },
+  { id: 'noise', cat: 'glitch', name: 'Digital Noise', desc: 'Sensor grain / static', params: [R('amount', 'Amount', 0, 100, 25, 1, '%'), R('grain', 'Grain size', 1, 16, 1, 1, 'px'), B('mono', 'Monochrome', true), SEL('mode', 'Blend', ['add', 'multiply', 'replace'], 'add'), SEED(), ANIM()],
+    fn: (s, d, w, h, p, c) => {
+      const a = p.amount / 100, gs = px(p.grain, c);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const gx = (x / gs) | 0, gy = (y / gs) | 0, k = (y * w + x) * 4;
+        for (let q = 0; q < 3; q++) { const n = hash2(gx, gy, c.seed + (p.mono ? 0 : q * 101)); d[k + q] = p.mode === 'multiply' ? s[k + q] * (1 - a + a * n * 1.5) : p.mode === 'replace' ? s[k + q] + (n * 255 - s[k + q]) * a : s[k + q] + (n - 0.5) * 255 * a; }
+      }
+    } },
+  { id: 'vhs', cat: 'glitch', name: 'VHS Distortion', desc: 'Tape wobble, chroma bleed, tracking', params: [R('bleed', 'Chroma bleed', 0, 40, 8, 1, 'px'), R('shift', 'Chroma shift', -30, 30, 4, 1, 'px'), R('wobble', 'Wobble', 0, 40, 4, 1, 'px'), R('track', 'Tracking error', 0, 100, 40, 1, '%'), R('noise', 'Tape noise', 0, 100, 20, 1, '%'), R('sat', 'Saturation', 0, 200, 115, 1, '%'), SEED(), ANIM()],
+    fn: (s, d, w, h, p, c) => {
+      const t = c.video && p.anim ? c.t : 0, Y = new Float32Array(w), I = new Float32Array(w), Q = new Float32Array(w), I2 = new Float32Array(w), Q2 = new Float32Array(w);
+      const br = Math.round(p.bleed * c.S), sh = Math.round(p.shift * c.S), sat = p.sat / 100, bandY = frac(t * 0.13 + hash2(1, 1, c.seed)) * h, bandH = h * 0.06 * p.track / 100;
+      for (let y = 0; y < h; y++) {
+        let off = (vnoise(y * 0.03 + t * 3, c.seed) - 0.5) * 2 * p.wobble * c.S; const inBand = Math.abs(y - bandY) < bandH;
+        if (inBand) off += (hash2(y, 9, c.seed + (t * 30 | 0)) - 0.5) * w * 0.06;
+        const row = y * w * 4;
+        for (let x = 0; x < w; x++) { const sx = clamp(Math.round(x - off), 0, w - 1), k = row + sx * 4, r = s[k], g = s[k + 1], b = s[k + 2]; Y[x] = 0.299 * r + 0.587 * g + 0.114 * b; I[x] = 0.596 * r - 0.274 * g - 0.322 * b; Q[x] = 0.211 * r - 0.523 * g + 0.312 * b; }
+        if (br > 0) { let ai = 0, aq = 0; const n = br * 2 + 1; for (let i = -br; i <= br; i++) { const xx = clamp(i, 0, w - 1); ai += I[xx]; aq += Q[xx]; } for (let x = 0; x < w; x++) { I2[x] = ai / n; Q2[x] = aq / n; const a = Math.min(w - 1, x + br + 1), b2 = Math.max(0, x - br); ai += I[a] - I[b2]; aq += Q[a] - Q[b2]; } } else { I2.set(I); Q2.set(Q); }
+        for (let x = 0; x < w; x++) {
+          const cx = clamp(x - sh, 0, w - 1), yy = Y[x] + (p.noise ? (hash2(x >> 1, y, c.seed + (t * 60 | 0)) - 0.5) * p.noise * (inBand ? 2.5 : 0.8) : 0), ii = I2[cx] * sat, qq = Q2[cx] * sat, k = row + x * 4;
+          d[k] = yy + 0.956 * ii + 0.621 * qq; d[k + 1] = yy - 0.272 * ii - 0.647 * qq; d[k + 2] = yy - 1.106 * ii + 1.703 * qq;
+        }
+      }
+    } },
+
+  // IMAGE
+  { id: 'posterize', cat: 'image', name: 'Posterize', desc: 'Reduce tonal levels', params: [R('levels', 'Levels', 2, 32, 5), SEL('mode', 'Mode', [['rgb', 'PER CHANNEL'], ['luma', 'LUMA']], 'rgb')],
+    fn: (s, d, w, h, p) => { const L = p.levels - 1; if (p.mode === 'luma') { for (let i = 0; i < s.length; i += 4) { const l = lum(s[i], s[i + 1], s[i + 2]), q = Math.round(l / 255 * L) / L * 255, f = l > 0 ? q / l : 0; d[i] = s[i] * f; d[i + 1] = s[i + 1] * f; d[i + 2] = s[i + 2] * f; } } else lutApply(s, d, mkLut(v => Math.round(v / 255 * L) / L * 255)); } },
+  { id: 'threshold', cat: 'image', name: 'Threshold', desc: 'Hard two-tone cut', params: [R('lvl', 'Level', 0, 255, 128), R('soft', 'Softness', 0, 64, 0), C('dark', 'Dark', '#000000'), C('light', 'Light', '#ffffff')],
+    fn: (s, d, w, h, p) => { const a = hex(p.dark), b = hex(p.light); for (let i = 0; i < s.length; i += 4) { const l = lum(s[i], s[i + 1], s[i + 2]), t = p.soft ? clamp((l - p.lvl) / p.soft / 2 + 0.5, 0, 1) : l >= p.lvl ? 1 : 0; d[i] = a[0] + (b[0] - a[0]) * t; d[i + 1] = a[1] + (b[1] - a[1]) * t; d[i + 2] = a[2] + (b[2] - a[2]) * t; } } },
+  { id: 'duotone', cat: 'image', name: 'Duotone', desc: 'Map tones to two inks', params: [C('sh', 'Shadows', '#101a10'), C('hi', 'Highlights', '#d4ff00'), R('con', 'Contrast', 0, 300, 100, 1, '%')],
+    fn: (s, d, w, h, p) => { const a = hex(p.sh), b = hex(p.hi), cn = p.con / 100; for (let i = 0; i < s.length; i += 4) { const t = clamp((lum(s[i], s[i + 1], s[i + 2]) / 255 - 0.5) * cn + 0.5, 0, 1); d[i] = a[0] + (b[0] - a[0]) * t; d[i + 1] = a[1] + (b[1] - a[1]) * t; d[i + 2] = a[2] + (b[2] - a[2]) * t; } } },
+  { id: 'tritone', cat: 'image', name: 'Tritone', desc: 'Shadow / mid / highlight inks', params: [C('sh', 'Shadows', '#07070c'), C('mid', 'Midtones', '#5b4bd6'), C('hi', 'Highlights', '#f2ffd0'), R('mp', 'Midpoint', 5, 95, 50, 1, '%')],
+    fn: (s, d, w, h, p) => { const a = hex(p.sh), m = hex(p.mid), b = hex(p.hi), mp = p.mp / 100; for (let i = 0; i < s.length; i += 4) { const l = lum(s[i], s[i + 1], s[i + 2]) / 255; let x, y, t; if (l < mp) { x = a; y = m; t = l / mp; } else { x = m; y = b; t = (l - mp) / (1 - mp); } d[i] = x[0] + (y[0] - x[0]) * t; d[i + 1] = x[1] + (y[1] - x[1]) * t; d[i + 2] = x[2] + (y[2] - x[2]) * t; } } },
+  { id: 'invert', cat: 'image', name: 'Invert', desc: 'Negative', params: [SEL('ch', 'Channels', [['rgb', 'RGB'], ['r', 'R'], ['g', 'G'], ['b', 'B'], ['luma', 'LUMA']], 'rgb')],
+    fn: (s, d, w, h, p) => { for (let i = 0; i < s.length; i += 4) { if (p.ch === 'luma') { const l = lum(s[i], s[i + 1], s[i + 2]), dl = 255 - 2 * l; d[i] = s[i] + dl; d[i + 1] = s[i + 1] + dl; d[i + 2] = s[i + 2] + dl; } else for (let q = 0; q < 3; q++) if (p.ch === 'rgb' || 'rgb'[q] === p.ch) d[i + q] = 255 - s[i + q]; } } },
+  { id: 'grayscale', cat: 'image', name: 'Grayscale', desc: 'Desaturate', params: [SEL('mode', 'Method', [['luma', 'LUMA'], ['avg', 'AVERAGE'], ['light', 'LIGHTNESS'], ['r', 'RED CH'], ['g', 'GREEN CH'], ['b', 'BLUE CH']], 'luma')],
+    fn: (s, d, w, h, p) => { for (let i = 0; i < s.length; i += 4) { const r = s[i], g = s[i + 1], b = s[i + 2]; const v = p.mode === 'avg' ? (r + g + b) / 3 : p.mode === 'light' ? (Math.max(r, g, b) + Math.min(r, g, b)) / 2 : p.mode === 'r' ? r : p.mode === 'g' ? g : p.mode === 'b' ? b : lum(r, g, b); d[i] = d[i + 1] = d[i + 2] = v; } } },
+  { id: 'contrast', cat: 'image', name: 'Contrast', desc: '', params: [R('amt', 'Contrast', -100, 100, 25)], fn: (s, d, w, h, p) => { const c = p.amt * 2.55, f = (259 * (c + 255)) / (255 * (259 - c)); lutApply(s, d, mkLut(v => f * (v - 128) + 128)); } },
+  { id: 'brightness', cat: 'image', name: 'Brightness', desc: '', params: [R('amt', 'Brightness', -100, 100, 15)], fn: (s, d, w, h, p) => lutApply(s, d, mkLut(v => v + p.amt * 2.55)) },
+  { id: 'saturation', cat: 'image', name: 'Saturation', desc: '', params: [R('amt', 'Saturation', 0, 300, 140, 1, '%')], fn: (s, d, w, h, p) => { const f = p.amt / 100; for (let i = 0; i < s.length; i += 4) { const l = lum(s[i], s[i + 1], s[i + 2]); d[i] = l + (s[i] - l) * f; d[i + 1] = l + (s[i + 1] - l) * f; d[i + 2] = l + (s[i + 2] - l) * f; } } },
+  { id: 'exposure', cat: 'image', name: 'Exposure', desc: 'Stops of light', params: [R('ev', 'Exposure', -5, 5, 0.5, 0.05, 'EV')], fn: (s, d, w, h, p) => { const f = Math.pow(2, p.ev); lutApply(s, d, mkLut(v => 255 * Math.pow(Math.pow(v / 255, 2.2) * f, 1 / 2.2))); } },
+  { id: 'gamma', cat: 'image', name: 'Gamma', desc: '', params: [R('g', 'Gamma', 0.1, 5, 1.4, 0.05)], fn: (s, d, w, h, p) => lutApply(s, d, mkLut(v => 255 * Math.pow(v / 255, 1 / p.g))) },
+  { id: 'sharpen', cat: 'image', name: 'Sharpness', desc: 'Unsharp mask', params: [R('amt', 'Amount', 0, 400, 120, 1, '%'), R('rad', 'Radius', 1, 20, 2, 0.5, 'px')], fn: (s, d, w, h, p, c) => { const b = blur(s, w, h, p.rad * c.S * 1.6), f = p.amt / 100; for (let i = 0; i < s.length; i += 4) for (let q = 0; q < 3; q++) d[i + q] = s[i + q] + (s[i + q] - b[i + q]) * f; } },
+  { id: 'blur', cat: 'image', name: 'Blur', desc: 'Gaussian-ish box blur', params: [R('rad', 'Radius', 0, 60, 6, 0.5, 'px')], fn: (s, d, w, h, p, c) => blur(s, w, h, p.rad * c.S * 1.6) },
+  { id: 'edges', cat: 'image', name: 'Edge Detection', desc: 'Laplacian outline', params: [R('str', 'Strength', 0, 800, 200, 1, '%'), B('mono', 'Monochrome', true), B('inv', 'Invert', false), R('thr', 'Threshold', 0, 255, 0)],
+    fn: (s, d, w, h, p) => { const f = p.str / 100; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4; let vals = [0, 0, 0]; for (let q = 0; q < 3; q++) vals[q] = Math.abs(4 * s[k + q] - samp(s, w, h, x - 1, y, q) - samp(s, w, h, x + 1, y, q) - samp(s, w, h, x, y - 1, q) - samp(s, w, h, x, y + 1, q)) * f; if (p.mono) { const l = lum(vals[0], vals[1], vals[2]); vals = [l, l, l]; } for (let q = 0; q < 3; q++) { let v = vals[q]; if (p.thr) v = v >= p.thr ? 255 : 0; d[k + q] = p.inv ? 255 - v : v; } } } },
+  { id: 'sobel', cat: 'image', name: 'Sobel', desc: 'Gradient magnitude edges', params: [R('str', 'Strength', 0, 500, 120, 1, '%'), SEL('mode', 'Render', [['mono', 'MONO'], ['color', 'COLOR EDGE'], ['ink', 'INK OVER'], ['angle', 'DIRECTION']], 'mono'), R('thr', 'Threshold', 0, 255, 0), B('inv', 'Invert', false)],
+    fn: (s, d, w, h, p) => {
+      const L = new Float32Array(w * h), f = p.str / 100; for (let i = 0, j = 0; i < L.length; i++, j += 4) L[i] = lum(s[j], s[j + 1], s[j + 2]);
+      const g = (x, y) => L[clamp(y, 0, h - 1) * w + clamp(x, 0, w - 1)];
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const gx = -g(x - 1, y - 1) - 2 * g(x - 1, y) - g(x - 1, y + 1) + g(x + 1, y - 1) + 2 * g(x + 1, y) + g(x + 1, y + 1), gy = -g(x - 1, y - 1) - 2 * g(x, y - 1) - g(x + 1, y - 1) + g(x - 1, y + 1) + 2 * g(x, y + 1) + g(x + 1, y + 1);
+        let m = clamp(Math.sqrt(gx * gx + gy * gy) * f / 4, 0, 255); if (p.thr) m = m >= p.thr ? 255 : 0; if (p.inv) m = 255 - m; const k = (y * w + x) * 4;
+        if (p.mode === 'color') { const t = m / 255; d[k] = s[k] * t; d[k + 1] = s[k + 1] * t; d[k + 2] = s[k + 2] * t; }
+        else if (p.mode === 'ink') { const t = 1 - m / 255; d[k] = s[k] * t; d[k + 1] = s[k + 1] * t; d[k + 2] = s[k + 2] * t; }
+        else if (p.mode === 'angle') { const a = Math.atan2(gy, gx), t = m / 255; d[k] = (Math.cos(a) * 0.5 + 0.5) * 255 * t; d[k + 1] = (Math.sin(a) * 0.5 + 0.5) * 255 * t; d[k + 2] = (1 - Math.abs(Math.cos(a))) * 255 * t; }
+        else d[k] = d[k + 1] = d[k + 2] = m;
+      }
+    } },
+  { id: 'vignette', cat: 'image', name: 'Vignette', desc: 'Darken edges', params: [R('amt', 'Amount', 0, 100, 50, 1, '%'), R('size', 'Size', 0, 100, 60, 1, '%'), R('soft', 'Softness', 1, 100, 50, 1, '%'), C('col', 'Color', '#000000')],
+    fn: (s, d, w, h, p) => { const col = hex(p.col), a = p.amt / 100, r0 = p.size / 100, sf = Math.max(0.01, p.soft / 100); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const u = (x / w - 0.5) * 2, v = (y / h - 0.5) * 2, dd = Math.sqrt(u * u + v * v) / 1.4142, t = clamp((dd - r0 * 0.9) / sf, 0, 1) * a, k = (y * w + x) * 4; for (let q = 0; q < 3; q++) d[k + q] = s[k + q] + (col[q] - s[k + q]) * t; } } },
+  { id: 'hue', cat: 'image', name: 'Hue Shift', desc: 'Rotate hue', params: [R('deg', 'Hue', -180, 180, 90, 1, '°')],
+    fn: (s, d, w, h, p) => { const a = p.deg * Math.PI / 180, cs = Math.cos(a), sn = Math.sin(a); const m = [0.213 + cs * 0.787 - sn * 0.213, 0.715 - cs * 0.715 - sn * 0.715, 0.072 - cs * 0.072 + sn * 0.928, 0.213 - cs * 0.213 + sn * 0.143, 0.715 + cs * 0.285 + sn * 0.140, 0.072 - cs * 0.072 - sn * 0.283, 0.213 - cs * 0.213 - sn * 0.787, 0.715 - cs * 0.715 + sn * 0.715, 0.072 + cs * 0.928 + sn * 0.072]; for (let i = 0; i < s.length; i += 4) { const r = s[i], g = s[i + 1], b = s[i + 2]; d[i] = m[0] * r + m[1] * g + m[2] * b; d[i + 1] = m[3] * r + m[4] * g + m[5] * b; d[i + 2] = m[6] * r + m[7] * g + m[8] * b; } } },
+
+  // HALFTONE
+  { id: 'htcircle', cat: 'halftone', name: 'Circular Halftone', desc: 'Round dot screen', params: HTP('circle', 8, 45), fn: halftone },
+  { id: 'htsquare', cat: 'halftone', name: 'Square Halftone', desc: 'Square dot screen', params: HTP('square', 8, 45), fn: halftone },
+  { id: 'htline', cat: 'halftone', name: 'Line Halftone', desc: 'Variable-width line screen', params: HTP('line', 6, 30), fn: halftone },
+  { id: 'newspaper', cat: 'halftone', name: 'Newspaper Print', desc: 'Coarse newsprint screen with grain', params: [...HTP('circle', 6, 45).map(q => q.k === 'paper' ? C('paper', 'Paper', '#e6dfcc') : q.k === 'ink' ? C('ink', 'Ink', '#1d1c1a') : q), R('grain', 'Paper grain', 0, 100, 35, 1, '%'), R('spread', 'Ink spread', 0, 100, 30, 1, '%')],
+    fn: (s, d, w, h, p, c) => { halftone(s, d, w, h, p, c); const sp = p.spread / 100; const b = sp ? blur(d, w, h, 1.2 * c.S) : null; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, g = (hash2(x, y, 11) - 0.5) * p.grain * 0.9 + (vnoise2(x * 0.02 / c.S, y * 0.02 / c.S, 3) - 0.5) * p.grain * 0.6; for (let q = 0; q < 3; q++) { let v = d[k + q]; if (b) v = Math.min(v, v + (b[k + q] - v) * sp); d[k + q] = v + g; } } } },
+  { id: 'cmyk', cat: 'halftone', name: 'CMYK Halftone', desc: 'Four rotated process screens', params: [R('cell', 'Frequency (cell)', 2, 80, 8, 1, 'px'), R('dot', 'Dot size', 10, 200, 100, 1, '%'), R('ac', 'Cyan angle', 0, 180, 15, 1, '°'), R('am', 'Magenta angle', 0, 180, 75, 1, '°'), R('ay', 'Yellow angle', 0, 180, 0, 1, '°'), R('ak', 'Black angle', 0, 180, 45, 1, '°'), R('gcr', 'Black generation', 0, 100, 80, 1, '%'), R('mis', 'Misregistration', 0, 30, 0, 0.5, 'px'), SEL('shape', 'Pattern', ['circle', 'square', 'diamond', 'line', 'ellipse'], 'circle'), C('paper', 'Paper', '#f4f1e8')],
+    fn: (s, d, w, h, p, c) => {
+      const cs = Math.max(2, p.cell * c.S), ds = p.dot / 100, bl = blur(s, w, h, cs / 3), pap = hex(p.paper), gcr = p.gcr / 100, mis = p.mis * c.S;
+      const ch = [p.ac, p.am, p.ay, p.ak].map((a, i) => { const r = a * Math.PI / 180; return { ca: Math.cos(r), sa: Math.sin(r), ox: [mis, -mis, 0, 0][i], oy: [0, mis * 0.6, -mis, 0][i] }; });
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const cov = [0, 0, 0, 0];
+        for (let i = 0; i < 4; i++) {
+          const C2 = ch[i], X = x - C2.ox, Y = y - C2.oy, u = X * C2.ca + Y * C2.sa, v = -X * C2.sa + Y * C2.ca, cu = (Math.floor(u / cs) + 0.5) * cs, cv = (Math.floor(v / cs) + 0.5) * cs;
+          const sx = clamp(Math.round(cu * C2.ca - cv * C2.sa), 0, w - 1), sy = clamp(Math.round(cu * C2.sa + cv * C2.ca), 0, h - 1), k = (sy * w + sx) * 4;
+          const r = bl[k] / 255, g = bl[k + 1] / 255, b = bl[k + 2] / 255, K = (1 - Math.max(r, g, b)) * gcr, den = 1 - K || 1;
+          const val = i === 0 ? (1 - r - K) / den : i === 1 ? (1 - g - K) / den : i === 2 ? (1 - b - K) / den : K;
+          cov[i] = coverage(p.shape, clamp(val, 0, 1), u - cu, v - cv, cs, ds);
+        }
+        const k = (y * w + x) * 4, kk = 1 - cov[3];
+        d[k] = pap[0] * (1 - cov[0]) * kk; d[k + 1] = pap[1] * (1 - cov[1]) * kk; d[k + 2] = pap[2] * (1 - cov[2]) * kk;
+      }
+    } },
+];
+/* ---------- LIGHT: HD glow + laser sweep ---------- */
+function boxF(a, w, h, r, axis, ch) {
+  // separable running-sum box blur on interleaved Float32 (ch channels), in place
+  r = Math.max(1, Math.round(r)); const ia = 1 / (2 * r + 1), n = axis ? h : w, m = axis ? w : h, line = new Float32Array(n * ch);
+  for (let o = 0; o < m; o++) {
+    const base = axis ? o * ch : o * w * ch, st = axis ? w * ch : ch;
+    for (let i = 0; i < n; i++) for (let q = 0; q < ch; q++) line[i * ch + q] = a[base + i * st + q];
+    for (let q = 0; q < ch; q++) {
+      let acc = 0; for (let i = -r; i <= r; i++) acc += line[clamp(i, 0, n - 1) * ch + q];
+      for (let i = 0; i < n; i++) { a[base + i * st + q] = acc * ia; acc += line[Math.min(i + r + 1, n - 1) * ch + q] - line[Math.max(i - r, 0) * ch + q]; }
+    }
+  }
+}
+function blurF(a, w, h, r, ch, onlyAxis) { const rr = Math.max(1, r / 1.7); for (let i = 0; i < 3; i++) { if (onlyAxis !== 1) boxF(a, w, h, rr, 0, ch); if (onlyAxis !== 0) boxF(a, w, h, rr, 1, ch); } }
+function hueRGB(hh) { hh = frac(hh) * 6; const x = 1 - Math.abs(hh % 2 - 1); return hh < 1 ? [1, x, 0] : hh < 2 ? [x, 1, 0] : hh < 3 ? [0, 1, x] : hh < 4 ? [0, x, 1] : hh < 5 ? [x, 0, 1] : [1, 0, x]; }
+function glowFx(s, d, w, h, p, c) {
+  const N = w * h, t = c.video && p.anim ? c.t : 0, L = new Float32Array(N), Wt = new Float32Array(N);
+  for (let i = 0, j = 0; i < N; i++, j += 4) L[i] = lum(s[j], s[j + 1], s[j + 2]);
+  const lo = p.thr - p.knee, hi = p.thr + p.knee, ss = x => { const u = clamp((x - lo) / ((hi - lo) || 1), 0, 1); return u * u * (3 - 2 * u); };
+  if (p.src === 'edges') { for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const g = (xx, yy) => L[clamp(yy, 0, h - 1) * w + clamp(xx, 0, w - 1)]; const gx = g(x + 1, y - 1) + 2 * g(x + 1, y) + g(x + 1, y + 1) - g(x - 1, y - 1) - 2 * g(x - 1, y) - g(x - 1, y + 1), gy = g(x - 1, y + 1) + 2 * g(x, y + 1) + g(x + 1, y + 1) - g(x - 1, y - 1) - 2 * g(x, y - 1) - g(x + 1, y - 1); Wt[y * w + x] = ss(Math.min(255, Math.sqrt(gx * gx + gy * gy) / 2)); } }
+  else for (let i = 0; i < N; i++) Wt[i] = ss(p.src === 'dark' ? 255 - L[i] : L[i]);
+  // laser beam geometry
+  const la = p.lang * Math.PI / 180, nx = -Math.sin(la), ny = Math.cos(la), pr = [0, w * nx, h * ny, w * nx + h * ny], dmin = Math.min(...pr), dmax = Math.max(...pr);
+  const dl = dmin + (dmax - dmin) * frac(p.lpos / 100 + t * p.lspeed * 0.2), bw = Math.max(0.5, p.lw * c.S), amb = p.amb / 100, boost = p.lboost / 100;
+  const flick = 1 - p.flick / 100 * hash2(c.frame, 1, c.seed);
+  if (p.laser) for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const dd = (x * nx + y * ny - dl) / (bw * 10); Wt[y * w + x] *= amb + boost * Math.exp(-dd * dd); }
+  else if (amb !== 1) for (let i = 0; i < N; i++) Wt[i] *= Math.max(amb, 1);
+  const c1 = hex(p.c1).map(v => v / 255), c2 = hex(p.c2).map(v => v / 255), sat = p.sat / 100;
+  const colAt = (j, out) => { if (p.mode === 'source') { const r = s[j] / 255, g = s[j + 1] / 255, b = s[j + 2] / 255, l = (r + g + b) / 3; out[0] = l + (r - l) * sat; out[1] = l + (g - l) * sat; out[2] = l + (b - l) * sat; } else { out[0] = 1; out[1] = 1; out[2] = 1; } };
+  // half-res bright buffer
+  const hw = Math.ceil(w / 2), hh2 = Math.ceil(h / 2), B = new Float32Array(hw * hh2 * 3), tmpc = [0, 0, 0];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x, wv = Wt[i] * 0.25; if (!wv) continue; colAt(i * 4, tmpc); const k = (((y >> 1) * hw) + (x >> 1)) * 3; B[k] += tmpc[0] * wv; B[k + 1] += tmpc[1] * wv; B[k + 2] += tmpc[2] * wv; }
+  const A = new Float32Array(B.length), R0 = Math.max(1, p.radius * c.S / 2), lv = p.levels | 0, prism = p.prism / 100;
+  const tint = k => { let col = p.mode === 'dual' ? [c2[0] + (c1[0] - c2[0]) * (lv > 1 ? k / (lv - 1) : 1), c2[1] + (c1[1] - c2[1]) * (lv > 1 ? k / (lv - 1) : 1), c2[2] + (c1[2] - c2[2]) * (lv > 1 ? k / (lv - 1) : 1)] : p.mode === 'tint' ? c1 : [1, 1, 1]; if (prism) { const hcol = hueRGB(k / Math.max(1, lv) + t * 0.1); col = col.map((v, q) => v * (1 - prism) + v * hcol[q] * prism * 1.6); } return col; };
+  for (let k = 0; k < lv; k++) {
+    const tmp = B.slice(); blurF(tmp, hw, hh2, R0 / Math.pow(2, k), 3); const tc = tint(k), wk = (1 + k * 0.35) / lv;
+    for (let i = 0; i < tmp.length; i += 3) { A[i] += tmp[i] * tc[0] * wk; A[i + 1] += tmp[i + 1] * tc[1] * wk; A[i + 2] += tmp[i + 2] * tc[2] * wk; }
+  }
+  if (p.streak > 0) { const tmp = B.slice(); blurF(tmp, hw, hh2, Math.max(1, p.slen * c.S / 2), 3, p.sdir === 'v' ? 1 : 0); const tc = tint(lv - 1), f = p.streak / 100 * 2.5; for (let i = 0; i < tmp.length; i += 3) { A[i] += tmp[i] * tc[0] * f; A[i + 1] += tmp[i + 1] * tc[1] * f; A[i + 2] += tmp[i + 2] * tc[2] * f; } }
+  const rays = +p.rays;
+  if (rays > 0) {
+    const taps = 18, len = p.rlen * c.S / 2, f = p.rint / 100 * 0.9, dirs = []; for (let r = 0; r < rays / 2; r++) { const a = (p.rang + r * 360 / rays) * Math.PI / 180; dirs.push([Math.cos(a), Math.sin(a)]); }
+    const tc = tint(lv - 1), Rb = new Float32Array(B.length);
+    for (let y = 0; y < hh2; y++) for (let x = 0; x < hw; x++) {
+      let r = 0, g = 0, b = 0;
+      for (const [dx, dy] of dirs) for (let q = 1; q <= taps; q++) { const wt = (1 - q / (taps + 1)) ** 2, st = q / taps * len; for (const sg of [1, -1]) { const sx = Math.round(x + dx * st * sg), sy = Math.round(y + dy * st * sg); if (sx < 0 || sy < 0 || sx >= hw || sy >= hh2) continue; const k = (sy * hw + sx) * 3; r += B[k] * wt; g += B[k + 1] * wt; b += B[k + 2] * wt; } }
+      const k = (y * hw + x) * 3; Rb[k] = r * f / taps; Rb[k + 1] = g * f / taps; Rb[k + 2] = b * f / taps;
+    }
+    for (let i = 0; i < A.length; i += 3) { A[i] += Rb[i] * tc[0]; A[i + 1] += Rb[i + 1] * tc[1]; A[i + 2] += Rb[i + 2] * tc[2]; }
+  }
+  // composite (exponential screen keeps highlights HD, never clips harshly)
+  const gi = p.int / 100 * 3 * flick, core = p.core / 100 * flick, lc = hex(p.lc).map(v => v / 255), li = p.laser ? p.lint / 100 : 0, ctc = tint(lv - 1);
+  for (let y = 0; y < h; y++) {
+    const fy = Math.min(hh2 - 1.001, Math.max(0, y / 2 - 0.25)), y0 = fy | 0, ty = fy - y0;
+    for (let x = 0; x < w; x++) {
+      const fx = Math.min(hw - 1.001, Math.max(0, x / 2 - 0.25)), x0 = fx | 0, tx = fx - x0, i = y * w + x, j = i * 4;
+      const k00 = (y0 * hw + x0) * 3, k10 = k00 + 3, k01 = k00 + hw * 3, k11 = k01 + 3;
+      let beam = 0; if (li) { const dd = (x * nx + y * ny - dl) / bw; beam = (Math.exp(-dd * dd) + 0.22 * Math.exp(-Math.abs(dd) / 6)) * li * flick; }
+      colAt(j, tmpc);
+      for (let q = 0; q < 3; q++) {
+        const a = (A[k00 + q] * (1 - tx) + A[k10 + q] * tx) * (1 - ty) + (A[k01 + q] * (1 - tx) + A[k11 + q] * tx) * ty;
+        const add = a * gi + Wt[i] * core * tmpc[q] * ctc[q] + beam * lc[q] + beam * beam * 0.35;
+        const base = s[j + q] / 255; d[j + q] = (1 - (1 - base) * Math.exp(-add)) * 255;
+      }
+    }
+  }
+}
+EFFECTS.push(
+  { id: 'glow', cat: 'light', name: 'Glow / Laser', desc: 'HD bloom, streaks, star rays + sweeping laser', params: [
+    SEL('src', 'Glow from', [['edges', 'EDGES'], ['bright', 'HIGHLIGHTS'], ['dark', 'DARK INK']], 'edges'), R('thr', 'Threshold', 0, 255, 70), R('knee', 'Softness', 1, 128, 45),
+    R('radius', 'Glow size', 2, 400, 60, 1, 'px'), R('int', 'Intensity', 0, 500, 140, 1, '%'), R('core', 'Hot core (shine)', 0, 300, 90, 1, '%'), R('levels', 'Detail layers', 1, 6, 4),
+    SEL('mode', 'Color mode', [['tint', 'TINT'], ['dual', 'GRADIENT'], ['source', 'SOURCE']], 'dual'), C('c1', 'Inner color', '#ff4fa3'), C('c2', 'Outer color', '#d4ff00'), R('sat', 'Source saturation', 0, 300, 150, 1, '%'), R('prism', 'Prism / rainbow', 0, 100, 0, 1, '%'),
+    R('streak', 'Light streak', 0, 200, 35, 1, '%'), R('slen', 'Streak length', 4, 800, 220, 1, 'px'), SEL('sdir', 'Streak axis', [['h', 'HORIZONTAL'], ['v', 'VERTICAL']], 'h'),
+    SEL('rays', 'Star rays', [['0', 'OFF'], ['4', '4'], ['6', '6'], ['8', '8']], '0'), R('rlen', 'Ray length', 4, 600, 120, 1, 'px'), R('rang', 'Ray angle', 0, 180, 45, 1, '°'), R('rint', 'Ray intensity', 0, 400, 120, 1, '%'),
+    B('laser', 'Laser sweep', true), C('lc', 'Beam color', '#ff4fa3'), R('lang', 'Beam angle', -90, 90, -18, 1, '°'), R('lpos', 'Beam position', 0, 100, 38, 1, '%'), R('lw', 'Beam width', 0.5, 60, 3, 0.5, 'px'), R('lint', 'Beam intensity', 0, 400, 140, 1, '%'),
+    R('lboost', 'Beam pickup', 0, 800, 350, 1, '%'), R('amb', 'Ambient glow', 0, 100, 35, 1, '%'), R('lspeed', 'Sweep speed', 0, 5, 0.5, 0.05), R('flick', 'Flicker', 0, 100, 0, 1, '%'), ANIM(), SEED()], fn: glowFx },
+  { id: 'imglayer', cat: 'layer', name: 'Image Layer', desc: 'Stack another image with blend + mask', params: [{ k: 'img', l: 'Image', t: 'img', def: '' }, SEL('fit', 'Fit', ['contain', 'cover', 'stretch'], 'contain'), R('scale', 'Scale', 1, 400, 100, 1, '%'), R('x', 'Position X', -100, 100, 0, 1, '%'), R('y', 'Position Y', -100, 100, 0, 1, '%'), R('rot', 'Rotation', -180, 180, 0, 1, '°')],
+    fn: (s, d, w, h, p, c) => { const im = p._img; if (!im || im.length !== s.length) return; const am = new Uint8Array(w * h); for (let i = 0, j = 0; i < am.length; i++, j += 4) { am[i] = im[j + 3]; if (im[j + 3]) { d[j] = im[j]; d[j + 1] = im[j + 1]; d[j + 2] = im[j + 2]; } } c.alphaMask = am; } },
+  { id: 'fill', cat: 'layer', name: 'Color Fill', desc: 'Solid or gradient layer (use blend modes)', params: [SEL('type', 'Type', ['solid', 'linear', 'radial'], 'linear'), C('a', 'Color A', '#ff4fa3'), C('b', 'Color B', '#0b0c0b'), R('ang', 'Angle', 0, 360, 90, 1, '°')],
+    fn: (s, d, w, h, p) => { const A2 = hex(p.a), B2 = hex(p.b), an = p.ang * Math.PI / 180, ca = Math.cos(an), sa = Math.sin(an), ext = Math.abs(w * ca) + Math.abs(h * sa); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let t2 = 0; if (p.type === 'linear') t2 = clamp(((x - w / 2) * ca + (y - h / 2) * sa) / ext + 0.5, 0, 1); else if (p.type === 'radial') t2 = clamp(Math.hypot(x / w - 0.5, y / h - 0.5) * 1.414, 0, 1); const k = (y * w + x) * 4; for (let q = 0; q < 3; q++) d[k + q] = A2[q] + (B2[q] - A2[q]) * t2; } } },
+);
+const CATS = [['layer', 'Layers'], ['light', 'Light'], ['dither', 'Dithering'], ['pixel', 'Pixel'], ['glitch', 'Glitch'], ['image', 'Image'], ['halftone', 'Halftone']];
+const MAP = {}; EFFECTS.forEach(e => MAP[e.id] = e);
+function defaults(def) { const o = {}; def.params.forEach(q => o[q.k] = q.def); return o; }
+const BLENDS = {
+  screen: (a, b) => 255 - (255 - a) * (255 - b) / 255, multiply: (a, b) => a * b / 255, overlay: (a, b) => a < 128 ? 2 * a * b / 255 : 255 - 2 * (255 - a) * (255 - b) / 255,
+  softlight: (a, b) => { const A2 = a / 255, B2 = b / 255; return 255 * (B2 < 0.5 ? A2 - (1 - 2 * B2) * A2 * (1 - A2) : A2 + (2 * B2 - 1) * ((A2 < 0.25 ? ((16 * A2 - 12) * A2 + 4) * A2 : Math.sqrt(A2)) - A2)); },
+  hardlight: (a, b) => b < 128 ? 2 * a * b / 255 : 255 - 2 * (255 - a) * (255 - b) / 255, add: (a, b) => a + b, subtract: (a, b) => a - b, difference: (a, b) => Math.abs(a - b),
+  lighten: (a, b) => a > b ? a : b, darken: (a, b) => a < b ? a : b, dodge: (a, b) => b >= 255 ? 255 : Math.min(255, a * 255 / (255 - b)), burn: (a, b) => b <= 0 ? 0 : Math.max(0, 255 - (255 - a) * 255 / b),
+};
+
+/* stack: [{id, mix, p, blend?, mask?}] (resolved, enabled only). img is consumed. */
+function run(img, w, h, stack, ctx, onProg) {
+  let cur = img; const N = w * h;
+  for (let i = 0; i < stack.length; i++) {
+    const e = stack[i], def = MAP[e.id]; if (!def) continue;
+    const p = Object.assign(defaults(def), e.p || {});
+    const c = { S: ctx.S || 1, t: ctx.t || 0, frame: ctx.frame || 0, video: !!ctx.video, prev: ctx.prev, seed: ((p.seed ?? 0) + (p.anim && ctx.video ? (ctx.frame || 0) * 7919 : 0) + i * 31) | 0 };
+    const dst = new Uint8ClampedArray(cur);
+    const out = def.fn(cur, dst, w, h, p, c) || dst;
+    const bf = e.blend && e.blend !== 'normal' ? BLENDS[e.blend] : null;
+    if (bf) for (let j = 0; j < out.length; j += 4) { out[j] = bf(cur[j], out[j]); out[j + 1] = bf(cur[j + 1], out[j + 1]); out[j + 2] = bf(cur[j + 2], out[j + 2]); }
+    const m = (e.mix ?? 100) / 100, mk = e.mask && e.mask.length === N ? e.mask : null, am = c.alphaMask && c.alphaMask.length === N ? c.alphaMask : null;
+    if (m < 0.999 || mk || am) for (let k = 0, j = 0; k < N; k++, j += 4) { let wt = m; if (mk) wt *= mk[k] / 255; if (am) wt *= am[k] / 255; if (wt >= 0.999) continue; for (let q = 0; q < 4; q++) out[j + q] = cur[j + q] + (out[j + q] - cur[j + q]) * wt; }
+    cur = out;
+    if (onProg) onProg(i + 1, stack.length);
+  }
+  return cur;
+}
+return { EFFECTS, MAP, CATS, PALETTES, defaults, run, hex, BLENDS };
+}
+if (typeof self !== 'undefined' && typeof window === 'undefined' && typeof importScripts === 'function') { /* worker context handled by app */ }
