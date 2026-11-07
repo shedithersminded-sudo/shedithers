@@ -8,6 +8,8 @@ const SHD_CONFIG = {
   redbubble: '',
   // Your TikTok handle (without @)
   tiktok: 'shedithers',
+  // Your YouTube handle (without @)
+  youtube: 'shedithersminded',
   // Where the suggestion box sends messages
   email: 'shedithersminded@gmail.com',
   tipLine: 'SHEDITHERS is free. If it made something you love, buy the artist a drink ♥',

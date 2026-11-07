@@ -29,21 +29,7 @@ function stopArtFeed() { cancelAnimationFrame(FEED.raf); if (FEED.v) FEED.v.paus
 /* empty-state buttons */
 $('#emImport').onclick = openFile; $('#emReel').onclick = () => loadArt('reel'); $('#emCollage').onclick = () => loadArt('collage');
 
-/* boot */
-const QUOTE = 'BECOMING AND UNBECOMING SO I CAN BECOME WHO I ALWAYS HAVE BEEN AND NEVER WAS';
-const LOG = ['MOUNTING DITHER CORE ………… OK', `LOADING ${E.EFFECTS.length} EFFECT MODULES ………… OK`, 'SPAWNING WORKERS [PREVIEW / BACKGROUND] ………… OK', 'CALIBRATING BAYER MATRICES 2·4·8·16 ………… OK', 'IDENTITY CHECK ………… ERROR: NO IDENTITY', 'SHEDITHERS LOVES YOU ………… ♥'];
-function runBoot() {
-  const boot = $('#boot'); let done = false;
-  const finish = () => { if (done) return; done = true; boot.classList.add('gone'); document.body.classList.add('ready'); setTimeout(() => { boot.remove(); fitView(); }, 700); };
-  if (!SETTINGS.boot) { finish(); return; }
-  boot.addEventListener('click', finish);
-  const art = new Image(); art.src = ART.collage;
-  art.onload = () => ditherTo(art, art.naturalWidth, art.naturalHeight, $('#bootArt'), 360, [{ id: 'bayer8', mix: 100, p: { pal: 'acid' } }]).catch(() => { const c = $('#bootArt'); c.width = art.naturalWidth; c.height = art.naturalHeight; c.getContext('2d').drawImage(art, 0, 0); });
-  let i = 0; const q = $('#bootQuote');
-  const typer = setInterval(() => { q.textContent = QUOTE.slice(0, ++i) + (i < QUOTE.length ? '█' : ''); if (i >= QUOTE.length) clearInterval(typer); }, 22);
-  LOG.forEach((l, k) => setTimeout(() => { if (done) return; $('#bootLog').append(h('div', null, '> ' + l)); $('#boot .boot-bar i').style.width = ((k + 1) / LOG.length * 100) + '%'; }, 250 + k * 300));
-  setTimeout(finish, 250 + LOG.length * 300 + 900);
-}
+/* boot sequence lives in intro.js */
 
 /* startup */
 (async function init() {

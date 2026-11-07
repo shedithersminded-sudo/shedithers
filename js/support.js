@@ -24,6 +24,9 @@ function openTip() {
 function openShop() { if (!rbUser()) return toast('Shop is not set up yet', 'info'); openExt(shopURL()); }
 const tiktokUser = () => { const t = String(CFG.tiktok || '').trim().replace(/^https?:\/\/(www\.)?tiktok\.com\/@?/i, '').replace(/^@/, '').split(/[/?#]/)[0]; return /^[A-Za-z0-9_.]{2,24}$/.test(t) ? t : ''; };
 const tiktokURL = () => `https://www.tiktok.com/@${tiktokUser()}`;
+const ytUser = () => { const t = String(CFG.youtube || '').trim().replace(/^https?:\/\/(www\.)?youtube\.com\/@?/i, '').replace(/^@/, '').split(/[/?#]/)[0]; return /^[A-Za-z0-9_.-]{2,40}$/.test(t) ? t : ''; };
+const ytURL = () => `https://www.youtube.com/@${ytUser()}`;
+function openYoutube() { if (ytUser()) openExt(ytURL()); }
 function openTiktok() { if (tiktokUser()) openExt(tiktokURL()); }
 let lastSuggest = 0;
 function openSuggest() {
@@ -60,14 +63,37 @@ function openSuggest() {
 }
 function supportUI() {
   const tip = !!cashtag(), shop = !!rbUser(), tt = !!tiktokUser();
+  $('#railYoutube').classList.toggle('hidden', !ytUser()); $('#emYoutube').classList.toggle('hidden', !ytUser());
   $('#railTiktok').classList.toggle('hidden', !tt); $('#emTiktok').classList.toggle('hidden', !tt);
   $('#railSuggest').classList.toggle('hidden', !CFG.email); $('#emSuggest').classList.toggle('hidden', !CFG.email);
   $('#btnTip').classList.toggle('hidden', !tip); $('#btnShop').classList.toggle('hidden', !shop);
   $('#emTip').classList.toggle('hidden', !tip); $('#emShop').classList.toggle('hidden', !shop);
 }
+$('#railYoutube').onclick = openYoutube; $('#emYoutube').onclick = openYoutube;
 $('#railTiktok').onclick = openTiktok; $('#emTiktok').onclick = openTiktok; $('#railSuggest').onclick = openSuggest; $('#emSuggest').onclick = openSuggest;
 $('#btnTip').onclick = openTip; $('#btnShop').onclick = openShop; $('#emTip').onclick = openTip; $('#emShop').onclick = openShop;
 supportUI();
 /* gentle nudge after a successful export (at most once per session) */
 let tipNudged = false;
 function tipNudge() { if (tipNudged || !cashtag()) return; tipNudged = true; setTimeout(() => toast('Made something you love? ♥ TIP the artist or grab stickers in the shop', 'info', 6000), 1200); }
+
+/* ---- thank-you note after every export, in the SHEDITHERS collage style ---- */
+const TY_LINES = ['thank u for making something with me', 'u made that. that’s yours forever', 'thank u for being here with me', 'look what u made', 'thank u for not being ordinary'];
+function thankYou(rec) {
+  const art = ART_GALLERY[Math.floor(Math.random() * ART_GALLERY.length)], line = TY_LINES[Math.floor(Math.random() * TY_LINES.length)], quote = TICKER[Math.floor(Math.random() * TICKER.length)];
+  const link = (show, label, fn, cls) => show ? h('button', { class: 'btn sm ' + (cls || ''), onclick: fn }, label) : null;
+  const card = h('div', { class: 'ty-card' },
+    h('div', { class: 'ty-art', style: { backgroundImage: `url(${art.src})` } }),
+    h('i', { class: 'ty-tape a' }), h('i', { class: 'ty-tape b' }),
+    h('img', { class: 'ty-gems', src: 'assets/art/gallery/sticker-gems.png', alt: '' }),
+    h('div', { class: 'ty-paper' },
+      h('div', { class: 'ty-hand' }, line, h('span', null, ' ♥')),
+      h('div', { class: 'ty-file' }, `▸ ${rec && rec.file ? rec.file : 'your file'} saved`),
+      h('div', { class: 'ty-quote' }, '“' + quote + '”'),
+      h('div', { class: 'ty-sign' }, '— shedithers', h('span', { html: '<svg viewBox="0 0 40 40"><use href="#i-mark"/></svg>' }))),
+    h('div', { class: 'badge-heart ty-badge' }, h('span', { html: '<svg viewBox="0 0 24 24"><use href="#i-heart"/></svg>' }), h('div', null, h('s', null, 'Shedithers'), h('b', null, 'LOVES YOU'))));
+  const links = h('div', { class: 'ty-links' }, link(cashtag(), '♥ BUY ME A DRINK', openTip, 'pink'), link(rbUser(), 'STICKERS & PRINTS', openShop), link(tiktokUser(), '♪ TIKTOK', openTiktok), link(ytUser(), '▶ YOUTUBE', openYoutube), link(CFG.email, '✉ IDEAS', openSuggest));
+  const md = openModal({ title: 'TRANSMISSION COMPLETE', sub: 'THANK YOU', cls: 'sm ty', body: h('div', null, card, links), foot: h('button', { class: 'btn primary', onclick: () => md.close() }, 'KEEP CREATING ▸') });
+  md.el.style.width = 'min(560px,94vw)';
+}
+function tipNudge(rec) { setTimeout(() => thankYou(rec), 450); }

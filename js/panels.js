@@ -31,7 +31,8 @@ function leftImport(body) {
     sec('SOURCE', dz),
     sec(['ARTIST ARCHIVE', h('span', { style: { color: 'var(--acid)' } }, '♥')],
       h('div', { class: 'art-card', onclick: () => loadArt('reel') }, vid, h('div', { class: 'cap' }, h('span', null, 'REEL // 01M.MP4'), h('span', null, 'LOAD ▸'))),
-      h('div', { class: 'art-card', onclick: () => loadArt('collage') }, h('img', { src: ART.collage, alt: 'Shedithers collage' }), h('div', { class: 'cap' }, h('span', null, 'COLLAGE // NO IDENTITY'), h('span', null, 'LOAD ▸')))),
+      h('div', { class: 'art-card', onclick: () => loadArt('collage') }, h('img', { src: ART.collage, alt: 'Shedithers collage' }), h('div', { class: 'cap' }, h('span', null, 'COLLAGE // NO IDENTITY'), h('span', null, 'LOAD ▸'))),
+      h('div', { class: 'art-grid' }, ART_GALLERY.map((g, i) => h('button', { class: 'art-tile', 'data-tip': `Load “${g.name}” to edit`, style: '--d:' + (i * 0.4) + 's', onclick: () => loadArtURL(g.src, g.name.replace(/[^A-Z0-9]+/gi, '_') + '.jpg') }, h('img', { src: g.src, alt: g.name, loading: 'lazy' }), h('span', null, g.name))))),
     sec('PROJECT FILES', h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', onclick: () => pickJSON() }, 'OPEN .JSON'), h('button', { class: 'btn sm', onclick: exportProjectFile, disabled: !S.media }, 'SAVE AS FILE'))),
     sec('FORMATS', h('div', { class: 'note', html: '<b>IMAGE</b> PNG · JPG · WEBP · TIFF (8-bit, none/LZW/PackBits)<br><b>VIDEO</b> MP4 · WEBM · MOV (codec support depends on browser)<br><b>EXPORT</b> PNG · JPG · WEBP · MP4 (H.264) · WEBM (VP9/VP8)<br><br>Drag files anywhere in the window.' })),
   );
@@ -158,7 +159,7 @@ function leftHistory(body) {
       h('div', { class: 'meta' }, h('b', null, x.file), h('span', null, `${x.fmt} · ${x.w}×${x.h} · ${fmtBytes(x.size)}`), h('span', null, fmtDate(x.at)))));
   }
 }
-function logExport(rec) { const t = cvA.width ? (() => { const c = h_canvas(80, Math.round(80 * cvA.height / cvA.width) || 60); c.getContext('2d').drawImage(cvA, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', 0.6); })() : ''; S.exports.unshift(Object.assign({ at: Date.now(), thumb: t, stack: stackToPreset(S.stack) }, rec)); S.exports = S.exports.slice(0, 60); LS.set('shd.exports', S.exports); if (leftTab === 'history') renderLeft(); if (typeof tipNudge === 'function') tipNudge(); }
+function logExport(rec) { const t = cvA.width ? (() => { const c = h_canvas(80, Math.round(80 * cvA.height / cvA.width) || 60); c.getContext('2d').drawImage(cvA, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', 0.6); })() : ''; S.exports.unshift(Object.assign({ at: Date.now(), thumb: t, stack: stackToPreset(S.stack) }, rec)); S.exports = S.exports.slice(0, 60); LS.set('shd.exports', S.exports); if (leftTab === 'history') renderLeft(); if (typeof tipNudge === 'function') tipNudge(rec); }
 
 /* ---------- STACK ---------- */
 let SYNC = [];
