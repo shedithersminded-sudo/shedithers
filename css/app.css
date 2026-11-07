@@ -482,3 +482,7 @@ input:not([type=range]):not([type=color]):not([type=checkbox]),textarea{cursor:t
 #btnMotion.on{background:var(--pink);color:#000;border-color:var(--pink)}
 .share-row{display:flex;gap:6px;align-items:center}
 #cvMask{display:none}
+/* logo mark: pink heart crosshair */
+.logo .mark,.boot-mark svg{color:var(--pink)!important;filter:drop-shadow(0 0 5px rgba(255,79,163,.55))}
+.logo:hover .mark{transform:scale(1.15)}
+.boot-mark svg{width:56px;height:56px}
