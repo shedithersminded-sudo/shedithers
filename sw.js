@@ -1,5 +1,5 @@
 /* SHEDITHERS service worker — offline app shell. Bump VERSION when files change. */
-const VERSION = 'shedithers-v1.3.0';
+const VERSION = 'shedithers-v1.3.1';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'css/app.css', 'js/engine.js', 'js/presets.js', 'js/util.js', 'js/app.js', 'js/panels.js', 'js/timeline.js', 'js/gif.js', 'js/brush.js', 'js/export.js', 'js/config.js', 'js/support.js', 'js/boot.js', 'assets/icon.svg', 'assets/icon-192.png', 'assets/icon-512.png', 'assets/art/collage.png', 'assets/art/01M.mp4'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim())); });

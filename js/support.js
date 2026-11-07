@@ -47,7 +47,7 @@ function openSuggest() {
       const j = await r.json().catch(() => ({}));
       if (!r.ok || String(j.success) === 'false') throw new Error(j.message || 'HTTP ' + r.status);
       lastSuggest = Date.now(); md.close(); toast('Suggestion sent — thank you ♥');
-    } catch (e) { sendBtn.disabled = false; status.innerHTML = ''; status.append('COULD NOT SEND (' + e.message + '). ', h('a', { href: mailto(), style: { color: 'var(--pink)' } }, 'EMAIL IT INSTEAD ▸')); }
+    } catch (e) { sendBtn.disabled = false; status.innerHTML = ''; status.append(/activat/i.test(e.message) ? 'THE ARTIST’S INBOX IS BEING SET UP — PLEASE ' : 'COULD NOT SEND (' + e.message + '). ', h('a', { href: mailto(), style: { color: 'var(--pink)' } }, 'EMAIL IT INSTEAD ▸')); }
   };
   const sendBtn = h('button', { class: 'btn primary', onclick: send }, '✉ SEND');
   const body = h('div', { style: { position: 'relative' } }, honey,
