@@ -16,6 +16,7 @@ const isVideo = () => !!(S.media && S.media.type === 'video');
 const isTimed = () => !!S.media && (S.media.type === 'video' || !!S.motion);
 const curTime = () => isVideo() ? S.media.el.currentTime : (S.motion ? S.still.t : 0);
 const frameIdx = t => Math.round((t || 0) * S.video.fps);
+const loopProg = t => { const a = S.video.in || 0, b = S.video.out || (S.media && S.media.duration) || S.still.dur || 1; return b > a ? clampN(((t || 0) - a) / (b - a), 0, 0.99999) : 0; };
 
 /* ---------- feedback ---------- */
 function toast(msg, type = 'ok', ms = 3200) {
@@ -186,7 +187,8 @@ function resolveStack(t, stack, w, hh) {
 }
 const hasMosh = st => st.some(f => f.id === 'datamosh' || (f.id === 'ghost' && (f.p.trail ?? 55) > 0));
 function selFx() { return S.stack.find(f => f.uid === S.sel) || null; }
-function addFx(id, at, p) { const f = mkFx(id, p); if (!f) return; if (at == null || at > S.stack.length) S.stack.push(f); else S.stack.splice(at, 0, f); S.sel = f.uid; changed(true); toast(`${E.MAP[id].name.toUpperCase()} added to stack`, 'info', 1600); return f; }
+function gifAutoMotion(ids) { if (!S.media || isVideo() || S.motion || typeof setMotion !== 'function') return; if (!ids.some(i => E.MAP[i] && E.MAP[i].cat === 'gif')) return; setMotion(true); setTimeout(() => { if (!isPlaying()) startPlay(); }, 250); }
+function addFx(id, at, p) { const f = mkFx(id, p); if (!f) return; setTimeout(() => gifAutoMotion([id]), 0); if (at == null || at > S.stack.length) S.stack.push(f); else S.stack.splice(at, 0, f); S.sel = f.uid; changed(true); toast(`${E.MAP[id].name.toUpperCase()} added to stack`, 'info', 1600); return f; }
 function removeFx(u) { const i = S.stack.findIndex(f => f.uid === u); if (i < 0) return; const [f] = S.stack.splice(i, 1); if (S.sel === u) S.sel = (S.stack[i] || S.stack[i - 1] || {}).uid || null; changed(true); toast(`${E.MAP[f.id].name.toUpperCase()} removed`, 'info', 1500); }
 function dupFx(u) { const i = S.stack.findIndex(f => f.uid === u); if (i < 0) return; const c = clone(S.stack[i]); c.uid = uid('fx'); S.stack.splice(i + 1, 0, c); S.sel = c.uid; changed(true); }
 function moveFx(u, to) { const i = S.stack.findIndex(f => f.uid === u); if (i < 0) return; const [f] = S.stack.splice(i, 1); if (to > i) to--; S.stack.splice(clampN(to, 0, S.stack.length), 0, f); changed(true); }
@@ -230,7 +232,7 @@ async function doRender() {
   catch (e) { RS.busy = false; setBusy(false); toast('Browser blocked pixel access (file:// security). Run start.bat and open http://localhost:8737', 'err', 8000); return; }
   const t = curTime(), stack = resolveStack(t, null, w, hh);
   try {
-    const m = await PV.run({ buf: id.data.buffer, w, h: hh, stack, ctx: { S: w / docDims().w, t, frame: frameIdx(t), video: isTimed(), chan: 'pv', keepPrev: isTimed() && hasMosh(stack) } }, [id.data.buffer]);
+    const m = await PV.run({ buf: id.data.buffer, w, h: hh, stack, ctx: { S: w / docDims().w, t, prog: loopProg(t), frame: frameIdx(t), video: isTimed(), chan: 'pv', keepPrev: isTimed() && hasMosh(stack) } }, [id.data.buffer]);
     if (cvA.width === w && cvA.height === hh) actx.putImageData(new ImageData(new Uint8ClampedArray(m.buf), w, hh), 0, 0);
     RS.ms = m.ms;
   } catch (e) { console.error(e); toast('Render failed: ' + e.message, 'err'); }
@@ -386,7 +388,7 @@ function savePresets() { LS.set('shd.presets', S.presets); }
 function savePalettes() { LS.set('shd.palettes', S.palettes); }
 function stackToPreset(stack) { return stack.map(f => ({ id: f.id, mix: f.mix, on: f.on, p: clone(f.p) })); }
 function presetToStack(ps) { return ps.stack.map(e => { const f = mkFx(e.id, e.p, e.mix); if (f && e.on === false) f.on = false; return f; }).filter(Boolean); }
-function applyPreset(ps, append) { const st = presetToStack(ps); S.stack = append ? S.stack.concat(st) : st; S.sel = st[0] && st[0].uid; S.override = null; changed(true); toast(`Preset ${ps.name} ${append ? 'appended' : 'applied'}`); }
+function applyPreset(ps, append) { const st = presetToStack(ps); setTimeout(() => gifAutoMotion(st.map(f => f.id)), 0); S.stack = append ? S.stack.concat(st) : st; S.sel = st[0] && st[0].uid; S.override = null; changed(true); toast(`Preset ${ps.name} ${append ? 'appended' : 'applied'}`); }
 function saveStackAsPreset() {
   if (!S.stack.length) return toast('Stack is empty — add effects first', 'err');
   promptModal('SAVE PRESET', 'CUSTOM_' + String(S.presets.length + 1).padStart(2, '0'), name => {

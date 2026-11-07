@@ -50,7 +50,7 @@ async function renderStill(W, H2, enc, prog) {
   drawSource(cx, W, H2);
   const id = cx.getImageData(0, 0, W, H2);
   const fmt = Object.keys(MIME).find(k => MIME[k] === enc.type), custom = CUSTOM_ENC[fmt];
-  const m = await BG.run({ buf: id.data.buffer, w: W, h: H2, stack: resolveStack(curTime(), S.stack, W, H2), ctx: { S: W / docDims().w, t: curTime(), frame: frameIdx(curTime()), video: isTimed() }, encode: custom ? undefined : enc }, [id.data.buffer], prog);
+  const m = await BG.run({ buf: id.data.buffer, w: W, h: H2, stack: resolveStack(curTime(), S.stack, W, H2), ctx: { S: W / docDims().w, t: curTime(), prog: loopProg(curTime()), frame: frameIdx(curTime()), video: isTimed() }, encode: custom ? undefined : enc }, [id.data.buffer], prog);
   if (custom) {
     let px = new Uint8ClampedArray(m.buf); if (enc.flatten) px = flattenPx(px, enc.bg);
     return fmt === 'bmp' ? encBMP(px, W, H2) : fmt === 'tiff' ? encTIFF(px, W, H2, !enc.flatten) : encGIFStill(px, W, H2);
@@ -173,7 +173,7 @@ function openVideoExport() {
       if (v) await new Promise(res => { if (Math.abs(v.currentTime - t) < 1e-4 && v.readyState >= 2) return res(); const f = () => { v.removeEventListener('seeked', f); res(); }; v.addEventListener('seeked', f); v.currentTime = t; });
       if (v || i === 0) drawSource(wcx, x.w, x.h, v || S.media.el);
       const id = wcx.getImageData(0, 0, x.w, x.h), st = resolveStack(t, S.stack, x.w, x.h);
-      const m = await BG.run({ buf: id.data.buffer, w: x.w, h: x.h, stack: st, ctx: { S: x.w / d.w, t, frame: i, video: true, chan: 'ex', keepPrev: hasMosh(st) } }, [id.data.buffer]);
+      const m = await BG.run({ buf: id.data.buffer, w: x.w, h: x.h, stack: st, ctx: { S: x.w / d.w, t, prog: i / n, frame: i, video: true, chan: 'ex', keepPrev: hasMosh(st) } }, [id.data.buffer]);
       ocx.putImageData(new ImageData(new Uint8ClampedArray(m.buf), x.w, x.h), 0, 0);
       if (i % 3 === 0) pcx.drawImage(out, 0, 0);
       const el = (performance.now() - t0) / 1000, eta = el / (i + 1) * (n - i - 1);

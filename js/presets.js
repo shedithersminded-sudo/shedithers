@@ -44,6 +44,12 @@ const BUILTIN_PRESETS = [
     { id: 'texture', p: { type: 'rust', opacity: 80, density: 55, scale: 34, tmode: 'multiply', light: 90, relief: 160 } }, { id: 'texture', mix: 60, p: { type: 'scratch', opacity: 90, density: 60, tmode: 'screen', light: 0 } }] },
   { id: 'crtglass', name: 'CRT GLASS', desc: 'Shadow mask + static', stack: [
     { id: 'texture', p: { type: 'crt', opacity: 55, scale: 3, tmode: 'multiply', light: 0 } }, { id: 'texture', mix: 35, p: { type: 'static', opacity: 50, tmode: 'screen', light: 0 } }, { id: 'chroma', p: { str: 10 } }] },
+  { id: 'loveloop', name: 'LOVE LOOP', desc: 'GIF · falling hearts + heartbeat', stack: [
+    { id: 'dithercrawl', mix: 55, p: { pal: 'vapor', size: 2, move: 'diag' } }, { id: 'pulse', p: { amt: 5, curve: 'beat', flash: 20, cycles: 2 } }, { id: 'particles', p: { shape: 'heart', count: 30, size: 26 } }] },
+  { id: 'staticdream', name: 'STATIC DREAM', desc: 'GIF · boil, flicker, roll bars', stack: [
+    { id: 'grayscale' }, { id: 'boil', p: { amt: 2, steps: 6 } }, { id: 'flicker', p: { chance: 30 } }, { id: 'rollbars', p: { bars: 2, cycles: 1 } }, { id: 'noise', p: { amount: 14 } }] },
+  { id: 'sparklecore', name: 'SPARKLE CORE', desc: 'GIF · twinkles + rainbow drift', stack: [
+    { id: 'huecycle', mix: 45, p: { range: 120, sat: 130 } }, { id: 'sparkle', p: { count: 80, size: 16, where: 'bright' } }, { id: 'glow', mix: 60, p: { src: 'bright', laser: false, amb: 100, radius: 30 } }] },
   { id: 'unbecoming', name: 'UNBECOMING', desc: 'Ink-on-paper collage dither', stack: [
     { id: 'grayscale' }, { id: 'contrast', p: { amt: 35 } }, { id: 'bluenoise', p: { pal: 'news', size: 2 } }, { id: 'noise', p: { amount: 6 } }] },
 ];

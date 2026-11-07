@@ -27,7 +27,7 @@ function startArtFeed() {
 function stopArtFeed() { cancelAnimationFrame(FEED.raf); if (FEED.v) FEED.v.pause(); }
 
 /* empty-state buttons */
-$('#emImport').onclick = openFile; $('#emReel').onclick = () => loadArt('reel'); $('#emCollage').onclick = () => loadArt('collage');
+$('#emImport').onclick = openFile; $('#emExhibit').onclick = () => openExhibit(0); $('#railExhibit').onclick = () => openExhibit(0);
 
 /* boot sequence lives in intro.js */
 

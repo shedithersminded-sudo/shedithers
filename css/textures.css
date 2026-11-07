@@ -8,6 +8,8 @@
 .tex-sw.on{border-color:var(--acid);box-shadow:0 0 0 1px var(--acid),0 0 10px rgba(212,255,0,.35)}
 .tex-sw.on span{color:var(--acid)}
 .fx-cat.cat-texture h4{color:var(--xray,#5fe0c0)}
+.fx-cat.cat-gif h4{color:var(--pink)}
+.fx-cat.cat-gif h4::after{content:' ● LOOPS';font:600 8px var(--mono);letter-spacing:.14em;color:var(--acid);animation:blink 1.2s steps(2) infinite}
 .skin-chrome .tex-sw{border:2px solid #4a5157;box-shadow:inset 0 0 0 1px #0b0d0e}
 .skin-chrome .tex-sw.on{border-color:var(--acid)}
 /* export: tabs + format grid */

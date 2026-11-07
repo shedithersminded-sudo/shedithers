@@ -6,9 +6,10 @@
 <title>SHEDITHERS — Dither Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Bebas+Neue&family=UnifrakturMaguntia&family=Rubik+Glitch&family=Permanent+Marker&family=Special+Elite&family=VT323&family=Monoton&family=Creepster&family=Pacifico&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=170">
-<link rel="stylesheet" href="css/skin-chrome.css?v=170">
-<link rel="stylesheet" href="css/textures.css?v=170">
+<link rel="stylesheet" href="css/app.css?v=180">
+<link rel="stylesheet" href="css/skin-chrome.css?v=180">
+<link rel="stylesheet" href="css/textures.css?v=180">
+<link rel="stylesheet" href="css/exhibit.css?v=180">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#070807">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
@@ -76,6 +77,7 @@
       <button data-tab="presets" data-tip="Presets"><svg><use href="#i-preset"/></svg><i>04</i></button>
       <button data-tab="projects" data-tip="Recent projects"><svg><use href="#i-folder"/></svg><i>05</i></button>
       <button data-tab="history" data-tip="Export history"><svg><use href="#i-clock"/></svg><i>06</i></button>
+      <button class="rail-link" id="railExhibit" data-tip="View the SHEDITHERS art exhibit"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 16l5-5 4 4 3-3 6 6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><i>MY ART</i></button>
       <button class="rail-link hidden" id="railTiktok" data-tip="SHEDITHERS on TikTok"><svg viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 11-3-3.46V8a6.5 6.5 0 106 6.44V8.7a7 7 0 004 1.3V7a4 4 0 01-4-4z" fill="currentColor"/></svg><i>TIKTOK</i></button>
       <button class="rail-link hidden" id="railYoutube" data-tip="SHEDITHERS on YouTube"><svg viewBox="0 0 24 24"><path d="M21.6 7.2a2.6 2.6 0 00-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4a2.6 2.6 0 00-1.8 1.8C2 8.8 2 12 2 12s0 3.2.4 4.8a2.6 2.6 0 001.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.6 2.6 0 001.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3z" fill="currentColor"/></svg><i>YOUTUBE</i></button>
       <button class="rail-link" id="railSuggest" data-tip="Send a suggestion to the artist"><svg viewBox="0 0 24 24"><path d="M4 4h16v12H9l-5 4z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 12h5" stroke="currentColor" stroke-width="1.6"/></svg><i>IDEAS</i></button>
@@ -135,8 +137,7 @@
             <p>PNG · JPG · WEBP · TIFF · MP4 · WEBM · MOV</p>
             <div class="row">
               <button class="btn primary" id="emImport"><svg><use href="#i-import"/></svg>IMPORT MEDIA</button>
-              <button class="btn" id="emReel">LOAD ARTIST REEL</button>
-              <button class="btn" id="emCollage">LOAD COLLAGE</button>
+              <button class="btn pink" id="emExhibit">◉ VIEW MY ART</button>
             </div>
             <div class="row" style="margin-top:8px">
               <button class="btn pink hidden" id="emTip">♥ BUY ME A DRINK</button>
@@ -268,19 +269,20 @@
   </defs>
 </svg>
 
-<script src="js/engine.js?v=170"></script>
-<script src="js/presets.js?v=170"></script>
-<script src="js/util.js?v=170"></script>
-<script src="js/app.js?v=170"></script>
-<script src="js/panels.js?v=170"></script>
-<script src="js/timeline.js?v=170"></script>
-<script src="js/gif.js?v=170"></script>
-<script src="js/brush.js?v=170"></script>
-<script src="js/tools.js?v=170"></script>
-<script src="js/export.js?v=170"></script>
-<script src="js/config.js?v=170"></script>
-<script src="js/support.js?v=170"></script>
-<script src="js/intro.js?v=170"></script>
-<script src="js/boot.js?v=170"></script>
+<script src="js/engine.js?v=180"></script>
+<script src="js/presets.js?v=180"></script>
+<script src="js/util.js?v=180"></script>
+<script src="js/app.js?v=180"></script>
+<script src="js/panels.js?v=180"></script>
+<script src="js/timeline.js?v=180"></script>
+<script src="js/gif.js?v=180"></script>
+<script src="js/brush.js?v=180"></script>
+<script src="js/tools.js?v=180"></script>
+<script src="js/export.js?v=180"></script>
+<script src="js/config.js?v=180"></script>
+<script src="js/support.js?v=180"></script>
+<script src="js/intro.js?v=180"></script>
+<script src="js/exhibit.js?v=180"></script>
+<script src="js/boot.js?v=180"></script>
 </body>
 </html>

@@ -13,6 +13,7 @@ function renderLeft() {
   const titles = { import: 'IMPORT MEDIA', library: 'IMAGE LIBRARY', effects: 'EFFECTS LIBRARY', presets: 'PRESETS', projects: 'RECENT PROJECTS', history: 'EXPORT HISTORY' };
   $('#leftTitle').textContent = titles[leftTab]; $('#leftMeta').textContent = '';
   ({ import: leftImport, library: leftLibrary, effects: leftEffects, presets: leftPresets, projects: leftProjects, history: leftHistory })[leftTab](body);
+  if (typeof stagger === 'function') setTimeout(() => stagger(body), 0);
 }
 function sec(title, ...kids) { return h('div', { class: 'sec' }, h('div', { class: 'sec-t' }, ...[].concat(title)), ...kids); }
 
@@ -26,13 +27,9 @@ async function loadArt(kind) {
 function leftImport(body) {
   const dz = h('div', { class: 'dropzone', onclick: openFile, html: '<svg><use href="#i-import"/></svg><b>DROP FILES HERE</b><span>OR CLICK TO BROWSE · CTRL+V TO PASTE</span>' });
   ['dragover', 'dragenter'].forEach(ev => dz.addEventListener(ev, () => dz.classList.add('over'))); ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, () => dz.classList.remove('over')));
-  const vid = h('video', { src: ART.reel, muted: true, loop: true, autoplay: true, playsInline: true }); vid.muted = true;
   body.append(
     sec('SOURCE', dz),
-    sec(['ARTIST ARCHIVE', h('span', { style: { color: 'var(--acid)' } }, '♥')],
-      h('div', { class: 'art-card', onclick: () => loadArt('reel') }, vid, h('div', { class: 'cap' }, h('span', null, 'REEL // 01M.MP4'), h('span', null, 'LOAD ▸'))),
-      h('div', { class: 'art-card', onclick: () => loadArt('collage') }, h('img', { src: ART.collage, alt: 'Shedithers collage' }), h('div', { class: 'cap' }, h('span', null, 'COLLAGE // NO IDENTITY'), h('span', null, 'LOAD ▸'))),
-      h('div', { class: 'art-grid' }, ART_GALLERY.map((g, i) => h('button', { class: 'art-tile', 'data-tip': `Load “${g.name}” to edit`, style: '--d:' + (i * 0.4) + 's', onclick: () => loadArtURL(g.src, g.name.replace(/[^A-Z0-9]+/gi, '_') + '.jpg') }, h('img', { src: g.src, alt: g.name, loading: 'lazy' }), h('span', null, g.name))))),
+    archiveSection(),
     sec('PROJECT FILES', h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', onclick: () => pickJSON() }, 'OPEN .JSON'), h('button', { class: 'btn sm', onclick: exportProjectFile, disabled: !S.media }, 'SAVE AS FILE'))),
     sec('FORMATS', h('div', { class: 'note', html: '<b>IMAGE</b> PNG · JPG · WEBP · TIFF (8-bit, none/LZW/PackBits)<br><b>VIDEO</b> MP4 · WEBM · MOV (codec support depends on browser)<br><b>EXPORT</b> PNG · JPG · WEBP · MP4 (H.264) · WEBM (VP9/VP8)<br><br>Drag files anywhere in the window.' })),
   );
