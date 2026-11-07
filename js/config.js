@@ -3,7 +3,7 @@
 const SHD_CONFIG = {
   artist: 'SHEDITHERS',
   // Your Cash App $cashtag, e.g. '$shedithers'
-  cashapp: '',
+  cashapp: '$olace6',
   // Your Redbubble username (from redbubble.com/people/USERNAME), e.g. 'shedithers'
   redbubble: '',
   tipLine: 'SHEDITHERS is free. If it made something you love, buy the artist a drink ♥',
