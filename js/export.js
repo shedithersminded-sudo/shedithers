@@ -1,8 +1,40 @@
 /* SHEDITHERS — export: image (worker-encoded), video (WebCodecs + muxer, MediaRecorder fallback), batch. */
 const EX = { img: { fmt: 'png', q: 92, res: 'doc', scale: 100, cw: 0, ch: 0, alpha: true, bg: '#000000' }, vid: { fmt: 'auto', scale: 100, fps: 0, mbps: 8 } };
-const MIME = { png: 'image/png', jpeg: 'image/jpeg', webp: 'image/webp' };
-const EXT = { png: 'png', jpeg: 'jpg', webp: 'webp' };
+const MIME = { png: 'image/png', jpeg: 'image/jpeg', webp: 'image/webp', avif: 'image/avif', gif: 'image/gif', bmp: 'image/bmp', tiff: 'image/tiff' };
+const EXT = { png: 'png', jpeg: 'jpg', webp: 'webp', avif: 'avif', gif: 'gif', bmp: 'bmp', tiff: 'tif' };
+const PIC_FORMATS = [['png', 'PNG', 'Lossless · transparency'], ['jpeg', 'JPG', 'Small · photos'], ['webp', 'WEBP', 'Small · transparency'], ['avif', 'AVIF', 'Smallest · modern'], ['gif', 'GIF', 'Still GIF · 256 colors'], ['bmp', 'BMP', 'Uncompressed bitmap'], ['tiff', 'TIFF', 'Print · lossless']];
+const CUSTOM_ENC = { gif: 1, bmp: 1, tiff: 1 };
+const NO_ALPHA = { jpeg: 1, gif: 1, bmp: 1 };
+let AVIF_OK = null;
+async function avifSupported() { if (AVIF_OK !== null) return AVIF_OK; try { const c = h_canvas(2, 2); const b = await new Promise(r => c.toBlob(r, 'image/avif', 0.8)); AVIF_OK = !!b && b.type === 'image/avif'; } catch (_) { AVIF_OK = false; } return AVIF_OK; }
 function openExport() { if (!S.media) return toast('Import media first', 'err'); return isTimed() ? openVideoExport() : openImageExport(); }
+/* PICTURE / GIF / VIDEO tab bar shared by both export windows */
+function exportTabs(active, close) {
+  const go = tab => { if (tab === active) return; close();
+    if (tab === 'picture') return openImageExport();
+    if (!isVideo() && !S.motion) { setMotion(true); if (!S.snd && tab === 'gif' && S.still.dur === 8) setStillDur(4); }
+    EX.vid.fmt = tab === 'gif' ? 'gif' : (EX.vid.fmt === 'gif' || EX.vid.fmt === 'pngseq' ? 'auto' : EX.vid.fmt); openVideoExport(); };
+  return h('div', { class: 'ex-tabs' }, [['picture', '▣ PICTURE', isVideo() ? 'current frame' : 'PNG · JPG · WEBP · AVIF · GIF · BMP · TIFF'], ['gif', '◎ GIF', 'animated loop'], ['video', '▶ VIDEO', 'MP4 · WEBM · frames']].map(([k, l, sub]) => h('button', { class: k === active ? 'on' : '', onclick: () => go(k) }, h('b', null, l), h('small', null, sub))));
+}
+/* ---- extra picture encoders ---- */
+function flattenPx(px, bg) { const c = E.hex(bg), o = new Uint8ClampedArray(px.length); for (let k = 0; k < px.length; k += 4) { const a = px[k + 3] / 255; o[k] = px[k] * a + c[0] * (1 - a); o[k + 1] = px[k + 1] * a + c[1] * (1 - a); o[k + 2] = px[k + 2] * a + c[2] * (1 - a); o[k + 3] = 255; } return o; }
+function encBMP(px, W, H2) {
+  const row = Math.ceil(W * 3 / 4) * 4, size = 54 + row * H2, b = new Uint8Array(size), dv = new DataView(b.buffer);
+  b[0] = 66; b[1] = 77; dv.setUint32(2, size, true); dv.setUint32(10, 54, true); dv.setUint32(14, 40, true); dv.setInt32(18, W, true); dv.setInt32(22, H2, true); dv.setUint16(26, 1, true); dv.setUint16(28, 24, true); dv.setUint32(34, row * H2, true); dv.setInt32(38, 2835, true); dv.setInt32(42, 2835, true);
+  for (let y = 0; y < H2; y++) { let o = 54 + (H2 - 1 - y) * row; for (let x = 0; x < W; x++, o += 3) { const k = (y * W + x) * 4; b[o] = px[k + 2]; b[o + 1] = px[k + 1]; b[o + 2] = px[k]; } }
+  return new Blob([b], { type: 'image/bmp' });
+}
+function encTIFF(px, W, H2, alpha) {
+  const spp = alpha ? 4 : 3, tags = alpha ? 13 : 12, ifd = 8, ifdLen = 2 + tags * 12 + 4, bpsOff = ifd + ifdLen, resOff = bpsOff + spp * 2, dataOff = resOff + 16, dataLen = W * H2 * spp;
+  const b = new Uint8Array(dataOff + dataLen), dv = new DataView(b.buffer); b[0] = 0x49; b[1] = 0x49; dv.setUint16(2, 42, true); dv.setUint32(4, ifd, true); dv.setUint16(ifd, tags, true);
+  let e = ifd + 2; const tag = (t, type, n, v) => { dv.setUint16(e, t, true); dv.setUint16(e + 2, type, true); dv.setUint32(e + 4, n, true); if (type === 3 && n === 1) dv.setUint16(e + 8, v, true); else dv.setUint32(e + 8, v, true); e += 12; };
+  tag(256, 4, 1, W); tag(257, 4, 1, H2); tag(258, 3, spp, bpsOff); tag(259, 3, 1, 1); tag(262, 3, 1, 2); tag(273, 4, 1, dataOff); tag(277, 3, 1, spp); tag(278, 4, 1, H2); tag(279, 4, 1, dataLen); tag(282, 5, 1, resOff); tag(283, 5, 1, resOff + 8); tag(296, 3, 1, 2); if (alpha) tag(338, 3, 1, 2);
+  dv.setUint32(e, 0, true); for (let i = 0; i < spp; i++) dv.setUint16(bpsOff + i * 2, 8, true);
+  dv.setUint32(resOff, 300, true); dv.setUint32(resOff + 4, 1, true); dv.setUint32(resOff + 8, 300, true); dv.setUint32(resOff + 12, 1, true);
+  if (alpha) b.set(px, dataOff); else { let o = dataOff; for (let k = 0; k < px.length; k += 4) { b[o++] = px[k]; b[o++] = px[k + 1]; b[o++] = px[k + 2]; } }
+  return new Blob([b], { type: 'image/tiff' });
+}
+async function encGIFStill(px, W, H2) { const g = new GifWorker(); try { const fr = await g.frame(px, W, H2, 256, 0); return new Blob([gifHeader(W, H2), fr, Uint8Array.of(0x3B)], { type: 'image/gif' }); } finally { g.close(); } }
 async function shareBlob(blob, file) {
   try { const f = new File([blob], file, { type: blob.type }); if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], title: 'Made with SHEDITHERS', text: 'Made with SHEDITHERS ♥' }); return; } } catch (e) { if (e.name === 'AbortError') return; }
   download(blob, file); toast('Direct sharing is not available on this device — the file was downloaded instead. Upload it to TikTok / Instagram from your files.', 'info', 6000);
@@ -17,8 +49,15 @@ async function renderStill(W, H2, enc, prog) {
   const c = h_canvas(W, H2), cx = c.getContext('2d', { willReadFrequently: true });
   drawSource(cx, W, H2);
   const id = cx.getImageData(0, 0, W, H2);
-  const m = await BG.run({ buf: id.data.buffer, w: W, h: H2, stack: resolveStack(curTime(), S.stack, W, H2), ctx: { S: W / docDims().w, t: curTime(), frame: frameIdx(curTime()), video: isTimed() }, encode: enc }, [id.data.buffer], prog);
-  return resultToBlob(m, W, H2, enc);
+  const fmt = Object.keys(MIME).find(k => MIME[k] === enc.type), custom = CUSTOM_ENC[fmt];
+  const m = await BG.run({ buf: id.data.buffer, w: W, h: H2, stack: resolveStack(curTime(), S.stack, W, H2), ctx: { S: W / docDims().w, t: curTime(), frame: frameIdx(curTime()), video: isTimed() }, encode: custom ? undefined : enc }, [id.data.buffer], prog);
+  if (custom) {
+    let px = new Uint8ClampedArray(m.buf); if (enc.flatten) px = flattenPx(px, enc.bg);
+    return fmt === 'bmp' ? encBMP(px, W, H2) : fmt === 'tiff' ? encTIFF(px, W, H2, !enc.flatten) : encGIFStill(px, W, H2);
+  }
+  const blob = await resultToBlob(m, W, H2, enc);
+  if (blob && enc.type === 'image/avif' && blob.type !== 'image/avif') throw new Error('This browser cannot encode AVIF — choose WEBP or PNG');
+  return blob;
 }
 function exportDims(o) {
   const d = docDims();
@@ -43,7 +82,9 @@ function openImageExport() {
   const alphaRow = h('div', { class: 'ctl-bool', onclick: () => { o.alpha = !o.alpha; alphaSw.classList.toggle('on', o.alpha); rerender(); } }, h('span', null, 'Transparent background'), alphaSw);
   const bgIn = h('input', { type: 'color', value: o.bg, onchange: e => { o.bg = e.target.value; rerender(); } });
   const bgRow = h('div', { class: 'ctl' }, h('div', { class: 'ctl-h' }, h('label', null, 'Background fill (JPG / alpha off)')), h('div', { class: 'ctl-color' }, bgIn));
-  const vis = () => { customRow.style.display = o.res === 'custom' ? '' : 'none'; scaleRow.style.display = o.res === 'scale' ? '' : 'none'; qRow.style.display = o.fmt === 'png' ? 'none' : ''; alphaRow.style.display = o.fmt === 'jpeg' ? 'none' : ''; prevBox.classList.toggle('checker', o.fmt !== 'jpeg' && o.alpha); };
+  const fmtGrid = h('div', { class: 'fmt-grid' }, PIC_FORMATS.map(([v, l, sub]) => h('button', { 'data-v': v, class: v === o.fmt ? 'on' : '', onclick: () => { o.fmt = v; rerender(); } }, h('b', null, l), h('small', null, sub))));
+  avifSupported().then(ok => { if (!ok) { const b = $('[data-v="avif"]', fmtGrid); if (b) { b.disabled = true; b.title = 'Not supported in this browser'; $('small', b).textContent = 'not in this browser'; } if (o.fmt === 'avif') { o.fmt = 'webp'; rerender(); } } });
+  const vis = () => { customRow.style.display = o.res === 'custom' ? '' : 'none'; scaleRow.style.display = o.res === 'scale' ? '' : 'none'; qRow.style.display = ['jpeg', 'webp', 'avif'].includes(o.fmt) ? '' : 'none'; alphaRow.style.display = NO_ALPHA[o.fmt] ? 'none' : ''; prevBox.classList.toggle('checker', !NO_ALPHA[o.fmt] && o.alpha); $$('.fmt-grid button', fmtGrid).forEach(b => b.classList.toggle('on', b.dataset.v === o.fmt)); };
   const updDims = () => { const x = exportDims(o); $('#exDims').textContent = `${x.w}×${x.h}`; $('#exMp').textContent = (x.w * x.h / 1e6).toFixed(2) + ' MP'; };
   const rerender = debounce(async () => {
     vis(); updDims(); const my = ++token, x = exportDims(o);
@@ -51,7 +92,7 @@ function openImageExport() {
     status.textContent = 'RENDERING FULL RESOLUTION…'; prog.querySelector('i').style.width = '0%'; $('#exGo').disabled = true;
     const t0 = performance.now();
     try {
-      const enc = { type: MIME[o.fmt], quality: o.q / 100, flatten: o.fmt === 'jpeg' || !o.alpha, bg: o.bg };
+      const enc = { type: MIME[o.fmt], quality: o.q / 100, flatten: !!NO_ALPHA[o.fmt] || !o.alpha, bg: o.bg };
       const b = await renderStill(x.w, x.h, enc, (i, n) => { if (my === token) prog.querySelector('i').style.width = (i / n * 100) + '%'; });
       if (my !== token) return; blob = b; if (url) URL.revokeObjectURL(url); url = URL.createObjectURL(b); img.src = url;
       prog.querySelector('i').style.width = '100%'; $('#exSize').textContent = fmtBytes(b.size); $('#exTime').textContent = Math.round(performance.now() - t0) + ' MS';
@@ -62,17 +103,18 @@ function openImageExport() {
     if (!blob) return; const x = exportDims(o), file = `${name.value.trim() || 'shedithers'}.${EXT[o.fmt]}`;
     download(blob, file); logExport({ file, fmt: o.fmt.toUpperCase(), w: x.w, h: x.h, size: blob.size }); toast(`Exported ${file} · ${fmtBytes(blob.size)}`); md.close();
   };
-  const body = h('div', { class: 'ex-grid' },
+  const body = h('div', { class: 'ex-wrap' }), grid1 = h('div', { class: 'ex-grid' },
     h('div', null, prevBox, h('div', { class: 'ex-stats', style: { gridTemplateColumns: 'repeat(4,1fr)' } }, stat('OUTPUT', 'exDims'), stat('PIXELS', 'exMp'), stat('FILE SIZE', 'exSize'), stat('RENDER', 'exTime')), prog, status),
     h('div', null,
-      h('div', { class: 'field' }, h('label', null, 'Format'), seg([['png', 'PNG'], ['jpeg', 'JPG'], ['webp', 'WEBP']], o.fmt, v => { o.fmt = v; rerender(); })),
+      h('div', { class: 'field' }, h('label', null, 'Picture format'), fmtGrid),
       h('div', { class: 'field' }, h('label', null, 'Resolution'), seg([['doc', 'ORIGINAL'], ['scale', 'SCALE'], ['custom', 'CUSTOM']], o.res, v => { o.res = v; rerender(); }), scaleRow, customRow,
         h('div', { class: 'btnrow', style: { marginTop: '6px' } }, [[50, '½×'], [100, '1×'], [200, '2×'], [400, '4×']].map(([s, l]) => h('button', { class: 'tbtn', onclick: () => { o.res = 'scale'; o.scale = s; md.close(); openImageExport(); } }, l))),
         h('label', { style: { marginTop: '10px' } }, 'Print-ready for Redbubble'),
         h('div', { class: 'print-presets' }, [['STICKER', 2800, 2800, 'max 2800 px'], ['T-SHIRT', 4500, 5400, '4500×5400'], ['POSTER / PRINT', 7632, 10800, '7632×10800']].map(([l, W, H, sub]) => h('button', { 'data-tip': `Scale up to fit ${W}×${H} as transparent PNG`, onclick: () => { const k = Math.min(W / d.w, H / d.h); o.res = 'custom'; o.cw = Math.round(d.w * k); o.ch = Math.round(d.h * k); o.fmt = 'png'; o.alpha = true; name.value = `${(S.name || 'shedithers').toLowerCase()}_${l.split(' ')[0].toLowerCase()}`; EX.img.lastName = name.value; md.close(); openImageExport(); } }, l, h('small', null, sub))))),
       h('div', { class: 'field' }, qRow), h('div', { class: 'field' }, alphaRow, bgRow),
-      h('div', { class: 'field' }, h('label', null, 'File name'), name)));
-  const md = openModal({ title: 'EXPORT IMAGE', sub: `${S.stack.filter(f => f.on).length} FX · ${d.w}×${d.h} DOC`, body, foot: [h('button', { class: 'btn pink', 'data-tip': 'Animate this picture, add sound, export MP4 / GIF', onclick: () => { md.close(); setMotion(true); openVideoExport(); } }, '▶ ANIMATE · GIF / MP4'), h('span', { class: 'note' }, 'Processed in a background worker.'), h('button', { class: 'btn', onclick: () => md.close() }, 'CANCEL'), h('button', { class: 'btn', onclick: () => { if (blob) shareBlob(blob, `${name.value.trim() || 'shedithers'}.${EXT[o.fmt]}`); } }, '♥ SHARE'), h('button', { class: 'btn primary', id: 'exGo', disabled: true, onclick: go, html: '<svg><use href="#i-export"/></svg>EXPORT' })], onClose: () => { token++; if (url) setTimeout(() => URL.revokeObjectURL(url), 5000); } });
+      h('div', { class: 'field' }, h('label', null, 'File name'), name))); body.append(grid1);
+  body.prepend(exportTabs('picture', () => md.close()));
+  const md = openModal({ title: 'EXPORT', sub: `${isVideo() ? 'PICTURE OF CURRENT FRAME · ' : ''}${S.stack.filter(f => f.on).length} FX · ${d.w}×${d.h} DOC`, body, foot: [h('span', { class: 'note' }, 'Processed in a background worker.'), h('button', { class: 'btn', onclick: () => md.close() }, 'CANCEL'), h('button', { class: 'btn', onclick: () => { if (blob) shareBlob(blob, `${name.value.trim() || 'shedithers'}.${EXT[o.fmt]}`); } }, '♥ SHARE'), h('button', { class: 'btn primary', id: 'exGo', disabled: true, onclick: go, html: '<svg><use href="#i-export"/></svg>EXPORT' })], onClose: () => { token++; if (url) setTimeout(() => URL.revokeObjectURL(url), 5000); } });
   rerender();
 }
 
@@ -93,6 +135,7 @@ async function detectVideoFormats(w, hh, fps, br) {
     if (await pickCodec('vp8', w, hh, fps, br)) out.push(['vp8', 'WEBM · VP8 (WEBCODECS)']);
   }
   out.push(['gif', 'GIF · ANIMATED LOOP (NO AUDIO)']);
+  out.push(['pngseq', 'PNG FRAME SEQUENCE · ZIP']);
   const rm = recMime(); if (rm) out.push(['rec', `${rm.includes('mp4') ? 'MP4' : 'WEBM'} · MEDIARECORDER (FALLBACK, NO AUDIO)`]);
   return out;
 }
@@ -139,6 +182,12 @@ function openVideoExport() {
     try {
       let blob, ext;
       if (o.fmt === 'rec') { ({ blob, ext } = await encodeRecorder(out, renderFrame, n, fps, bitrate)); }
+      else if (o.fmt === 'pngseq') {
+        if (!window.JSZip) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
+        const zip = new JSZip(), pad = String(n).length;
+        for (let i = 0; i < n; i++) { if (running.cancel) throw new Error('CANCELLED'); await renderFrame(i); const fb = await new Promise(r => out.toBlob(r, 'image/png')); zip.file(`frame_${String(i + 1).padStart(Math.max(4, pad), '0')}.png`, fb); }
+        status.textContent = 'ZIPPING FRAMES…'; blob = await zip.generateAsync({ type: 'blob' }); ext = 'zip';
+      }
       else if (o.fmt === 'gif') {
         const gw = new GifWorker(), parts = [gifHeader(x.w, x.h)], delay = Math.max(2, Math.round(100 / fps));
         try { for (let i = 0; i < n; i++) { if (running.cancel) throw new Error('CANCELLED'); await renderFrame(i); parts.push(await gw.frame(ocx.getImageData(0, 0, x.w, x.h).data, x.w, x.h, o.gifColors, delay)); } } finally { gw.close(); }
@@ -172,14 +221,16 @@ function openVideoExport() {
     } catch (e) { status.textContent = e.message === 'CANCELLED' ? 'CANCELLED' : 'ERROR: ' + e.message; if (e.message !== 'CANCELLED') toast('Video export failed: ' + e.message, 'err', 7000); }
     if (v) { v.removeAttribute('src'); v.load(); } running = null; goBtn.disabled = false; fmtSel.disabled = false;
   }
-  const body = h('div', { class: 'ex-grid' },
+  const body = h('div', { class: 'ex-wrap' }), grid2 = h('div', { class: 'ex-grid' },
     h('div', null, prevBox, h('div', { class: 'ex-stats', style: { gridTemplateColumns: 'repeat(4,1fr)' } }, stat('OUTPUT', 'vxDims'), stat('DURATION', 'vxDur'), stat('FRAMES', 'vxFr'), stat('EST. SIZE', 'vxSize')), h('div', { class: 'ex-stats', style: { gridTemplateColumns: '1fr', marginTop: '-1px' } }, stat('AUDIO TRACK', 'vxAudio')), prog, status),
     h('div', null,
       h('div', { class: 'field' }, h('label', null, 'Format / encoder'), fmtSel), gifField,
       h('div', { class: 'field' }, scaleRow), h('div', { class: 'field' }, h('label', null, 'Frame rate'), fpsSel), h('div', { class: 'field' }, brRow),
       h('div', { class: 'field' }, h('label', null, 'File name'), name),
       h('p', { class: 'note' }, `RANGE ${fmtTime(S.video.in, o.fps)} → ${fmtTime(S.video.out, o.fps)} · SPEED ${S.video.speed}× · Every frame is processed through all layers at output resolution, then encoded. MP4/WEBM include your soundtrack${isVideo() ? ' and/or the original audio' : ''}. Use 9:16 VERTICAL for TikTok / Reels.`)));
-  const md = openModal({ title: isVideo() ? 'EXPORT VIDEO' : 'EXPORT MOTION CLIP', sub: 'MP4 · WEBM · GIF', body, foot: [cancelBtn, shareBtn, goBtn], onClose: () => { if (running) running.cancel = true; } });
+  body.append(grid2); body.prepend(exportTabs(o.fmt === 'gif' ? 'gif' : 'video', () => md.close()));
+  if (!isVideo()) body.querySelector('.ex-grid > div:last-child').prepend(h('div', { class: 'field' }, h('label', null, 'Clip length (seconds)'), h('input', { class: 'inp', type: 'number', min: 0.5, max: 600, step: 0.5, value: S.still.dur, onchange: e => { setStillDur(e.target.value); upd(); } })));
+  const md = openModal({ title: 'EXPORT', sub: isVideo() ? 'VIDEO · GIF · FRAMES' : 'ANIMATED STILL · GIF · VIDEO', body, foot: [cancelBtn, shareBtn, goBtn], onClose: () => { if (running) running.cancel = true; } });
   upd();
   (async () => {
     const x = dims(); const fm = await detectVideoFormats(x.w, x.h, o.fps, o.mbps * 1e6);
