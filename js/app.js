@@ -9,7 +9,7 @@ const S = {
   palettes: LS.get('shd.palettes', []), presets: LS.get('shd.presets', []), exports: LS.get('shd.exports', []),
   clip: null, motion: false, still: { t: 0, dur: 8, playing: false, t0: 0, wall: 0 }, snd: null, origAudio: true, monitor: true,
 };
-const SETTINGS = Object.assign({ pmax: 1280, scan: true, grain: true, motion: true, autosave: true, boot: true }, LS.get('shd.settings', {}));
+const SETTINGS = Object.assign({ skin: 'chrome', pmax: 1280, scan: true, grain: true, motion: true, autosave: true, boot: true }, LS.get('shd.settings', {}));
 const cvB = $('#cvBefore'), cvA = $('#cvAfter'), bctx = cvB.getContext('2d', { willReadFrequently: true }), actx = cvA.getContext('2d', { willReadFrequently: true });
 const viewport = $('#viewport'), stage = $('#stage');
 const isVideo = () => !!(S.media && S.media.type === 'video');

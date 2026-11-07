@@ -363,11 +363,11 @@ function openPalettes(fx, key) {
 }
 
 /* ---------- settings ---------- */
-function applySettings() { document.body.classList.toggle('no-scan', !SETTINGS.scan); document.body.classList.toggle('no-grain', !SETTINGS.grain); document.body.classList.toggle('no-motion', !SETTINGS.motion); LS.set('shd.settings', SETTINGS); }
+function applySettings() { document.body.classList.toggle('skin-chrome', SETTINGS.skin !== 'marathon'); document.body.classList.toggle('no-scan', !SETTINGS.scan); document.body.classList.toggle('no-grain', !SETTINGS.grain); document.body.classList.toggle('no-motion', !SETTINGS.motion); LS.set('shd.settings', SETTINGS); }
 function openSettings() {
   const tog = (k, label) => { const sw = h('div', { class: 'sw' + (SETTINGS[k] ? ' on' : '') }); return h('div', { class: 'ctl-bool', style: { padding: '6px 0', borderBottom: '1px dashed var(--ln)' }, onclick: () => { SETTINGS[k] = !SETTINGS[k]; sw.classList.toggle('on', SETTINGS[k]); applySettings(); } }, h('span', null, label), sw); };
   const body = h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' } },
-    h('div', null, h('div', { class: 'sec-t' }, 'INTERFACE'), tog('scan', 'Scanline overlay'), tog('grain', 'Film grain overlay'), tog('motion', 'Interface animations'), tog('boot', 'Boot sequence on launch'),
+    h('div', null, h('div', { class: 'sec-t' }, 'SKIN'), h('div', { class: 'seg', style: { width: '100%', marginBottom: '14px' } }, [['chrome', 'Y2K CHROME'], ['marathon', 'MARATHON FLAT']].map(([v, l]) => h('button', { class: (SETTINGS.skin !== 'marathon') === (v === 'chrome') ? 'on' : '', style: { flex: 1 }, onclick: e => { SETTINGS.skin = v; applySettings(); $$('button', e.currentTarget.parentNode).forEach(b => b.classList.toggle('on', b === e.currentTarget)); } }, l))), h('div', { class: 'sec-t' }, 'INTERFACE'), tog('scan', 'Scanline overlay'), tog('grain', 'Film grain overlay'), tog('motion', 'Interface animations'), tog('boot', 'Boot sequence on launch'),
       h('div', { class: 'sec-t', style: { marginTop: '16px' } }, 'PROJECT'), tog('autosave', 'Autosave to browser storage')),
     h('div', null, h('div', { class: 'sec-t' }, 'PERFORMANCE'),
       h('div', { class: 'field' }, h('label', null, 'Preview resolution cap'), h('select', { onchange: e => { SETTINGS.pmax = +e.target.value; applySettings(); S.fitPending = true; requestRender(); } }, [[720, '720 PX'], [1280, '1280 PX'], [1920, '1920 PX'], [2560, '2560 PX'], [0, 'FULL']].map(([v, l]) => h('option', { value: v, selected: SETTINGS.pmax === v }, l)))),
