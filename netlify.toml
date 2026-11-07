@@ -1,0 +1,14 @@
+# Netlify: static site, no build step. Publish the repo root.
+[build]
+  publish = "."
+  command = ""
+
+# Always re-check the service worker and HTML so updates appear right away.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
