@@ -1,0 +1,89 @@
+/* SHEDITHERS — Dither Lab bars in stained glass: the artist's art glows through like light behind a window, lead lines
+ * split it into panes, and every control is a polished jewel-toned glass pane. Loaded last; only touches the bars. */
+:root{
+  --lead:#07060a;
+  --ruby:#b3122a;--sapph:#1d4fb8;--emer:#0f7a4a;--amber:#d98a0b;--ameth:#7a2fb0;--rose:#b8326e;
+  --glass-hi:linear-gradient(165deg,rgba(255,255,255,.38) 0,rgba(255,255,255,.08) 38%,rgba(255,255,255,0) 52%,rgba(0,0,0,.28) 100%);
+  --lead-lines:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='70' viewBox='0 0 420 70'%3E%3Cg fill='none' stroke='%2307060a' stroke-width='3.2' stroke-linejoin='round'%3E%3Cpath d='M0 22 L48 8 L96 30 L150 4 L205 26 L262 6 L318 34 L372 10 L420 22'/%3E%3Cpath d='M48 8 L60 70 M96 30 L84 70 M150 4 L170 70 M205 26 L238 70 M262 6 L250 70 M318 34 L330 70 M372 10 L392 70'/%3E%3Cpath d='M0 50 L60 44 L84 58 L170 46 L238 60 L330 48 L392 56 L420 50'/%3E%3Cpath d='M96 30 L118 0 M205 26 L228 0 M318 34 L300 0'/%3E%3C/g%3E%3C/svg%3E");
+}
+/* ---- the bars: lead + glowing art behind leaded panes ---- */
+:root body #top,:root body #viewTools,:root body .ph,:root body .rtabs,:root body .stack-head,:root body #brushBar{position:relative;isolation:isolate;background:var(--lead)!important;color:#f4f1ff!important;border:0!important;clip-path:none!important;box-shadow:inset 0 -3px 0 var(--lead),0 6px 18px rgba(0,0,0,.55)!important;overflow:hidden}
+:root body #top::before,:root body #viewTools::before,:root body .ph::before,:root body .rtabs::before,:root body .stack-head::before,:root body #brushBar::before{content:'';position:absolute;inset:-30px;z-index:-2;background:url('../assets/archive/who-will-you-be.png') 30% 40%/cover no-repeat;filter:blur(16px) saturate(2.4) brightness(.62) contrast(1.15);animation:glassLight 26s ease-in-out infinite alternate;pointer-events:none}
+:root body #viewTools::before,:root body #brushBar::before{background-image:url('../assets/archive/not-in-my-nature.png');background-position:60% 50%}
+:root body .ph::before,:root body .stack-head::before{background-image:url('../assets/archive/when-you-rain.png')}
+:root body .rtabs::before{background-image:url('../assets/archive/mad-women-and-poets.png')}
+:root body #top::after,:root body #viewTools::after,:root body .ph::after,:root body .rtabs::after,:root body .stack-head::after,:root body #brushBar::after{content:'';display:block!important;position:absolute;inset:0;z-index:-1;pointer-events:none;background:var(--lead-lines) 0 0/420px 100% repeat-x,linear-gradient(180deg,rgba(255,255,255,.1),transparent 40%,rgba(0,0,0,.35));opacity:.9}
+@keyframes glassLight{from{transform:translateX(-14px) scale(1.05);filter:blur(16px) saturate(2.4) brightness(.6) contrast(1.15) hue-rotate(0deg)}to{transform:translateX(14px) scale(1.12);filter:blur(16px) saturate(2.4) brightness(.72) contrast(1.15) hue-rotate(-25deg)}}
+/* ---- text ---- */
+:root body #top .wordmark b{color:#fff!important;font:600 22px/1 'Barlow Condensed',sans-serif!important;letter-spacing:.16em!important;text-shadow:0 0 12px rgba(255,255,255,.35),0 1px 0 #000!important}
+:root body #top .wordmark span{color:#d9cffa!important;font:600 9px var(--mono,monospace)!important;letter-spacing:.24em!important;opacity:.85}
+:root body #top .logo{border-right:3px solid var(--lead)!important;box-shadow:none!important}
+:root body #top .logo .logo-img{filter:drop-shadow(0 0 8px rgba(255,80,100,.7)) drop-shadow(0 1px 0 #000)!important}
+:root body #top .proj label,:root body #viewTools .lbl,:root body .ph span,:root body .stack-head span{color:#d9cffa!important;font:600 10px var(--mono,monospace)!important;letter-spacing:.2em!important;text-shadow:0 1px 0 #000}
+:root body .ph b,:root body .stack-head b{color:#fff!important;font:600 15px/1 'Barlow Condensed',sans-serif!important;letter-spacing:.2em!important;text-shadow:0 0 10px rgba(255,255,255,.3),0 1px 0 #000!important}
+/* ---- every control is a glass pane: jewel tint + top shine + lead border ---- */
+:root body #top .btn,:root body #top .ib,:root body #top .seg button,:root body #viewTools .tbtn,:root body #viewTools .ib,:root body #viewTools .zlabel,:root body #viewTools .seg button,:root body .rtabs button,:root body #brushBar .seg button,:root body #top .readout,:root body #top .pill,:root body #top #projName{
+  --t:var(--sapph);position:relative;background:var(--glass-hi),color-mix(in srgb,var(--t) 78%,#000)!important;color:#fff!important;border:2px solid var(--lead)!important;border-radius:6px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 0 14px rgba(255,255,255,.12),0 2px 6px rgba(0,0,0,.5)!important;text-shadow:0 1px 0 rgba(0,0,0,.6)!important;
+  font-family:'Barlow Condensed',sans-serif!important;font-weight:600!important;letter-spacing:.12em!important;transform:none!important;animation:none!important;
+  transition:background-color .2s,box-shadow .25s,filter .2s,transform .2s!important}
+:root body #top .seg,:root body #viewTools .seg,:root body #brushBar .seg{gap:3px;padding:0;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}
+:root body #top .seg button,:root body #viewTools .seg button,:root body #brushBar .seg button{border-right:2px solid var(--lead)!important;--t:#3a3150}
+/* lit when on / hovered: the light comes through */
+:root body #top .btn:hover,:root body #top .ib:hover,:root body #top .seg button:hover,:root body #viewTools .tbtn:hover,:root body #viewTools .ib:hover,:root body #viewTools .zlabel:hover,:root body #viewTools .seg button:hover,:root body .rtabs button:hover,:root body #brushBar .seg button:hover{filter:brightness(1.35) saturate(1.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 0 18px rgba(255,255,255,.25),0 0 16px color-mix(in srgb,var(--t) 80%,transparent)!important;transform:translateY(-1px)!important}
+:root body #top .seg button.on,:root body #viewTools .seg button.on,:root body .tool-seg button.on,:root body .rtabs button.on,:root body #brushBar .seg button.on{background:var(--glass-hi),color-mix(in srgb,var(--t) 78%,#000)!important;color:#fff!important;filter:brightness(1.3) saturate(1.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 0 20px rgba(255,255,255,.3),0 0 18px color-mix(in srgb,var(--t) 85%,transparent)!important}
+/* jewel per job */
+:root body #top #cmpSeg button{--t:#2b3a35}:root body #top #cmpSeg button.on{--t:var(--emer)}
+:root body .tool-seg button{--t:#2a3352!important}:root body .tool-seg button.on{--t:var(--sapph)!important;background:var(--glass-hi),color-mix(in srgb,var(--sapph) 78%,#000)!important}
+:root body #bgSeg button{--t:#4a3a1a}:root body #bgSeg button.on{--t:var(--amber)}
+:root body #viewTools .tbtn,:root body #viewTools .ib,:root body #viewTools .zlabel{--t:var(--sapph)}
+:root body #viewTools #btnMotion{--t:var(--amber)}
+:root body #viewTools #btnRandAll{--t:var(--ameth)}
+:root body #top #btnUndo,:root body #top #btnRedo{--t:var(--ameth)}:root body #top #btnSave{--t:var(--emer)}
+:root body #top #btnShare{--t:var(--rose)}:root body #top #btnSettings,:root body #top #btnInstall,:root body #top #btnShop{--t:#3a3150}
+:root body #top .btn.primary{--t:var(--ruby);font-size:15px!important}
+:root body #top .btn.tip-big{--t:var(--amber)}
+:root body .rtabs button{--t:#3a2030}:root body .rtabs button.on{--t:var(--ruby)}
+:root body #brushBar .seg button.on{--t:var(--rose)}
+/* readouts + project field = smoke glass with amber light numbers */
+:root body #top .readout,:root body #top #projName,:root body #top .pill{--t:#16121f}
+:root body #top .readout span{color:#cbbfef!important;font-family:var(--mono,monospace)!important;letter-spacing:.18em!important}
+:root body #top .readout b{color:#ffc65a!important;text-shadow:0 0 8px rgba(255,170,40,.7)!important;font-family:var(--mono,monospace)!important}
+:root body #top #projName{color:#fff!important;letter-spacing:.08em!important}
+:root body #top #projName:focus{outline:2px solid var(--amber)!important;outline-offset:1px}
+:root body #top .pill{--t:var(--ruby);font-size:11px!important}
+:root body #top .sep{background:var(--lead)!important;width:3px!important;opacity:1!important}
+:root body #top .heart{color:#ff6b8a!important;filter:drop-shadow(0 0 8px rgba(255,80,120,.8))}
+:root body #top svg,:root body #viewTools svg{filter:drop-shadow(0 1px 0 rgba(0,0,0,.6))}
+/* the import / brush strips match */
+:root body #brushBar label{color:#d9cffa!important}
+@media (prefers-reduced-motion:reduce){:root body #top::before,:root body #viewTools::before,:root body .ph::before,:root body .rtabs::before,:root body .stack-head::before,:root body #brushBar::before{animation:none}}
+
+/* ===== the Dither Lab intro, in stained glass: the art glows behind big leaded panes, prints framed in lead ===== */
+:root body #boot{background:#07060a!important;isolation:isolate;overflow:hidden}
+:root body #boot::before{content:'';position:absolute;inset:-40px!important;width:auto!important;height:auto!important;display:block!important;background-color:transparent;transform:none;clip-path:none!important;z-index:-2;background:url('../assets/archive/who-will-you-be.png') 40% 40%/cover no-repeat;filter:blur(18px) saturate(2.6) brightness(.85) contrast(1.25);opacity:.9;animation:bootLight 26s ease-in-out infinite alternate;pointer-events:none}
+@keyframes bootLight{from{transform:translateX(-20px) scale(1.06)}to{transform:translateX(20px) scale(1.14) rotate(1deg)}}
+:root body #boot::after{content:'';position:absolute;inset:0!important;width:auto!important;height:auto!important;display:block!important;opacity:1!important;transform:none!important;clip-path:none!important;animation:none!important;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse 45% 40% at 50% 46%,rgba(255,236,200,.22),transparent 70%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='520' viewBox='0 0 640 520'%3E%3Cg fill='none' stroke='%2307060a' stroke-width='7' stroke-linejoin='round'%3E%3Cpath d='M0 120 L140 60 L260 150 L400 40 L520 130 L640 90'/%3E%3Cpath d='M0 300 L120 260 L230 340 L360 250 L470 330 L640 280'/%3E%3Cpath d='M0 460 L150 420 L280 500 L420 430 L560 480 L640 450'/%3E%3Cpath d='M140 60 L120 260 L150 420 L170 520 M260 150 L230 340 L280 500 M400 40 L360 250 L420 430 L400 520 M520 130 L470 330 L560 480 M80 0 L140 60 M330 0 L400 40 M600 0 L520 130'/%3E%3C/g%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.08' stroke-width='2'%3E%3Cpath d='M0 116 L140 56 L260 146 L400 36 L520 126 L640 86'/%3E%3C/g%3E%3C/svg%3E") center/640px 520px,
+  linear-gradient(180deg,rgba(255,255,255,.05),transparent 40%,rgba(0,0,0,.4))}
+:root body #boot .boot-hud{color:#d9cffa!important;text-shadow:0 1px 0 #000}
+:root body #boot .boot-mark .boot-logo{width:72px;height:72px;object-fit:contain;filter:drop-shadow(0 0 14px rgba(255,120,150,.6)) drop-shadow(0 2px 0 #000)}
+:root body #boot .boot-title{color:#fff!important;font:700 clamp(46px,8vw,86px)/1 'Barlow Condensed',sans-serif!important;letter-spacing:.24em!important;text-shadow:0 0 18px rgba(255,255,255,.45),0 0 42px rgba(122,47,176,.7),0 2px 0 #000!important}
+:root body #boot.title .boot-title::before{color:rgba(179,18,42,.85)!important;mix-blend-mode:screen}
+:root body #boot.title .boot-title::after{color:rgba(29,79,184,.9)!important;mix-blend-mode:screen}
+:root body #boot .boot-sub,:root body #boot .boot-quote,:root body #boot .boot-log{color:#e6dcff!important;text-shadow:0 1px 0 #000}
+:root body #boot .boot-bar{height:8px;border:2px solid #07060a;border-radius:6px;background:rgba(0,0,0,.5)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+:root body #boot .boot-bar i{background:linear-gradient(90deg,var(--ruby),var(--amber),var(--emer),var(--sapph),var(--ameth))!important;box-shadow:0 0 12px rgba(255,255,255,.4)}
+:root body #boot .boot-enter{--t:var(--ruby);padding:9px 20px!important;border:2px solid #07060a!important;border-radius:6px!important;background:var(--glass-hi),color-mix(in srgb,var(--ruby) 80%,#000)!important;color:#fff!important;font:600 13px 'Barlow Condensed',sans-serif!important;letter-spacing:.24em!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 0 16px rgba(255,255,255,.18),0 0 26px rgba(179,18,42,.65)!important;animation:glassPulse 1.85s ease-in-out infinite!important}
+@keyframes glassPulse{50%{filter:brightness(1.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 0 22px rgba(255,255,255,.3),0 0 40px rgba(179,18,42,.9)}}
+/* the prints are framed as leaded glass panels, light tinting the art */
+:root body #boot .boot-print{padding:8px 8px 26px!important;background:#07060a!important;border-radius:4px;box-shadow:0 0 0 2px #2a2236,0 0 34px rgba(122,47,176,.45),0 24px 50px rgba(0,0,0,.7)!important}
+:root body #boot .boot-print::before{display:none}
+:root body #boot .boot-print::after{content:'';position:absolute;inset:8px 8px 26px;pointer-events:none;background:linear-gradient(135deg,rgba(29,79,184,.35),transparent 35%,rgba(217,138,11,.25) 60%,rgba(179,18,42,.35));mix-blend-mode:overlay;box-shadow:inset 0 0 0 3px #07060a,inset 0 0 24px rgba(0,0,0,.6)}
+:root body #boot .boot-print img{filter:saturate(1.25) contrast(1.08)!important}
+:root body #boot .boot-print figcaption{color:#d9cffa!important;font:600 9px var(--mono,monospace)!important;letter-spacing:.16em}
+/* the band at the bottom: a strip of leaded glass panes instead of tape */
+:root body #boot .boot-ticker{height:34px!important;border:0!important;border-block:3px solid #07060a!important;background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--ruby) 85%,#000) 0 180px,#07060a 180px 183px,color-mix(in srgb,var(--ameth) 85%,#000) 183px 360px,#07060a 360px 363px,color-mix(in srgb,var(--sapph) 85%,#000) 363px 540px,#07060a 540px 543px,color-mix(in srgb,var(--amber) 85%,#000) 543px 720px,#07060a 720px 723px)!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.3),inset 0 -8px 14px rgba(0,0,0,.35),0 0 30px rgba(122,47,176,.4)!important}
+:root body #boot .boot-ticker .ticker-in span,:root body #boot .boot-ticker .ticker-in b{color:#fff!important;font:600 13px 'Barlow Condensed',sans-serif!important;letter-spacing:.3em!important;text-shadow:0 0 10px rgba(255,255,255,.55),0 1px 0 #000!important}
+:root body #boot .boot-skip{color:#d9cffa!important}
