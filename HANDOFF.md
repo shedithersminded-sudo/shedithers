@@ -1,4 +1,4 @@
-# SHEDITHERS — handoff (2026-11-07, live version v2.9.4)
+# SHEDITHERS — handoff (2026-11-07, live version v2.9.5)
 
 Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 
@@ -9,7 +9,7 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - **Deploys:** pushing `main` to github.com/shedithersminded-sudo/shedithers auto-deploys to https://shedithers.netlify.app and https://shedithersminded-sudo.github.io/shedithers/. The user always wants both sites updated and verified.
 
 ## Release steps (every change)
-1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=294 and v2.9.4 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
+1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=295 and v2.9.5 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
 2. Commit, ending the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then push.
 3. Check that both live sites serve the new `sw.js` version.
 
@@ -79,3 +79,4 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - v2.9.2: reading font is now Patrick Hand (+3px) on both pages (was Special Elite); muted palette vars (--rust --mustard --moss --teal --dblue --plum --violet --rose) beside red/ink/paper; each effect group has its own colour; stronger hover glow in a random muted colour per word (js/glow.js); hand-drawn "sketch" border-radius shapes, star-burst counts, flag NOW EDITING. Style rule update: colours are welcome if muted (not neon).
 - v2.9.3: one of each effect by default (libAdd in panels.js: clicking one you have opens it; "allow the same effect more than once" switch = localStorage shd.allowDoubles; Shift+click forces). Library + layers restyled as tinted glass over a random blurred artwork (--lib-art on #left/#right), straight rows, no tilt/torn cards; bigger card buttons (32px); "what it does" = frosted label with cut corner.
 - v2.9.4: editor library click → chooser (add / preview on top; Shift+click adds) — preview uses S.override + #pvBar. Archive: walk-in intro (js/archive-walk.js, css/archive-walk.css) from the artist's WANTED street drawing, split into assets/ui/walk-bg.jpg (street, hands filled in, graded ink→blood→acid) + walk-fg.png (hands + flyer, recoloured paper/blood) — made at the artist's request; once per visit, tap flyer/skip/6.5s. Gate restyled to the inside's lime render (.g-render reuses portal .pr-* layers), lime #d4ff00 accents.
+- v2.9.5: walk-in intro redrawn from scratch in SVG (artist said the WANTED picture is inspiration only — walk-bg/fg photos removed): dusk rave street, broken Japanese huts, SHE DITHERS warehouse with lasers pulsing at 120bpm, Little Guy on a cut-paper standee, orange-outlined hands with a lime glowstick + SHE DITHERS rave flyer. Fonts: Rubik Wet Paint (title, moving letters), Rubik Glitch (labels).

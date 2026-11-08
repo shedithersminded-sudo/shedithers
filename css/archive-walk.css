@@ -53,3 +53,37 @@
 .pg-rimtxt{fill:#d4ff00;stroke:#0b0a09}
 .pop-gate .gate-hands{display:none}
 .pg-badges span{background:#0b0a09!important;color:#d4ff00!important;box-shadow:2px 2px 0 #d4ff00!important}
+/* ===== the way in v2: drawn rave street (no photos) ===== */
+.wk-world,.wk-hands{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.wk-world{transform-origin:50% 50%;animation:wkWalk 7.2s cubic-bezier(.3,.1,.4,1) forwards}
+.wk-world .ol{stroke:#0b0a09;stroke-width:3;stroke-linejoin:round}
+.wk-world .hl{stroke:#0b0a09;stroke-width:2;fill:none;opacity:.7}
+.wk-hands{transform-origin:70% 90%;animation:wkBob .5s ease-in-out infinite alternate}
+.wk-beam,.beam{transform-origin:600px 418px;transform-box:view-box;animation:wkSweep 3.2s ease-in-out infinite alternate}
+.beam.b1{animation-duration:2.6s;animation-direction:alternate-reverse}.beam.b2{animation-duration:3.8s}
+@keyframes wkSweep{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
+.wk-lasers{animation:wkBass .5s steps(2,jump-none) infinite}
+.wk-pulse,.wk-door,.wk-strip{animation:wkBass .5s ease-in-out infinite}
+@keyframes wkBass{0%,100%{opacity:.55}50%{opacity:1}}
+.wk-sign{font:400 15px 'Rubik Glitch','Bebas Neue',sans-serif;fill:#d4ff00;letter-spacing:1px}
+.wk-stars circle{animation:wkTw 2.4s ease-in-out infinite alternate}
+@keyframes wkTw{to{opacity:.15}}
+.wk-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 46%,transparent 40%,rgba(5,4,6,.65) 90%)}
+.fl-title{font:400 46px 'Rubik Wet Paint','Bebas Neue',sans-serif;fill:#c3141c}
+.fl-sub{font:400 24px 'Bebas Neue',sans-serif;letter-spacing:4px;fill:#0b0a09}
+.fl-line{font:400 19px 'Patrick Hand',cursive;fill:#0b0a09}.fl-line.r{fill:#c3141c}
+.fl-small{font:400 15px 'Rubik Glitch','Bebas Neue',sans-serif;fill:#0b0a09;letter-spacing:1px}
+.wk-stick path:first-child{filter:drop-shadow(0 0 10px #d4ff00) drop-shadow(0 0 22px #d4ff00)}
+/* moving title + labels */
+.wk-title{display:inline-flex;flex-wrap:wrap;padding:6px 12px 4px;background:#0b0a09;box-shadow:3px 3px 0 #c3141c;font:400 clamp(22px,4.4vw,44px)/1 'Rubik Wet Paint','Bebas Neue',sans-serif;color:#d4ff00;letter-spacing:.02em}
+.wk-title span{display:inline-block;animation:wkLetter 1.6s ease-in-out infinite;animation-delay:var(--d)}
+.wk-title .sp{display:inline-block;width:.35em}
+@keyframes wkLetter{0%,100%{transform:translateY(0) rotate(0);color:#d4ff00}25%{transform:translateY(-3px) rotate(-4deg)}50%{color:#e9e3d1}75%{transform:translateY(2px) rotate(3deg);color:#d4ff00}}
+.wk-dist{font-family:'Rubik Glitch','Bebas Neue',sans-serif!important;animation:wkGlitch 2.2s steps(1) infinite}
+@keyframes wkGlitch{0%,92%,100%{transform:none}93%{transform:translate(2px,-1px) skewX(-8deg)}95%{transform:translate(-2px,1px)}}
+.wk-flyer span{font-family:'Rubik Glitch','Bebas Neue',sans-serif!important}
+.wk-flyer{left:54%;top:52%;width:28%;height:46%}
+.walk.arrive .wk-hands{animation:wkArrive 1.05s cubic-bezier(.6,0,.4,1) forwards}
+.walk.arrive .wk-world{animation:none;transform:scale(1.3);transition:opacity .9s .15s;opacity:0}
+.walk.still .wk-world,.walk.still .wk-hands,.walk.still .beam,.walk.still .wk-lasers,.walk.still .wk-title span{animation:none}
+@media (max-width:760px){.wk-flyer{left:40%;width:58%;top:50%;height:48%}}
