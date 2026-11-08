@@ -175,3 +175,38 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     window.SHD_MOVE(tv, 'tv', 'TikTok TV');
   }
 })();
+
+/* ---------------- BUY ME A DRINK: the same drink menu as the Dither Lab, always visible on the archive ---------------- */
+(() => {
+  const CFG = typeof SHD_CONFIG !== 'undefined' ? SHD_CONFIG : {};
+  const tag = String(CFG.cashapp || '').trim().replace(/^\$+/, ''); if (!/^[A-Za-z][A-Za-z0-9_-]{0,19}$/.test(tag)) return;
+  const cashURL = amt => `https://cash.app/$${tag}${amt ? '/' + amt : ''}`;
+  const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; };
+  let modal = null;
+  function qr(box) {
+    const draw = () => { try { const q = window.qrcode(0, 'M'); q.addData(cashURL()); q.make(); box.innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch (_) { box.textContent = 'QR unavailable'; } };
+    if (window.qrcode) return draw();
+    const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js'; s.onload = draw; s.onerror = () => { box.textContent = 'QR unavailable offline'; }; document.head.append(s);
+  }
+  function close() { if (!modal) return; const m = modal; modal = null; m.classList.remove('in'); document.removeEventListener('keydown', key, true); setTimeout(() => m.remove(), 250); }
+  function key(e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } }
+  function open(e) {
+    if (e) e.preventDefault(); if (modal) return;
+    modal = el('div', 'dk'); modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true'); modal.setAttribute('aria-label', 'Buy me a drink');
+    const card = el('div', 'dk-card');
+    const x = el('button', 'dk-x', '✕'); x.setAttribute('aria-label', 'Close'); x.onclick = close;
+    const head = el('div', 'dk-head'); head.append(el('small', null, 'TIP JAR // $' + tag.toUpperCase()), el('h3', null, 'BUY ME A DRINK'), el('p', null, CFG.tipLine || 'Buy the artist a drink ♥'));
+    const menu = el('div', 'dk-menu');
+    (CFG.drinks || []).forEach((d, i) => { const a = el('a', 'dk-drink'); a.href = cashURL(d.amount); a.target = '_blank'; a.rel = 'noopener'; a.style.setProperty('--r', [-2, 1.5, -1, 2][i % 4] + 'deg'); a.append(el('i', null, d.emoji || '♥'), el('b', null, d.label), el('span', null, '$' + d.amount)); menu.append(a); });
+    const any = el('a', 'dk-any', 'ANY AMOUNT · OPEN CASH APP ▸'); any.href = cashURL(); any.target = '_blank'; any.rel = 'noopener';
+    const scan = el('div', 'dk-scan'); const box = el('div', 'dk-qr', 'loading QR…');
+    scan.append(box, el('p', null, 'On a computer? Scan with your phone camera to tip in Cash App. Payments go straight to the artist — SHEDITHERS never sees your payment details.'));
+    card.append(x, head, menu, any, scan, el('div', 'dk-foot', 'SHEDITHERS LOVES YOU ♥'));
+    modal.append(card); modal.addEventListener('click', ev => { if (ev.target === modal) close(); });
+    document.body.append(modal); requestAnimationFrame(() => modal.classList.add('in')); document.addEventListener('keydown', key, true); x.focus(); qr(box);
+  }
+  window.SHD_DRINK = open;
+  const tab = el('button', 'drink-tab'); tab.type = 'button'; tab.setAttribute('aria-label', 'Buy me a drink'); tab.innerHTML = '<i>🍹</i><b>BUY ME A DRINK</b>'; tab.onclick = open;
+  document.body.append(tab);
+  document.querySelectorAll('[data-drink]').forEach(a => a.addEventListener('click', open));
+})();
