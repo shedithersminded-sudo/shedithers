@@ -11,13 +11,14 @@
 <link rel="apple-touch-icon" href="assets/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Special+Elite&family=Permanent+Marker&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/archive.css?v=250">
-<link rel="stylesheet" href="css/archive-plus.css?v=250">
-<link rel="stylesheet" href="css/archive-mess.css?v=250">
-<link rel="stylesheet" href="css/archive-cute.css?v=250">
-<link rel="stylesheet" href="css/archive-edit.css?v=250">
-<link rel="stylesheet" href="css/archive-portal.css?v=250">
-<link rel="stylesheet" href="css/archive-artui.css?v=250">
+<link rel="stylesheet" href="css/archive.css?v=261">
+<link rel="stylesheet" href="css/archive-plus.css?v=261">
+<link rel="stylesheet" href="css/archive-mess.css?v=261">
+<link rel="stylesheet" href="css/archive-cute.css?v=261">
+<link rel="stylesheet" href="css/archive-edit.css?v=261">
+<link rel="stylesheet" href="css/archive-portal.css?v=261">
+<link rel="stylesheet" href="css/archive-artui.css?v=261">
+<link rel="stylesheet" href="css/archive-pop.css?v=261">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -28,19 +29,38 @@
 </svg>
 
 <!-- ENTRY -->
-<section id="gate" class="gate" aria-label="Enter the archive">
-  <div class="gate-folder">
-    <div class="gate-tab">FILE_01//</div>
-    <div class="gate-body">
-      <div class="gate-code">ARCHIVE LOG · VIEW ONLY</div>
-      <h1 class="gate-title">SHE<br>DITHERS</h1>
-      <p class="gate-sub">Artist archive · collage · drawing · signal · motion</p>
-      <p class="gate-quote">“becoming and unbecoming so I can become who I always have been and never was”</p>
-      <button class="gate-enter" id="enter"><svg><use href="#mk"/></svg>ENTER THE ARCHIVE</button>
-      <div class="gate-log" id="gateLog"></div>
+<section id="gate" class="gate pop-gate" aria-label="Enter the archive">
+  <div class="pg-dots" aria-hidden="true"></div>
+  <div class="pg-stage">
+    <div class="pg-cd" aria-hidden="true">
+      <div class="pg-disc">
+        <i class="pg-art"></i><i class="pg-stripes"></i><i class="pg-check"></i><i class="pg-dotband"></i>
+        <span class="pg-vert"><b>SHEDITHERS</b><span><small>ARCHIVE</small><small>FOR YOUR EYES</small></span><b class="pg-open">OPEN</b></span>
+        <i class="pg-shine"></i><i class="pg-hub"></i><i class="pg-hole"></i>
+      </div>
+      <span class="pg-flower f1"></span><span class="pg-flower f2"></span><span class="pg-star s1">★</span><span class="pg-dot"></span>
+      <span class="pg-sticker">tap <b>enter</b><small>or press any key</small></span>
+    </div>
+    <div class="pg-seal" aria-hidden="true">
+      <svg viewBox="0 0 200 200"><defs><path id="sealPath" d="M100 100 m-78 0 a78 78 0 1 1 156 0 a78 78 0 1 1 -156 0"/></defs>
+        <circle cx="100" cy="100" r="96" fill="none" stroke="#111" stroke-width="3"/><circle cx="100" cy="100" r="64" fill="none" stroke="#111" stroke-width="2"/>
+        <text font-family="Georgia,serif" font-size="17" font-weight="700" letter-spacing="3" fill="#111"><textPath href="#sealPath">SHEDITHERS ★ NO IDENTITY ★ ARTIST ARCHIVE ★ </textPath></text></svg>
+      <span class="pg-pix"><svg viewBox="0 0 40 40"><use href="#mk"/></svg></span>
+      <span class="pg-stars">★★★★★★★</span>
+    </div>
+    <div class="pg-folder">
+      <span class="pg-bubble">NEW ART!</span>
+      <div class="pg-fbody">
+        <div class="gate-code">FILE_01// ARCHIVE LOG · VIEW ONLY</div>
+        <h1 class="pg-title">SHE<br>DITHERS</h1>
+        <p class="gate-quote">“becoming and unbecoming so I can become who I always have been and never was”</p>
+        <button class="gate-enter" id="enter"><svg><use href="#mk"/></svg>ENTER THE ARCHIVE</button>
+        <div class="gate-log" id="gateLog"></div>
+      </div>
+      <span class="pg-cable" aria-hidden="true"><i></i></span>
     </div>
   </div>
-  <i class="tape t1"></i><i class="tape t2"></i>
+  <div class="pg-badges" aria-hidden="true"><span>♥</span><span>⌖</span><span>★</span><span>NO ID</span><span>✦</span><span>☆☆☆</span></div>
 </section>
 
 <!-- CHROME -->
@@ -107,13 +127,15 @@
 </div>
 
 <div class="grain" aria-hidden="true"></div>
-<script src="js/config.js?v=250"></script>
-<script src="js/artworks.js?v=250"></script>
-<script src="js/archive-portal.js?v=250"></script>
-<script src="js/archive.js?v=250"></script>
-<script src="js/archive-plus.js?v=250"></script>
-<script src="js/archive-mess.js?v=250"></script>
-<script src="js/archive-cute.js?v=250"></script>
-<script src="js/archive-artui.js?v=250"></script>
+<script src="js/config.js?v=261"></script>
+<script src="js/artworks.js?v=261"></script>
+<script src="js/archive-portal.js?v=261"></script>
+<script src="js/archive.js?v=261"></script>
+<script src="js/archive-plus.js?v=261"></script>
+<script src="js/archive-mess.js?v=261"></script>
+<script src="js/archive-cute.js?v=261"></script>
+<script src="js/archive-artui.js?v=261"></script>
+<script src="js/archive-pop.js?v=261"></script>
+<script src="js/archive-watch.js?v=261"></script>
 </body>
 </html>
