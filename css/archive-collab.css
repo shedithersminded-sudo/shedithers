@@ -1,0 +1,84 @@
+/* ===== COLLABS: "wanna collab?" poster + where-to-find-me signal line ===== */
+.portal>.p-collab{grid-column:1/-1}
+.cl-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:stretch}
+/* the poster: two pieces of the art, duotoned acid yellow / orange, leaning toward the pointer */
+.cl-poster{--mx:0;--my:0;position:relative;overflow:hidden;min-height:330px;padding:26px 24px 22px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:#0b0a09;border:1px solid #6c7a2a;box-shadow:0 0 0 2px #0b0a09,8px 8px 0 #e2682a;transform:perspective(900px) rotateY(calc(var(--mx) * 6deg)) rotateX(calc(var(--my) * -5deg));transition:transform .25s ease-out;isolation:isolate}
+.cl-a,.cl-b{position:absolute;z-index:-2;pointer-events:none;background:center/cover no-repeat}
+.cl-a{inset:-6%;background-image:var(--cl-a);filter:grayscale(1) contrast(1.8) brightness(.7) sepia(1) saturate(2.4) hue-rotate(28deg);transform:translate(calc(var(--mx) * -18px),calc(var(--my) * -14px)) scale(1.05);transition:transform .3s ease-out}
+.cl-b{right:-4%;bottom:-6%;width:46%;height:70%;background-image:var(--cl-b);filter:grayscale(1) contrast(1.6) sepia(1) saturate(3) hue-rotate(-20deg);mix-blend-mode:screen;opacity:.75;clip-path:polygon(6% 4%,100% 0,96% 100%,0 94%);transform:translate(calc(var(--mx) * 26px),calc(var(--my) * 20px)) rotate(4deg);transition:transform .3s ease-out}
+.cl-poster::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(115deg,rgba(8,9,4,.92) 0,rgba(8,9,4,.7) 48%,rgba(8,9,4,.15) 100%),repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px)}
+.cl-scan{position:absolute;left:0;right:0;top:0;height:40px;z-index:-1;background:linear-gradient(180deg,transparent,rgba(212,255,0,.28),transparent);mix-blend-mode:screen;animation:clScan 3.4s linear infinite;pointer-events:none}
+@keyframes clScan{from{transform:translateY(-40px)}to{transform:translateY(420px)}}
+.cl-tag{padding:3px 9px;background:#d4ff00;color:#0b0a09;font:700 11px Verdana,Tahoma,sans-serif;letter-spacing:.16em;box-shadow:3px 3px 0 #0b0a09;transform:rotate(-2deg)}
+.cl-title{display:flex;flex-wrap:wrap;font:400 clamp(48px,7vw,92px)/.86 'Bebas Neue',sans-serif;letter-spacing:.02em;color:#ff5a3c;text-shadow:4px 4px 0 #0b0a09,-1px -1px 0 #0b0a09,1px -1px 0 #0b0a09,-1px 1px 0 #0b0a09}
+.cl-title span{display:inline-block;transition:transform .3s cubic-bezier(.3,1.7,.5,1),color .3s;animation:clWave 2.8s ease-in-out infinite;animation-delay:calc(var(--i) * 90ms)}
+.cl-title .sp{width:.25em}
+@keyframes clWave{0%,100%{transform:translateY(0)}30%{transform:translateY(-4px) rotate(-3deg)}60%{transform:translateY(2px) rotate(2deg)}}
+.cl-poster:hover .cl-title span:nth-child(3n){transform:translate(-3px,-8px) rotate(-10deg);color:#f2b234}
+.cl-poster:hover .cl-title span:nth-child(3n+1){transform:translate(2px,6px) rotate(8deg)}
+.cl-words{max-width:430px;margin:0;font:400 14px/1.6 Verdana,Tahoma,sans-serif;color:#eef2e6;text-shadow:1px 1px 0 #000}
+.cl-btn{--bx:0px;--by:0px;margin-top:auto;display:inline-flex;align-items:center;gap:12px;padding:15px 22px;border:1px solid #0b0a09;border-radius:2px;background:repeating-linear-gradient(-45deg,#d4ff00 0 14px,#c4ee00 14px 28px);background-size:40px 40px;color:#0b0a09;font:400 clamp(20px,2.4vw,26px) 'Bebas Neue',sans-serif;letter-spacing:.12em;box-shadow:5px 5px 0 #0b0a09;transform:translate(var(--bx),var(--by));transition:transform .15s ease-out,box-shadow .2s;animation:clMarch 1s linear infinite}
+@keyframes clMarch{to{background-position:40px 0}}
+.cl-btn i{font-style:normal;display:inline-block;animation:clNudge .923s ease-in-out infinite}
+@keyframes clNudge{50%{transform:translateX(6px)}}
+.cl-btn:hover{background:#0b0a09;color:#d4ff00;box-shadow:5px 5px 0 #d4ff00}
+.cl-btn:active{transform:translate(var(--bx),var(--by)) scale(.97)}
+.cl-note{font:700 11px Verdana,Tahoma,sans-serif;color:#d4ff00;text-decoration:underline;text-underline-offset:2px}
+/* where to find me: a signal line with stops, a travelling dot, and an art peek */
+.fm{position:relative;display:flex;flex-direction:column;padding:16px 18px;background:rgba(5,6,3,.9);border:1px solid #6c7a2a;box-shadow:0 0 0 2px #0b0a09;color:#eef2e6}
+.fm-head{display:flex;flex-direction:column;line-height:1;margin-bottom:10px}
+.fm-head small{font:600 9px/1 sans-serif;letter-spacing:.3em;color:#e9f7a6}
+.fm-head b{font:400 34px/.95 'Bebas Neue',sans-serif;color:#f2b234;text-shadow:2px 2px 0 #0b0a09}
+.fm-head span{font:700 10px Verdana,Tahoma,sans-serif;letter-spacing:.1em;color:#9fb52a}
+.fm-wrap{position:relative;flex:1;display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:14px}
+.fm-line{position:relative;list-style:none;margin:0;padding:0 0 0 26px;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
+.fm-line::before{content:'';position:absolute;left:9px;top:10px;bottom:10px;width:3px;background:repeating-linear-gradient(180deg,#9fb52a 0 6px,transparent 6px 10px)}
+.fm-line::after{content:'';position:absolute;left:5px;top:6px;width:11px;height:11px;border-radius:50%;background:#d4ff00;box-shadow:0 0 0 3px rgba(212,255,0,.25),0 0 14px #d4ff00;animation:fmTravel 4.6s ease-in-out infinite}
+@keyframes fmTravel{0%{top:6px}50%{top:calc(100% - 17px)}100%{top:6px}}
+.fm-stop{position:relative;display:flex;align-items:baseline;gap:10px;padding:5px 8px;color:#eef2e6;text-decoration:none;border-bottom:1px dotted #44502a;transition:background .2s,transform .2s,color .2s}
+.fm-dot{position:absolute;left:-23px;top:50%;width:11px;height:11px;margin-top:-6px;border-radius:50%;background:#0b0a09;border:2px solid #9fb52a;transition:background .2s,transform .2s}
+.fm-stop b{font:700 13px Verdana,Tahoma,sans-serif;letter-spacing:.06em;color:#d4ff00;text-decoration:underline;text-underline-offset:2px}
+.fm-stop small{font:400 12px Verdana,Tahoma,sans-serif;color:#cfd6c0}
+.fm-stop:hover,.fm-stop:focus-visible{background:rgba(212,255,0,.1);transform:translateX(6px);outline:none}
+.fm-stop:hover .fm-dot,.fm-stop:focus-visible .fm-dot{background:#d4ff00;transform:scale(1.4)}
+.fm-stop:hover b{color:#f2b234}
+.fm-stop.here b{color:#ff5a3c}.fm-stop.here .fm-dot{background:#ff5a3c;border-color:#ff5a3c;animation:fmHere .923s ease-in-out infinite}
+@keyframes fmHere{50%{box-shadow:0 0 0 6px rgba(255,90,60,.25)}}
+.fm-peek{position:relative;align-self:center;height:160px;border:1px solid #6c7a2a;background:#0b0a09;overflow:hidden;opacity:.35;transform:rotate(2deg);transition:opacity .25s,transform .3s cubic-bezier(.3,1.6,.5,1)}
+.fm-peek i{position:absolute;inset:0;background:center/cover no-repeat;filter:grayscale(1) contrast(1.6) sepia(1) saturate(2.6) hue-rotate(28deg)}
+.fm-peek b,.fm-peek span{position:absolute;left:6px;right:6px;font:700 10px Verdana,Tahoma,sans-serif;text-shadow:1px 1px 0 #000}
+.fm-peek b{top:6px;color:#d4ff00;letter-spacing:.12em}
+.fm-peek span{bottom:6px;color:#eef2e6;font-style:italic}
+.fm-peek.on{opacity:1;transform:rotate(-2deg) scale(1.04)}
+.fm-pulse{position:absolute;right:12px;top:14px;width:10px;height:10px;border-radius:50%;background:#ff5a3c;animation:fmHere .923s ease-in-out infinite}
+/* the form */
+.cb{position:fixed;inset:0;z-index:85;display:grid;place-items:center;padding:16px;background:rgba(5,6,3,.88);opacity:0;transition:opacity .25s}
+.cb.in{opacity:1}
+.cb-card{position:relative;width:min(560px,100%);max-height:calc(100svh - 32px);overflow:auto;padding:24px 22px 18px;background:linear-gradient(180deg,rgba(14,16,6,.95),rgba(5,6,3,.97));color:#eef2e6;border:1px solid #6c7a2a;box-shadow:0 0 0 2px #0b0a09,10px 10px 0 #e2682a;isolation:isolate}
+.cb.in .cb-card{animation:dkGlitchIn .55s steps(1,end) both}
+.cb-art{position:absolute;inset:0 0 auto 0;height:120px;z-index:-1;background:var(--cb-art) center 30%/cover no-repeat;filter:grayscale(1) contrast(1.7) sepia(1) saturate(2.4) hue-rotate(28deg);opacity:.45;-webkit-mask:linear-gradient(#000,transparent);mask:linear-gradient(#000,transparent)}
+.cb-x{position:absolute;right:12px;top:12px;width:38px;height:38px;background:#0b0a09;color:#d4ff00;border:1px solid #9fb52a;border-radius:3px}
+.cb-x:hover{background:#d4ff00;color:#0b0a09}
+.cb-kana{display:block;font:600 10px sans-serif;letter-spacing:.3em;color:#e9f7a6}
+.cb-card h3{margin:2px 0 8px;font:400 clamp(38px,7vw,54px)/.9 'Bebas Neue',sans-serif;color:#ff5a3c;text-shadow:3px 3px 0 #0b0a09}
+.cb-lede{margin:0 0 12px;font:400 13px/1.6 Verdana,Tahoma,sans-serif}
+.cb-label{font:700 11px Verdana,Tahoma,sans-serif;letter-spacing:.14em;color:#9fb52a;text-transform:uppercase;margin-bottom:6px}
+.cb-kinds{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.cb-kinds button{padding:6px 11px;border:1px solid #6c7a2a;border-radius:2px;background:transparent;color:#eef2e6;font:700 12px Verdana,Tahoma,sans-serif;transition:background .2s,transform .2s}
+.cb-kinds button:hover{transform:translateY(-2px)}
+.cb-kinds button.on{background:#d4ff00;color:#0b0a09;border-color:#d4ff00}
+.cb-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}.cb-row .cb-in{flex:1 1 200px}
+.cb-in,.cb-msg{width:100%;padding:10px 12px;border:1px solid #6c7a2a;border-radius:2px;background:rgba(0,0,0,.5);color:#eef2e6;font:400 14px Verdana,Tahoma,sans-serif}
+.cb-msg{min-height:120px;resize:vertical;margin-bottom:8px}
+.cb-in:focus,.cb-msg:focus{outline:2px solid #d4ff00;outline-offset:1px}
+.cb-row.end{align-items:center;margin:4px 0 0}
+.cb-status{flex:1;margin:0;font:700 12px Verdana,Tahoma,sans-serif;color:#f2b234}.cb-status a{color:#d4ff00}
+.cb-send{margin-left:auto;display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border:1px solid #0b0a09;border-radius:2px;background:#d4ff00;color:#0b0a09;font:400 22px 'Bebas Neue',sans-serif;letter-spacing:.12em;box-shadow:4px 4px 0 #0b0a09}
+.cb-send i{font-style:normal}
+.cb-send:hover{background:#0b0a09;color:#d4ff00;box-shadow:4px 4px 0 #d4ff00}
+.cb-send:disabled{opacity:.6}
+.cb-card.sending .cb-send i{animation:clNudge .4s ease-in-out infinite}
+.cb-card.sent{box-shadow:0 0 0 2px #0b0a09,10px 10px 0 #d4ff00}
+@media (max-width:860px){.cl-grid{grid-template-columns:1fr}.cl-poster{min-height:300px}}
+@media (max-width:520px){.fm-wrap{grid-template-columns:1fr}.fm-peek{display:none}.cl-poster{padding:22px 16px 18px}.cb-card{padding:22px 16px 16px}}
+@media (prefers-reduced-motion:reduce){.cl-scan,.cl-title span,.cl-btn,.cl-btn i,.fm-line::after,.fm-stop.here .fm-dot,.fm-pulse{animation:none}.cl-poster{transform:none}}

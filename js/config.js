@@ -11,6 +11,8 @@ const SHD_CONFIG = {
   goatcounter: 'shedithers',
   // Your TikTok handle (without @)
   tiktok: 'shedithers',
+  // Your Pinterest profile link (e.g. 'https://www.pinterest.com/shedithers/'). Empty = links a Pinterest search for shedithers.
+  pinterest: '',
   // Your YouTube handle (without @)
   youtube: 'shedithersminded',
   // TikTok TV: paste links to your favourite TikToks here (e.g. 'https://www.tiktok.com/@shedithers/video/1234567890').
