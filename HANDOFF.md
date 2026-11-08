@@ -1,4 +1,4 @@
-# SHEDITHERS — handoff (2026-11-07, live version v2.9.8)
+# SHEDITHERS — handoff (2026-11-07, live version v2.9.9)
 
 Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 
@@ -9,7 +9,7 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - **Deploys:** pushing `main` to github.com/shedithersminded-sudo/shedithers auto-deploys to https://shedithers.netlify.app and https://shedithersminded-sudo.github.io/shedithers/. The user always wants both sites updated and verified.
 
 ## Release steps (every change)
-1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=298 and v2.9.8 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
+1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=299 and v2.9.9 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
 2. Commit, ending the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then push.
 3. Check that both live sites serve the new `sw.js` version.
 
@@ -83,3 +83,4 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - v2.9.6: deck cards carry the art's own words as cut-out scraps in 6 fonts that jump on hover; TikTok TV Mars-style (rust cratered porthole, orbit ring, spinning star); drink tab = hanging bar sign (tape, cocktail doodle, Rubik Wet Paint, drip) + drink spots: slushy sticker by the CD, deck "tip the artist", footer link, viewer "liked this one?", about-page bottle, cocktail button in the song chip.
 - v2.9.7: inspo = artist's Pinterest (warm orange/red, black letterbox bars, y2k date + checkers, grain) rebuilt from their own art: assets/ui/dither-sky.png (untitled-wide-01 dithered warm), dither-tv.png (are-we-alive-yet), dither-drink.png (stop-asking), flower-cut.png (their flower doodle IMG_8048 cut out). Intro: dithered art sky, red bone-striped hands w/ orange outline, flower + Little Guy standees, Michroma date bar. TikTok TV = Y2K egg handheld with dithered art shell. Drink tab = their art recoloured red/black/orange. NOT used: IMG_6775/7706/7716 (personal selfies).
 - v2.9.8: SHEDITHERS is ONE word everywhere (artist's name). Intro vibe pass: huts textured with dithered art, hazy blurred beams, fog, sketch wobble on hands, everything pulses at 130 BPM (the intro song's ID3 TBPM). Music player art = purpose-cut dithered sets assets/ui/player-{0,1,2}-{strip,arch,disc}.png (strip→mini blade, arch→full player, disc→relic disc), cycling per track.
+- v2.9.9: THE COMMENT SECTION (js/archive-voices.js + css): real words only — artist's TikTok bio/profile quote/captions + art words; real fan comments go in SHD_CONFIG.tiktokComments [{user,text}] (TikTok comments need login; never invent them). Tap to blow up, ♥ likes per device. Home section titles louder orange/red. Gate title SHEDITHERS one word.

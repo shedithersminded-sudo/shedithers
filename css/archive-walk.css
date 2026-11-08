@@ -118,3 +118,4 @@
 .walk::before{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at 50% 48%,transparent 30%,rgba(12,4,4,.55) 80%),linear-gradient(180deg,rgba(226,104,38,.08),rgba(120,16,20,.18));mix-blend-mode:multiply;animation:wkBreath .4615s ease-in-out infinite alternate}
 @keyframes wkBreath{to{opacity:.8}}
 .walk.still::before{animation:none}
+.pop-gate .pg-title{font-size:clamp(44px,6.4vw,92px);line-height:.9;white-space:nowrap}
