@@ -120,3 +120,16 @@
 .pop-gate .gate-hands{display:none}
 .pg-badges span{background:#0b0a09!important;color:#d4ff00!important;box-shadow:2px 2px 0 #d4ff00!important}
 .pop-gate .pg-title{font-size:clamp(44px,6.4vw,92px);line-height:.9;white-space:nowrap}
+/* ===== bass: the alley pumps with the music (live analyser → --b), or with a 130 BPM thump when sound is off ===== */
+.wk-scene img{transform-origin:50% 58%;will-change:scale}
+.walk.ready:not(.loud) .wk-scene img{animation:wkThump .4615s cubic-bezier(.2,.9,.3,1) infinite}
+@keyframes wkThump{0%{scale:1.018}35%{scale:1}}
+.walk.loud .wk-scene img{scale:calc(1 + var(--b,0) * .04) calc(1 + var(--b,0) * .055);filter:contrast(1.05) saturate(1.05) brightness(calc(1 + var(--b,0) * .3))}
+.walk.loud .wk-bass{animation:none;opacity:calc(.12 + var(--b,0) * .88)}
+.walk.loud .wk-hold{margin-bottom:calc(var(--b,0) * -6px)}
+.walk.loud .wk-title{text-shadow:0 0 calc(10px + var(--b,0) * 30px) rgba(255,60,40,.8),2px 2px 0 #7a0c10}
+.wk-snd{position:absolute;z-index:6;right:max(16px,env(safe-area-inset-right));top:calc(9svh + 104px);padding:5px 12px;background:rgba(5,4,4,.6);color:#e9e3d1;border:1px solid rgba(233,227,209,.35);border-radius:3px;font:400 12px 'Michroma',sans-serif;letter-spacing:.14em;text-transform:uppercase}
+.wk-snd.ask{color:#0b0a09;background:#d4ff00;border-color:#d4ff00;animation:wkAsk .923s ease-in-out infinite}
+@keyframes wkAsk{50%{box-shadow:0 0 0 6px rgba(212,255,0,.25)}}
+.walk.arrive .wk-snd{opacity:0;transition:opacity .25s}
+.walk.still .wk-scene img{animation:none;scale:none}.walk.still .wk-snd.ask{animation:none}

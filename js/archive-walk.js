@@ -63,7 +63,7 @@ let done = false, dist = 0.2;
 const dEl = walk.querySelector('.wk-dist');
 const tick = setInterval(() => { if (!walk.classList.contains("ready")) return; dist = Math.max(0, dist - 0.03); dEl.textContent = dist > 0.01 ? `${dist.toFixed(2)} MI ▸` : 'YOU’RE HERE ★'; }, 600);
 function finish() {
-  if (done) return; done = true; clearInterval(tick); clearTimeout(auto);
+  if (done) return; done = true; clearInterval(tick); clearTimeout(auto); bass.stop();
   try { sessionStorage.setItem('shd.walked', '1'); } catch (_) { }
   walk.classList.add('arrive'); document.body.classList.remove('walking');
   setTimeout(() => { walk.remove(); const b = document.getElementById('enter'); if (b) b.focus(); }, reduce ? 0 : 1100);
@@ -73,7 +73,61 @@ walk.querySelector('.wk-skip').addEventListener('click', finish);
 walk.addEventListener('keydown', e => { if (e.key === 'Escape' || e.key === 'Enter') finish(); });
 // the walk starts once the alley is actually on screen (or after 4s if the picture is slow)
 let auto = 0;
-const go = () => { if (walk.classList.contains('ready') || done) return; walk.classList.add('ready'); auto = setTimeout(finish, reduce ? 999999 : 8200); };
+/* bass through the walls: "Sorry" (evo & crevo) muffled behind a low-pass filter that opens up as you get closer.
+ * A bass analyser drives --b (0..1) so the alley pumps on every kick. Browsers only allow sound after a tap, so if
+ * it can't start on its own the chip says "tap for bass" and the first tap anywhere starts it. */
+const bass = (() => {
+  let on = true; try { on = localStorage.getItem('shd.introSound') !== 'off'; } catch (_) { }
+  let vol = 0.3; try { const v = parseFloat(localStorage.getItem('shd.introVol')); if (v >= 0 && v <= 1) vol = v; } catch (_) { }
+  const btn = el('button', 'wk-snd'); btn.type = 'button'; walk.append(btn);
+  let ctx = null, au, filt, gain, an, data, raf = 0, playing = false;
+  const paint = () => { btn.textContent = playing ? '♪ bass: on' : (on ? '♪ tap for bass' : '♪ bass: off'); btn.setAttribute('aria-pressed', String(playing)); btn.classList.toggle('ask', on && !playing); };
+  function setup() {
+    if (ctx) return true; const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+    ctx = new AC(); au = new Audio(abs('assets/ui/intro.mp3')); au.loop = true; au.preload = 'auto';
+    const src = ctx.createMediaElementSource(au);
+    filt = ctx.createBiquadFilter(); filt.type = 'lowpass'; filt.frequency.value = 150; filt.Q.value = 0.9;
+    an = ctx.createAnalyser(); an.fftSize = 1024; data = new Float32Array(an.fftSize);
+    gain = ctx.createGain(); gain.gain.value = 0;
+    src.connect(filt); filt.connect(an); an.connect(gain); gain.connect(ctx.destination);
+    return true;
+  }
+  let slow = 0.05, shown = 0;
+  function loop() { // kick detector: loudness of the filtered bass vs its own running average, with a quick fall-off
+    an.getFloatTimeDomainData(data); let sum = 0; for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
+    const rms = Math.sqrt(sum / data.length); slow = slow * 0.94 + rms * 0.06;
+    const hit = Math.min(1, Math.max(0, (rms - slow * 1.12) / (slow * 1.1 + 0.002)));
+    shown = Math.max(hit, shown * 0.8);
+    walk.style.setProperty('--b', shown.toFixed(3)); raf = setTimeout(loop, 30);
+  }
+  async function start() {
+    if (playing || done || !on || !setup()) return false;
+    try { await ctx.resume(); await au.play(); } catch (_) { paint(); return false; }
+    if (ctx.state !== 'running') { au.pause(); paint(); return false; }
+    playing = true; walk.classList.add('loud');
+    const now = ctx.currentTime, loud = Math.min(0.7, vol * 1.8);
+    gain.gain.cancelScheduledValues(now); gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(loud, now + 1.2);
+    filt.frequency.cancelScheduledValues(now); filt.frequency.setValueAtTime(150, now); filt.frequency.exponentialRampToValueAtTime(1400, now + 8.5);
+    clearTimeout(raf); loop(); paint(); return true;
+  }
+  function stop(fade = 0.9) {
+    clearTimeout(raf); walk.classList.remove('loud'); walk.style.removeProperty('--b');
+    if (!playing) return; playing = false; const now = ctx.currentTime;
+    gain.gain.cancelScheduledValues(now); gain.gain.setValueAtTime(gain.gain.value, now); gain.gain.linearRampToValueAtTime(0, now + fade);
+    const c = ctx; setTimeout(() => { au.pause(); if (done) c.close().catch(() => { }); }, fade * 1000 + 100);
+  }
+  btn.addEventListener('click', async e => {
+    e.stopPropagation();
+    if (playing) { on = false; stop(0.3); } else { on = true; if (await start()) { clearTimeout(auto); auto = setTimeout(finish, reduce ? 999999 : 8200); } }
+    try { localStorage.setItem('shd.introSound', on ? 'on' : 'off'); } catch (_) { }
+    paint();
+  });
+  // the first tap on the alley itself (not the flyer or skip) also turns the bass on
+  walk.addEventListener('pointerdown', e => { if (!playing && on && !e.target.closest('button')) start().then(ok => { if (ok) { clearTimeout(auto); auto = setTimeout(finish, reduce ? 999999 : 8200); } }); });
+  paint();
+  return { start, stop };
+})();
+const go = () => { if (walk.classList.contains('ready') || done) return; walk.classList.add('ready'); auto = setTimeout(finish, reduce ? 999999 : 8200); bass.start(); };
 const sImg = walk.querySelector('.wk-scene img');
 if (sImg.complete && sImg.naturalWidth) go(); else { sImg.addEventListener('load', go, { once: true }); sImg.addEventListener('error', go, { once: true }); setTimeout(go, 4000); }
 setTimeout(() => walk.querySelector('.wk-hold').focus({ preventScroll: true }), 50);
