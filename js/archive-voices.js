@@ -15,11 +15,13 @@ const CAPTIONS = [ // from the artist's TikTok (bio, profile picture, captions)
   'ᴺᵉᵛᵉʳ ᵇᵉ ᵃᶠʳᵃⁱᵈ ᵗᵒ ᵇᵉᶜᵒᵐᵉ ʷⁱˢᵉ', 'I forget you can just scan your scribbles/doodles.', 'was lost in my iPad for so long I forgot I did this 😵‍💫', 'S e e d l i n g', '𝔰𝔥𝔢𝔡𝔦𝔱𝔥𝔢𝔯𝔰 ░▒', 'digital collage · photomontage · dither & glitch art',
 ];
 const ART = ARTWORKS.filter(a => a.words && a.type !== 'video');
-const feed = [
+const FANS = (Array.isArray(CFG.tiktokComments) ? CFG.tiktokComments : []).filter(c => c && c.text).map(c => ({ who: '@' + String(c.user || 'someone').replace(/^@/, ''), tag: 'on tiktok', text: String(c.text), art: null, fan: true }));
+const OWN = [
   ...CAPTIONS.map(t => ({ who: '@shedithers', tag: 'caption', text: t, art: null })),
   ...ART.map(a => ({ who: 'from the art', tag: a.title.toLowerCase(), text: a.words.split(' · ')[0], art: a })),
-  ...(Array.isArray(CFG.tiktokComments) ? CFG.tiktokComments : []).filter(c => c && c.text).map(c => ({ who: '@' + String(c.user || 'someone').replace(/^@/, ''), tag: 'comment', text: String(c.text), art: null, fan: true })),
 ];
+// real comments lead; one of the artist's own lines drops in every fifth
+const feed = FANS.length ? FANS.flatMap((f, k) => (k % 4 === 3 ? [f, OWN[(k / 4 | 0) % OWN.length]] : [f])) : OWN;
 const AV = ART.slice(0, 12);
 let likes = {}; try { likes = JSON.parse(localStorage.getItem('shd.voiceLikes') || '{}'); } catch (_) { }
 const FONTS = ['vf-wet', 'vf-hand', 'vf-glitch', 'vf-marker', 'vf-bebas', 'vf-serif', 'vf-mono'];
@@ -47,7 +49,7 @@ function build() {
   for (let k = 0; k < 4; k++) push();
   const loop = () => { clearTimeout(timer); if (!paused && !document.hidden) push(); timer = setTimeout(loop, reduce ? 6000 : 2600); };
   const sec = h('section', { class: 'p-mod p-voices' },
-    h('div', { class: 'p-head' }, h('small', null, 'コメント'), h('b', null, 'THE COMMENT SECTION'), h('span', null, 'TAP A COMMENT TO BLOW IT UP · ♥ IT')),
+    h('div', { class: 'p-head' }, h('small', null, 'コメント'), h('b', null, 'THE COMMENT SECTION'), h('span', null, 'REAL COMMENTS FROM MY TIKTOKS · TAP ONE TO BLOW IT UP · ♥ IT')),
     h('div', { class: 'vc-wrap' }, h('div', { class: 'vc-strip', 'aria-hidden': 'true' }, ...AV.slice(0, 6).map(a => h('i', { style: `background-image:url('${abs(a.src)}')` }))), list, big,
       h('div', { class: 'vc-ctrl' }, h('button', { type: 'button', class: 'vc-btn', onclick: e => { paused = !paused; e.currentTarget.textContent = paused ? '▶ play' : '❚❚ pause'; } }, '❚❚ pause'), h('button', { type: 'button', class: 'vc-btn', onclick: push }, 'next ▸'), h('a', { class: 'vc-btn red', href: 'https://www.tiktok.com/@' + String(CFG.tiktok || 'shedithers').replace(/^@/, ''), target: '_blank', rel: 'noopener' }, 'say something on tiktok ▸'))));
   sec.addEventListener('mouseenter', () => { paused = true; }); sec.addEventListener('mouseleave', () => { paused = false; });
