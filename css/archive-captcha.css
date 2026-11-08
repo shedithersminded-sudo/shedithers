@@ -1,0 +1,35 @@
+/* ===== the door check: "select all squares with YOU" ===== */
+.has-cap .pg-cd,.has-cap .pg-seal{display:none!important}
+.cap{position:relative;grid-row:1/3;width:min(470px,44vw);perspective:1000px;animation:capIn .8s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes capIn{from{opacity:0;transform:translateY(30px) scale(.9)}}
+.cap-frame{position:absolute;inset:-22px;border:2px solid rgba(233,227,209,.25);border-radius:28px;background:repeating-linear-gradient(45deg,rgba(233,227,209,.04) 0 2px,transparent 2px 9px),radial-gradient(ellipse at 50% 40%,rgba(212,255,0,.08),rgba(11,10,9,.9) 75%);box-shadow:inset 0 0 0 8px rgba(11,10,9,.6),0 30px 80px rgba(0,0,0,.7)}
+.cap-frame i{position:absolute;font-style:normal;color:#e2682a;font-size:22px;text-shadow:0 0 8px rgba(226,104,38,.7)}
+.cap-frame i:nth-child(1){left:10px;top:6px}.cap-frame i:nth-child(2){right:12px;top:8px}.cap-frame i:nth-child(3){left:12px;bottom:6px}.cap-frame i:nth-child(4){right:10px;bottom:6px}
+.cap-screen{position:relative;padding:14px;background:#d9dccd;border-radius:14px 14px 22px 22px/14px 14px 34px 34px;transform:rotateX(9deg);transform-origin:50% 100%;box-shadow:0 0 0 3px #0b0a09,inset 0 0 40px rgba(0,0,0,.25),0 20px 40px rgba(0,0,0,.5)}
+.cap-screen::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,rgba(255,255,255,.18),transparent 55%),repeating-linear-gradient(0deg,rgba(0,0,0,.05) 0 1px,transparent 1px 3px)}
+.cap-head{display:flex;flex-direction:column;padding:10px 14px 12px;margin-bottom:12px;background:#d4ff00;color:#0b0a09;border-radius:6px;box-shadow:0 0 0 2px #0b0a09}
+.cap-head small{font:400 15px 'Patrick Hand',cursive}
+.cap-head b{font:400 clamp(36px,4.4vw,54px)/.95 'Rubik Wet Paint','Bebas Neue',sans-serif;letter-spacing:.04em;color:#0b0a09}
+.cap-head span{font:400 16px 'Patrick Hand',cursive}
+.cap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;aspect-ratio:1/1.12}
+.cap-t{position:relative;padding:0;border:0;border-radius:3px;background:#1a1817 0 0/400% 400% no-repeat;filter:grayscale(1) contrast(1.35) brightness(.9);box-shadow:0 0 0 2px #0b0a09;cursor:pointer;animation:capT .45s cubic-bezier(.2,1.4,.4,1) both;animation-delay:var(--d);transition:transform .2s cubic-bezier(.3,1.6,.5,1),filter .2s}
+@keyframes capT{from{opacity:0;transform:scale(.6) rotate(-6deg)}}
+.cap-t:hover{transform:scale(1.05);z-index:2;filter:grayscale(.6) contrast(1.4)}
+.cap-t::after{content:'';position:absolute;inset:0;border-radius:inherit;background:#c3141c;mix-blend-mode:multiply;opacity:0;transition:opacity .2s}
+.cap-t::before{content:'✓';position:absolute;left:5px;top:5px;z-index:2;width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:#e2682a;color:#0b0a09;font:700 15px/1 sans-serif;box-shadow:0 0 0 2px #0b0a09;transform:scale(0);transition:transform .25s cubic-bezier(.3,1.8,.5,1)}
+.cap-t.on{transform:scale(.9)}.cap-t.on::after{opacity:.85}.cap-t.on::before{transform:scale(1)}
+.cap-foot{display:flex;align-items:center;gap:8px;margin-top:12px}
+.cap-ico{width:34px;height:34px;border-radius:50%;background:#0b0a09;color:#e9e3d1;font:700 16px/1 Georgia,serif;box-shadow:0 0 0 2px #e2682a}
+.cap-msg{flex:1;min-width:0;font:400 16px/1.2 'Patrick Hand',cursive;color:#0b0a09}
+.cap-end{padding:9px 22px;background:#c3141c;color:#e9e3d1;border-radius:5px;font:400 20px 'Bebas Neue',sans-serif;letter-spacing:.14em;box-shadow:3px 3px 0 #0b0a09}
+.cap-end:hover{background:#0b0a09;box-shadow:3px 3px 0 #c3141c}
+.cap.fail .cap-head{background:#c3141c;color:#e9e3d1;animation:capShake .4s}.cap.fail .cap-head b{color:#e9e3d1}
+.cap.pass .cap-head{background:#e2682a}
+@keyframes capShake{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@media (max-width:760px){.cap{grid-row:auto;width:min(380px,88vw)}.cap-screen{transform:none}}
+@media (prefers-reduced-motion:reduce){.cap,.cap-t{animation:none}}
+.cap-t{filter:none!important;background:#1a1817;overflow:hidden}
+.cap-img{position:absolute;inset:0;background:#1a1817 0 0/400% 400% no-repeat;filter:grayscale(1) contrast(1.35) brightness(.9);transition:filter .2s}
+.cap-t:hover .cap-img{filter:grayscale(.5) contrast(1.4)}
+.cap-t::after{z-index:1}
+.cap-t.on .cap-img{filter:grayscale(1) contrast(1.5)}
