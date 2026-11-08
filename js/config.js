@@ -35,7 +35,7 @@ const SHD_CONFIG = {
   ],
   // Where the suggestion box sends messages
   email: 'shedithersminded@gmail.com',
-  tipLine: 'no paywall, no catch. stay as long as u want. if something in here stuck with u, pull up a seat and buy me a drink ♥',
+  tipLine: 'no paywall, no catch. stay as long as u want. if u liked looking at my art, or made something cool in the editor, maybe buy me a drink. it keeps the lights on and the weird stuff coming ♥',
   // icon = little doodle in assets/ui/drinks/ (emoji is the fallback)
   drinks: [
     { label: 'SLUSHY', emoji: '🍧', icon: 'slushy', amount: 3 },
