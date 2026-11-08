@@ -37,3 +37,19 @@
 @media (prefers-reduced-motion:reduce){.d3-inner{transition:none}}
 .portal>.p-deck{grid-column:1/-1;grid-row:8}
 @media (max-width:1100px){.portal>.p-deck{grid-row:auto}}
+
+/* the art's own words, cut out and stuck on the card in mixed fonts; they jump when you hover */
+.d3-words{position:absolute;left:12px;right:12px;bottom:44px;z-index:2;display:flex;flex-wrap:wrap;gap:3px 4px;align-items:flex-end;pointer-events:none}
+.d3-words i{display:inline-block;padding:1px 6px 2px;font-style:normal;line-height:1.05;transform:rotate(var(--r));box-shadow:2px 2px 0 rgba(0,0,0,.55);transition:transform .35s cubic-bezier(.3,1.6,.5,1);transition-delay:calc(var(--k) * 35ms)}
+.d3-words .w0{background:#e9e3d1;color:#0b0a09;font:400 15px 'Rubik Wet Paint','Bebas Neue',sans-serif}
+.d3-words .w1{background:#0b0a09;color:#d4ff00;font:400 14px 'Rubik Glitch','Bebas Neue',sans-serif}
+.d3-words .w2{background:#c3141c;color:#e9e3d1;font:400 16px 'Patrick Hand',cursive}
+.d3-words .w3{background:#c9a227;color:#0b0a09;font:400 15px 'Permanent Marker',cursive}
+.d3-words .w4{background:#3f7f7a;color:#e9e3d1;font:400 17px 'Bebas Neue',sans-serif;letter-spacing:.06em}
+.d3-words .w5{background:#e9e3d1;color:#7a3a6b;font:italic 400 15px Georgia,serif}
+.d3-card:hover .d3-words i,.d3-card.front .d3-words i{animation:d3Jig .9s ease-in-out infinite alternate;animation-delay:calc(var(--k) * -120ms)}
+.d3-card:hover .d3-words i{transform:rotate(calc(var(--r) * -1.6)) translateY(-4px) scale(1.08)}
+@keyframes d3Jig{0%{translate:0 0}50%{translate:0 -3px}100%{translate:1px 1px}}
+.d3-card:not(.front) .d3-words{opacity:.75}
+@media (max-width:760px){.d3-words i{font-size:12px!important}}
+@media (prefers-reduced-motion:reduce){.d3-words i{animation:none!important}}

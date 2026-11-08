@@ -24,6 +24,7 @@ function build() {
       h('i', { class: 'd3-glare', 'aria-hidden': 'true' }),
       h('span', { class: 'd3-code' }, `NO.${String(i + 1).padStart(2, '0')}`),
       h('span', { class: 'd3-stars', 'aria-hidden': 'true' }, '★'.repeat(3 + (i % 3))),
+      h('span', { class: 'd3-words', 'aria-hidden': 'true' }, (words || a.title.toLowerCase()).split(/\s+/).filter(Boolean).slice(0, 7).map((w, k) => h('i', { class: `w${(k + i) % 6}`, style: `--k:${k};--r:${[-6, 4, -2, 7, -5, 3, -8][k % 7]}deg` }, w))),
       h('span', { class: 'd3-title' }, a.title));
     const back = h('div', { class: 'd3-face d3-back' },
       h('span', { class: 'd3-mark' }, 'SHEDITHERS'),

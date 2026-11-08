@@ -90,7 +90,8 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     const mute = mk('ic-mute', '🔊', 'Mute the song');
     const slider = document.createElement('input'); slider.type = 'range'; slider.className = 'ic-vol'; slider.min = 0; slider.max = 100; slider.value = Math.round(vol * 100); slider.setAttribute('aria-label', 'Song volume');
     const stop = mk('ic-stop', '✕', 'Stop the song');
-    chip.append(pp, mute, slider, stop);
+    const tipB = mk('ic-tip', '', 'Buy me a drink'); tipB.innerHTML = '<img src="assets/ui/drinks/cocktail.svg" alt="">'; tipB.onclick = e => { e.stopPropagation(); window.SHD_DRINK && window.SHD_DRINK(); };
+    chip.append(pp, mute, slider, tipB, stop);
     const paintPP = () => { const p = a.paused; pp.textContent = p ? '▶' : '❚❚'; pp.setAttribute('aria-label', p ? 'Play the song' : 'Pause the song'); pp.title = pp.getAttribute('aria-label'); chip.classList.toggle('paused', p); };
     const paintVol = () => { const v = fading ? vol : a.volume, m = a.muted || v === 0; mute.textContent = m ? '🔇' : v < 0.4 ? '🔉' : '🔊'; mute.setAttribute('aria-label', m ? 'Unmute the song' : 'Mute the song'); mute.title = mute.getAttribute('aria-label'); slider.value = a.muted ? 0 : Math.round(v * 100); };
     pp.onclick = e => { e.stopPropagation(); a.paused ? a.play().catch(() => { }) : a.pause(); };
@@ -221,7 +222,25 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
   }
   const openCounted = e => { if (!modal && window.shdCount) window.shdCount('tip-jar-opened', 'Opened the tip jar'); open(e); };
   window.SHD_DRINK = openCounted;
-  const tab = el('button', 'drink-tab'); tab.type = 'button'; tab.setAttribute('aria-label', 'Buy me a drink'); tab.innerHTML = '<i>🍹</i><b>BUY ME A DRINK</b>'; tab.onclick = openCounted;
+  // the side tab: a hanging bar sign — tape on top, cocktail doodle, scrawled words, a drip
+  const tab = el('button', 'drink-tab'); tab.type = 'button'; tab.setAttribute('aria-label', 'Buy me a drink');
+  tab.innerHTML = '<span class="dt-tape"></span><img class="dt-ico" src="assets/ui/drinks/cocktail.svg" alt=""><b>buy me a drink</b><small>no pressure ♥</small><span class="dt-drip"></span>';
+  tab.onclick = openCounted;
   document.body.append(tab);
   document.querySelectorAll('[data-drink]').forEach(a => a.addEventListener('click', openCounted));
+  // little drink spots around the site
+  const mini = (cls, html, label) => { const b = el('button', 'drink-spot ' + cls); b.type = 'button'; b.setAttribute('aria-label', label || 'Buy me a drink'); b.innerHTML = html; b.onclick = e => { e.preventDefault(); e.stopPropagation(); openCounted(); }; return b; };
+  const place = () => {
+    const row = document.querySelector('.p-pop .pp-row'); // home: a slushy sticker next to the spinning CD
+    if (row && !row.querySelector('.ds-slushy')) row.append(mini('ds-slushy', '<img src="assets/ui/drinks/slushy.svg" alt=""><span>buy me<br>a slushy</span>'));
+    const foot = document.querySelector('.p-foot'); // home footer links
+    if (foot && !foot.querySelector('.ds-foot')) { const a = mini('ds-foot pf-badge', '🍹 buy me a drink'); const pf = foot.querySelector('.pf-badge.dim'); pf ? pf.before(a) : foot.append(a); }
+    const ctrl = document.querySelector('.p-deck .d3-ctrl'); // the deck: a tip button with the cards
+    if (ctrl && !ctrl.querySelector('.ds-deck')) ctrl.append(mini('ds-deck d3-btn', '<img src="assets/ui/drinks/fruit.svg" alt=""> tip the artist'));
+    const va = document.querySelector('.v-actions'); // the viewer: "liked this one?"
+    if (va && !va.querySelector('.ds-view')) va.append(mini('ds-view v-btn', '🍹 liked this one?', 'Liked this piece? Buy me a drink'));
+    const about = document.querySelector('.about-card .rights'); // about page: a bottle sticker by the rights line
+    if (about && !document.querySelector('.ds-about')) about.before(mini('ds-about', '<img src="assets/ui/drinks/bottle.svg" alt=""><span>round for the studio?</span>'));
+  };
+  place(); const view = document.getElementById('view'); if (view) new MutationObserver(place).observe(view, { childList: true, subtree: true });
 })();

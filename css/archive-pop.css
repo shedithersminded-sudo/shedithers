@@ -514,3 +514,42 @@ nav a.drink-nav{box-shadow:2px 2px 0 #0b0a09}
 .sb-send{background:var(--teal)}
 .lab-float{box-shadow:4px 4px 0 var(--teal)}
 .intro-chip{box-shadow:0 0 0 2px #0b0a09,4px 4px 0 var(--mustard)}
+
+/* ===== TikTok TV, Mars style: rust porthole set with craters, an orbiting ring and a spinning star ===== */
+.tv::before{content:'';position:absolute;left:-26px;right:-26px;top:22%;height:44%;z-index:-1;border:3px solid #c9a227;border-left-color:transparent;border-radius:50%;transform:rotate(-12deg);pointer-events:none;box-shadow:0 0 0 1px #0b0a09}
+.tv::after{content:'★';position:absolute;right:-14px;top:-18px;z-index:3;width:44px;height:44px;display:grid;place-items:center;background:#c3141c;color:#e9e3d1;font-size:20px;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);animation:tvStar 8s linear infinite;pointer-events:none}
+@keyframes tvStar{to{transform:rotate(360deg)}}
+.tv-body{border-radius:48% 48% 22px 22px/34% 34% 22px 22px;padding-top:22px;background:radial-gradient(circle at 18% 22%,rgba(11,10,9,.35) 0 7px,transparent 8px),radial-gradient(circle at 78% 30%,rgba(11,10,9,.3) 0 5px,transparent 6px),radial-gradient(circle at 64% 12%,rgba(233,227,209,.18) 0 4px,transparent 5px),radial-gradient(circle at 30% 8%,rgba(11,10,9,.25) 0 3px,transparent 4px),linear-gradient(160deg,#c45a2c,#8a3418 60%,#5a2010);box-shadow:0 0 0 2px #0b0a09,0 0 0 5px #c9a227,0 18px 40px rgba(0,0,0,.6)}
+.tv-body::before{background:linear-gradient(135deg,rgba(201,162,39,.25),transparent 50%,rgba(11,10,9,.35));mix-blend-mode:normal;opacity:1}
+.tv-screen{border-radius:38%/26%;box-shadow:0 0 0 3px #0b0a09,0 0 0 6px #e9e3d1,inset 0 0 30px rgba(0,0,0,.9)}
+.tv-tag{background:#0b0a09;color:#c9a227;font-family:'Rubik Glitch','Bebas Neue',sans-serif;box-shadow:2px 2px 0 #c3141c}
+.tv-ant i{background:#0b0a09}.tv-ant i::after{background:#c9a227}
+.tv-panel{background:rgba(11,10,9,.55)}
+.tv-k{box-shadow:0 0 0 2px #c9a227}
+.tv.min::before,.tv.min::after{display:none}
+@media (prefers-reduced-motion:reduce){.tv::after{animation:none}}
+
+/* ===== buy me a drink v2: a hanging bar sign + little drink spots ===== */
+.drink-tab{display:flex;flex-direction:column;align-items:center;gap:6px;width:62px;padding:22px 6px 26px 8px;background:#e9e3d1;color:#0b0a09;border-radius:0;animation:none;box-shadow:-4px 4px 0 #c3141c,0 0 0 2px #0b0a09;clip-path:polygon(10% 0,100% 0,100% 100%,10% 100%,0 94%,8% 86%,0 78%,8% 70%,0 62%,8% 54%,0 46%,8% 38%,0 30%,8% 22%,0 14%,8% 6%);transform:translateY(-50%) rotate(-2deg);transform-origin:right center;transition:transform .25s cubic-bezier(.3,1.5,.5,1),width .25s}
+.drink-tab:hover{transform:translateY(-50%) rotate(0) translateX(-6px);box-shadow:-6px 6px 0 #c3141c,0 0 0 2px #0b0a09}
+.drink-tab b{writing-mode:vertical-rl;transform:rotate(180deg);font:400 26px/1 'Rubik Wet Paint','Bebas Neue',sans-serif;color:#c3141c;letter-spacing:.02em}
+.drink-tab small{writing-mode:vertical-rl;transform:rotate(180deg);font:400 14px 'Patrick Hand',cursive;color:#3a3633}
+.drink-tab .dt-ico{width:44px;height:44px;transition:transform .3s}
+.drink-tab:hover .dt-ico{transform:rotate(-14deg) scale(1.1)}
+.drink-tab .dt-tape{position:absolute;top:-4px;left:50%;width:46px;height:14px;margin-left:-20px;background:rgba(201,162,39,.85);transform:rotate(-6deg)}
+.drink-tab .dt-drip{position:absolute;bottom:6px;left:50%;width:8px;height:14px;margin-left:-2px;background:#c3141c;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;animation:dtDrip 3s ease-in infinite}
+@keyframes dtDrip{0%,60%{transform:translateY(-6px) scaleY(.6);opacity:0}70%{opacity:1}100%{transform:translateY(10px) scaleY(1.2);opacity:0}}
+@media (max-width:760px){.drink-tab{width:48px;padding:16px 4px 18px 6px;transform:rotate(-2deg)}.drink-tab b{font-size:19px}.drink-tab small{display:none}.drink-tab .dt-ico{width:32px;height:32px}.drink-tab:hover{transform:none}}
+/* spots */
+.drink-spot{cursor:pointer}
+.ds-slushy{align-self:center;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 12px 8px;background:#e9e3d1;color:#0b0a09;transform:rotate(5deg);box-shadow:4px 4px 0 #3f7f7a,0 0 0 2px #0b0a09;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.ds-slushy img{width:64px;height:64px}.ds-slushy span{font:400 18px/1 'Patrick Hand',cursive;text-align:center}
+.ds-slushy:hover{transform:rotate(-3deg) scale(1.06)}
+.ds-foot{background:#c3141c!important;color:#e9e3d1!important}
+.ds-deck img{width:22px;height:22px;vertical-align:-5px}
+.ds-deck{background:#3f7f7a!important}
+.ds-view{background:#c3141c;color:#e9e3d1}
+.ds-about{display:flex;align-items:center;gap:10px;margin:18px 0 0;padding:6px 14px 6px 6px;background:#0b0a09;color:#e9e3d1;transform:rotate(-1.5deg);box-shadow:4px 4px 0 #c9a227;font:400 19px 'Patrick Hand',cursive}
+.ds-about img{width:48px;height:48px}
+.ds-about:hover{transform:rotate(0) scale(1.03)}
+.intro-chip .ic-tip{padding:0;background:#e9e3d1!important}.intro-chip .ic-tip img{width:24px;height:24px}
