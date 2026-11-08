@@ -1,33 +1,99 @@
-/* ===== the way in: walking to the warehouse with a flyer ===== */
-.walk{position:fixed;inset:0;z-index:200;overflow:hidden;background:#0b0a09;color:#e9e3d1}
-.wk-bg,.wk-fg,.wk-tint,.wk-grain{position:absolute;inset:0;pointer-events:none}
-.wk-bg{background:url('../assets/ui/walk-bg.jpg') center 62%/cover no-repeat;transform-origin:50% 55%;animation:wkWalk 6.5s cubic-bezier(.3,.1,.4,1) forwards}
-.wk-fg{background:url('../assets/ui/walk-fg.png') center 62%/cover no-repeat;transform-origin:65% 80%;animation:wkBob .62s ease-in-out infinite alternate}
-.wk-tint{background:radial-gradient(ellipse at 50% 40%,transparent 35%,rgba(11,10,9,.55) 85%),linear-gradient(180deg,rgba(212,255,0,.12),transparent 40%)}
-.wk-grain{opacity:.18;background:repeating-linear-gradient(0deg,rgba(0,0,0,.4) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
-@keyframes wkWalk{0%{transform:scale(1) translate(0,0)}25%{transform:scale(1.06) translate(.4%,.6%)}50%{transform:scale(1.13) translate(-.4%,0)}75%{transform:scale(1.2) translate(.4%,.6%)}100%{transform:scale(1.28) translate(0,0)}}
-@keyframes wkBob{from{transform:translateY(0) rotate(-.4deg)}to{transform:translateY(1.6%) rotate(.5deg)}}
-.wk-hud{position:absolute;left:max(16px,env(safe-area-inset-left));right:max(16px,env(safe-area-inset-right));top:max(16px,env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center;gap:10px}
-.wk-hud b{padding:4px 10px;background:#0b0a09;color:#d4ff00;font:400 clamp(18px,3.4vw,30px)/1 'Bebas Neue',sans-serif;letter-spacing:.14em;box-shadow:3px 3px 0 #c3141c}
-.wk-dist{padding:4px 10px;background:#d4ff00;color:#0b0a09;font:400 clamp(16px,2.6vw,24px)/1 'Bebas Neue',sans-serif;letter-spacing:.1em;box-shadow:3px 3px 0 #0b0a09}
-.wk-steps{position:absolute;left:max(16px,env(safe-area-inset-left));top:22%;display:flex;flex-direction:column;gap:8px}
-.wk-steps span{align-self:flex-start;padding:3px 10px;background:#e9e3d1;color:#0b0a09;font:400 clamp(18px,3vw,26px) 'Patrick Hand',cursive;transform:rotate(-2deg);opacity:0;animation:wkLine .5s ease forwards}
-.wk-steps span:nth-child(1){animation-delay:.8s}.wk-steps span:nth-child(2){animation-delay:2.1s;transform:rotate(1.5deg);background:#d4ff00}
-@keyframes wkLine{from{opacity:0;translate:-20px 0}to{opacity:1;translate:0 0}}
-.wk-flyer{position:absolute;left:53%;top:40%;width:26%;height:52%;padding:0;background:transparent;border:0;cursor:pointer;animation:wkBob .62s ease-in-out infinite alternate}
-.wk-flyer span{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%) rotate(-3deg);white-space:nowrap;padding:5px 12px;background:#0b0a09;color:#d4ff00;font:400 clamp(16px,2.4vw,22px) 'Bebas Neue',sans-serif;letter-spacing:.12em;box-shadow:3px 3px 0 #c3141c;animation:wkTap 1.2s ease-in-out infinite}
-@keyframes wkTap{50%{transform:translateX(-50%) rotate(-3deg) scale(1.08)}}
-.wk-flyer:focus-visible{outline:3px dashed #d4ff00;outline-offset:4px}
-.wk-skip{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));padding:6px 14px;background:rgba(11,10,9,.7);color:#e9e3d1;border:1px solid rgba(233,227,209,.4);border-radius:4px;font:400 18px 'Bebas Neue',sans-serif;letter-spacing:.12em}
-/* arriving: the flyer comes up to your face, flash of lime, you're at the door */
-.walk.arrive .wk-fg{animation:wkArrive 1.05s cubic-bezier(.6,0,.4,1) forwards}
-.walk.arrive .wk-bg{animation:none;transform:scale(1.3);transition:opacity .9s .15s;opacity:0}
-.walk.arrive::after{content:'';position:absolute;inset:0;background:#d4ff00;animation:wkFlash 1.05s ease forwards;pointer-events:none}
-.walk.arrive .wk-hud,.walk.arrive .wk-steps,.walk.arrive .wk-flyer,.walk.arrive .wk-skip{opacity:0;transition:opacity .25s}
-@keyframes wkArrive{to{transform:scale(4.2) translate(-8%,-14%);opacity:0}}
+/* ===== the way in v3: a rendered night alley to an underground warehouse rave, flyer held in bone-print gloves ===== */
+.walk{position:fixed;inset:0;z-index:200;overflow:hidden;background:#050404;color:#e9e3d1}
+.wk-scene{position:absolute;inset:0;transform-origin:50% 58%;animation:wkWalk 8.2s cubic-bezier(.25,.1,.35,1) forwards}
+.wk-scene{background:#050404 var(--ph) 50% 56%/cover no-repeat}
+.wk-scene::before{content:'';position:absolute;inset:0;backdrop-filter:blur(18px)}
+.walk:not(.ready) .wk-scene,.walk:not(.ready) .wk-steps span,.walk:not(.ready) .wk-title span{animation-play-state:paused}
+.wk-scene img{opacity:0;transition:opacity .5s}.walk.ready .wk-scene img{opacity:1}
+.wk-scene picture,.wk-scene img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.wk-scene img{object-fit:cover;object-position:50% 56%;filter:contrast(1.05) saturate(1.05)}
+@keyframes wkWalk{0%{transform:scale(1) translate(0,0)}12%{transform:scale(1.02) translate(.25%,.35%)}25%{transform:scale(1.045) translate(-.2%,0)}37%{transform:scale(1.07) translate(.25%,.35%)}50%{transform:scale(1.095) translate(-.2%,0)}62%{transform:scale(1.12) translate(.25%,.35%)}75%{transform:scale(1.145) translate(-.2%,0)}87%{transform:scale(1.17) translate(.25%,.35%)}100%{transform:scale(1.2) translate(0,0)}}
+/* the bass leaking out of the door, on the beat of "Sorry" (130 BPM) */
+.wk-bass{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(ellipse 22% 26% at 50% 60%,rgba(212,255,0,.5),rgba(212,255,0,.12) 45%,transparent 70%),radial-gradient(ellipse 12% 10% at 50% 47%,rgba(255,40,30,.45),transparent 70%);animation:wkBass .4615s ease-out infinite}
+@keyframes wkBass{0%{opacity:1}35%{opacity:.35}100%{opacity:.15}}
+.wk-fog{position:absolute;left:-20%;right:-20%;bottom:8%;height:46%;pointer-events:none;mix-blend-mode:screen;opacity:.35;background:radial-gradient(ellipse 30% 40% at 30% 60%,rgba(226,104,38,.35),transparent 70%),radial-gradient(ellipse 35% 30% at 70% 70%,rgba(212,255,0,.18),transparent 70%);filter:blur(10px);animation:wkFogDrift 11s ease-in-out infinite alternate}
+@keyframes wkFogDrift{from{transform:translateX(-5%)}to{transform:translateX(5%)}}
+/* the artist's doodles drifting in the haze */
+.wk-doods{position:absolute;inset:-6%;pointer-events:none;mix-blend-mode:screen;opacity:.14;background:url('../assets/ui/doodles/bloom.png') 4% 22%/min(30vw,30vh) no-repeat,url('../assets/ui/doodles/gold.png') 97% 30%/min(26vw,28vh) no-repeat,url('../assets/ui/doodles/little-guy.png') 50% 9%/min(24vw,30vh) no-repeat;filter:grayscale(.2) contrast(1.3);animation:wkDood 14s ease-in-out infinite alternate}
+@keyframes wkDood{to{transform:translate(1.5%,-2%) rotate(1deg)}}
+.wk-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 55%,transparent 45%,rgba(4,3,3,.7) 100%)}
+.wk-grain{position:absolute;inset:0;pointer-events:none;opacity:.28;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");mix-blend-mode:overlay;z-index:5;animation:wkGrain .25s steps(2) infinite}
+@keyframes wkGrain{50%{background-position:37px 61px}}
+/* letterbox */
+.wk-bar{position:absolute;left:0;right:0;height:9svh;background:#050404;z-index:4;pointer-events:none}
+.wk-bar.top{top:0}.wk-bar.bot{bottom:0;display:flex;align-items:center;gap:18px;padding:0 max(18px,env(safe-area-inset-left));border-top:1px solid rgba(226,104,38,.4)}
+.wk-obs{font:italic 400 clamp(13px,1.8vw,20px) 'Michroma',sans-serif;letter-spacing:.08em;color:#e9e3d1;transform:scaleX(1.25);transform-origin:left;text-transform:lowercase;opacity:.8}
+.wk-date{margin-left:auto;font:400 clamp(14px,2.4vw,26px) 'Michroma',sans-serif;color:#e9e3d1;opacity:.75}
+.wk-check{display:grid;grid-template-columns:repeat(3,12px);grid-template-rows:repeat(2,12px)}
+.wk-check i:nth-child(odd){background:#e2682a}.wk-check i:nth-child(even){background:#f2b234}.wk-check i:nth-child(2),.wk-check i:nth-child(5){background:transparent}
+/* HUD: quiet, like a phone map on the way to a party */
+.wk-hud{position:absolute;z-index:6;left:max(16px,env(safe-area-inset-left));right:max(16px,env(safe-area-inset-right));top:calc(9svh + 12px);display:flex;justify-content:space-between;align-items:center;gap:10px;pointer-events:none}
+.wk-title{display:inline-flex;font:400 clamp(30px,5vw,58px)/1 'UnifrakturMaguntia',serif;color:#e9e3d1;text-shadow:0 0 18px rgba(255,60,40,.55),2px 2px 0 #7a0c10}
+.wk-title span{display:inline-block;animation:wkLetter 1.84s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes wkLetter{0%,100%{transform:translateY(0)}25%{transform:translateY(-3px) rotate(-3deg)}75%{transform:translateY(2px) rotate(2deg)}}
+.wk-dist{padding:5px 10px;border:1px solid rgba(233,227,209,.35);border-radius:3px;background:rgba(5,4,4,.55);font:400 clamp(11px,1.4vw,14px) 'Michroma',sans-serif;letter-spacing:.12em;color:#e9e3d1;backdrop-filter:blur(4px)}
+.wk-steps{position:absolute;z-index:6;left:max(16px,env(safe-area-inset-left));top:calc(9svh + clamp(70px,11vw,110px));display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.wk-steps span{align-self:flex-start;padding:3px 9px;background:#0b0a09;color:#e9e3d1;font:400 clamp(14px,1.7vw,19px) 'Special Elite',monospace;letter-spacing:.04em;box-shadow:0 0 0 1px rgba(233,227,209,.18);opacity:0;animation:wkLine .5s ease forwards}
+.wk-steps span:nth-child(1){animation-delay:.8s}.wk-steps span:nth-child(2){animation-delay:2.2s;color:#d4ff00}
+@keyframes wkLine{from{opacity:0;translate:-16px 0}to{opacity:1;translate:0 0}}
+.wk-skip{position:absolute;z-index:6;right:max(16px,env(safe-area-inset-right));top:calc(9svh + 64px);padding:5px 12px;background:rgba(5,4,4,.6);color:#e9e3d1;border:1px solid rgba(233,227,209,.35);border-radius:3px;font:400 12px 'Michroma',sans-serif;letter-spacing:.14em;text-transform:uppercase}
+
+/* ===== the flyer: a real photocopied rave flyer, held in two bone-print gloves ===== */
+.wk-hold{--fw:min(380px,31vw,46svh);position:absolute;z-index:7;right:7vw;bottom:calc(var(--fw) * .2);width:var(--fw);aspect-ratio:400/556;padding:0;border:0;background:none;cursor:pointer;container-type:inline-size;transform:rotate(-5deg);transform-origin:50% 100%;animation:wkHold .923s ease-in-out infinite alternate}
+@keyframes wkHold{from{translate:0 0;rotate:0deg}to{translate:0 1.6%;rotate:.8deg}}
+.wk-hold:focus-visible{outline:none}.wk-hold:focus-visible .fly{outline:3px solid #d4ff00;outline-offset:3px}
+.fly{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:stretch;padding:7cqw 7cqw 0;text-align:left;color:#111;background:
+  linear-gradient(90deg,transparent 49.6%,rgba(0,0,0,.09) 50%,rgba(255,255,255,.35) 50.5%,transparent 51%),
+  linear-gradient(0deg,transparent 64.6%,rgba(0,0,0,.08) 65%,rgba(255,255,255,.3) 65.4%,transparent 66%),
+  linear-gradient(97deg,rgba(0,0,0,.08),transparent 18% 80%,rgba(0,0,0,.12)),#e8e5dc;
+  clip-path:polygon(0 1%,9% 0,40% .6%,71% 0,100% .8%,99.4% 38%,100% 79%,98.2% 84%,99.6% 90%,97% 100%,61% 99.2%,30% 100%,.8% 99.4%,0 60%)}
+.fly::after{content:'';position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.35'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23t)'/%3E%3C/svg%3E");opacity:.16;mix-blend-mode:multiply}
+.wk-hold::before{content:'';position:absolute;inset:4% -2% -2% 4%;z-index:0;background:rgba(0,0,0,.55);filter:blur(14px);transform:rotate(2deg)}
+.fy-staple{position:absolute;left:5cqw;top:3.4cqw;width:9cqw;height:1.4cqw;background:linear-gradient(#bbb,#666);transform:rotate(-24deg);box-shadow:0 1px 0 rgba(0,0,0,.4)}
+.fy-tape{position:absolute;right:-3cqw;top:-1cqw;width:24cqw;height:7cqw;background:rgba(240,232,200,.55);transform:rotate(28deg);box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.fy-top{display:flex;justify-content:space-between;font:400 3.4cqw 'Special Elite',monospace;letter-spacing:.06em;text-transform:uppercase;border-bottom:.6cqw solid #111;padding-bottom:1.4cqw}
+.fy-top em{font-style:normal}
+.fy-name{display:block;margin:1cqw 0 -1.5cqw;font:400 19cqw/1 'UnifrakturMaguntia',serif;letter-spacing:-.01em;color:#111;text-shadow:.5cqw .3cqw 0 rgba(196,20,28,.85)}
+.fy-art{position:relative;display:block;height:36cqw;margin:1.6cqw 0 2cqw;overflow:hidden;background:#111}
+.fy-art i{position:absolute;inset:0;background:var(--fy-art) 50% 46%/cover no-repeat}
+.fy-k{filter:grayscale(1) brightness(1.9) contrast(1.9)}
+.fy-art::after{content:'';position:absolute;inset:0;background:radial-gradient(circle,#111 28%,transparent 31%) 0 0/1.6cqw 1.6cqw;mix-blend-mode:screen;opacity:.35}
+.fy-r{mix-blend-mode:multiply;opacity:.75;filter:grayscale(1) brightness(1.9) contrast(2.2) sepia(1) saturate(9) hue-rotate(-38deg);translate:1.2cqw .7cqw}
+.fy-stamp{position:absolute;z-index:1;right:3cqw;bottom:2.4cqw;padding:.6cqw 2cqw;border:.6cqw solid #c4141c;color:#c4141c;font:400 4.2cqw 'Anton',sans-serif;letter-spacing:.1em;text-transform:uppercase;transform:rotate(-8deg);background:rgba(232,229,220,.6)}
+.fy-line{display:block;font:400 10.5cqw/.95 'Anton',sans-serif;letter-spacing:.01em;text-transform:uppercase}
+.fy-line.sm{margin:1cqw 0 2cqw;font:400 3.5cqw/1.25 'Special Elite',monospace;text-transform:uppercase;letter-spacing:.02em}
+.fy-info{display:block;padding-top:1.6cqw;border-top:.4cqw dashed #111;font:400 3.5cqw/1.45 'Special Elite',monospace;letter-spacing:.02em}
+.fy-stub{display:flex;justify-content:space-between;align-items:center;margin:auto -7cqw 0;padding:2.4cqw 21cqw 3.4cqw;border-top:.5cqw dashed #111;font:400 4.2cqw 'Anton',sans-serif;letter-spacing:.12em}
+.fy-go{color:#c4141c;animation:wkGo 1.2s ease-in-out infinite}
+@keyframes wkGo{50%{opacity:.35}}
+/* gloves */
+.fy-hands{position:absolute;left:0;top:0;width:100%;height:auto;overflow:visible;pointer-events:none}
+.fy-hands.back{z-index:0;filter:drop-shadow(0 18px 20px rgba(0,0,0,.6))}.fy-hands.front{z-index:2}
+.fy-hands .gl{fill:#c3141c;stroke:#e2682a;stroke-width:6;stroke-linejoin:round}
+.fy-hands .bn{stroke:#e9e3d1;stroke-width:9;stroke-linecap:round;fill:none}
+.fy-hands .bnk{fill:#e9e3d1}
+.fy-hands .nail{fill:#e9e3d1;stroke:#0b0a09;stroke-width:2}
+.fy-hands .glow{fill:none;stroke:#d4ff00;stroke-width:13;stroke-linecap:round;filter:drop-shadow(0 0 8px #d4ff00) drop-shadow(0 0 18px #d4ff00)}
+/* arriving: flyer comes up to your face, lime flash, you're at the door */
+.walk.arrive .wk-hold{animation:wkArrive 1.05s cubic-bezier(.6,0,.4,1) forwards}
+.walk.arrive .wk-scene{animation:none;transform:scale(1.3);transition:opacity .9s .15s,transform 1s;opacity:0}
+.walk.arrive::after{content:'';position:absolute;inset:0;z-index:9;background:#d4ff00;animation:wkFlash 1.05s ease forwards;pointer-events:none}
+.walk.arrive .wk-hud,.walk.arrive .wk-steps,.walk.arrive .wk-skip{opacity:0;transition:opacity .25s}
+@keyframes wkArrive{to{transform:translate(-30vw,-30svh) scale(3.4) rotate(0);opacity:0}}
+@keyframes wkArriveUp{to{transform:translateY(-34svh) scale(2.6) rotate(0);opacity:0}}
 @keyframes wkFlash{0%,55%{opacity:0}75%{opacity:.85}100%{opacity:0}}
-.walk.still .wk-bg,.walk.still .wk-fg,.walk.still .wk-flyer,.walk.still .wk-flyer span{animation:none}
-@media (max-width:760px){.wk-bg,.wk-fg{background-position:70% 62%}.wk-flyer{left:44%;width:44%;top:42%;height:48%}}
+.walk.still .wk-scene,.walk.still .wk-bass,.walk.still .wk-fog,.walk.still .wk-doods,.walk.still .wk-grain,.walk.still .wk-hold,.walk.still .wk-title span,.walk.still .fy-go{animation:none}
+/* tablets: flyer a touch bigger */
+@media (max-width:1100px) and (min-aspect-ratio:5/6){.wk-hold{--fw:min(300px,29vw,42svh);right:3vw}}
+/* phones (portrait): flyer centred at the bottom, door visible above it */
+@media (max-aspect-ratio:5/6){
+  .wk-hold{--fw:min(330px,58vw,32svh);right:auto;left:50%;margin-left:calc(var(--fw) / -2);bottom:calc(var(--fw) * .12);transform:rotate(-3deg)}
+  .walk.arrive .wk-hold{animation-name:wkArriveUp}
+  .wk-scene{transform-origin:50% 52%}
+  .wk-bass{background:radial-gradient(ellipse 30% 14% at 50% 54%,rgba(212,255,0,.5),rgba(212,255,0,.12) 45%,transparent 70%)}
+  .wk-obs{display:none}.wk-steps{top:calc(9svh + 64px)}}
+/* short landscape phones */
+@media (max-height:500px) and (min-aspect-ratio:5/6){.wk-hold{--fw:min(230px,26vw,52svh)}.wk-steps{display:none}}
 
 /* ===== the gate matches the inside: lime render behind, ink + lime panels ===== */
 .g-render{position:absolute;inset:0;z-index:0;overflow:hidden;background:#050604;pointer-events:none}
@@ -53,69 +119,4 @@
 .pg-rimtxt{fill:#d4ff00;stroke:#0b0a09}
 .pop-gate .gate-hands{display:none}
 .pg-badges span{background:#0b0a09!important;color:#d4ff00!important;box-shadow:2px 2px 0 #d4ff00!important}
-/* ===== the way in v2: drawn rave street (no photos) ===== */
-.wk-world,.wk-hands{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.wk-world{transform-origin:50% 50%;animation:wkWalk 7.2s cubic-bezier(.3,.1,.4,1) forwards}
-.wk-world .ol{stroke:#0b0a09;stroke-width:3;stroke-linejoin:round}
-.wk-world .hl{stroke:#0b0a09;stroke-width:2;fill:none;opacity:.7}
-.wk-hands{transform-origin:70% 90%;animation:wkBob .5s ease-in-out infinite alternate}
-.wk-beam,.beam{transform-origin:600px 418px;transform-box:view-box;animation:wkSweep 3.2s ease-in-out infinite alternate}
-.beam.b1{animation-duration:2.6s;animation-direction:alternate-reverse}.beam.b2{animation-duration:3.8s}
-@keyframes wkSweep{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
-.wk-lasers{animation:wkBass .5s steps(2,jump-none) infinite}
-.wk-pulse,.wk-door,.wk-strip{animation:wkBass .5s ease-in-out infinite}
-@keyframes wkBass{0%,100%{opacity:.55}50%{opacity:1}}
-.wk-sign{font:400 15px 'Rubik Glitch','Bebas Neue',sans-serif;fill:#d4ff00;letter-spacing:1px}
-.wk-stars circle{animation:wkTw 2.4s ease-in-out infinite alternate}
-@keyframes wkTw{to{opacity:.15}}
-.wk-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 46%,transparent 40%,rgba(5,4,6,.65) 90%)}
-.fl-title{font:400 46px 'Rubik Wet Paint','Bebas Neue',sans-serif;fill:#c3141c}
-.fl-sub{font:400 24px 'Bebas Neue',sans-serif;letter-spacing:4px;fill:#0b0a09}
-.fl-line{font:400 19px 'Patrick Hand',cursive;fill:#0b0a09}.fl-line.r{fill:#c3141c}
-.fl-small{font:400 15px 'Rubik Glitch','Bebas Neue',sans-serif;fill:#0b0a09;letter-spacing:1px}
-.wk-stick path:first-child{filter:drop-shadow(0 0 10px #d4ff00) drop-shadow(0 0 22px #d4ff00)}
-/* moving title + labels */
-.wk-title{display:inline-flex;flex-wrap:wrap;padding:6px 12px 4px;background:#0b0a09;box-shadow:3px 3px 0 #c3141c;font:400 clamp(22px,4.4vw,44px)/1 'Rubik Wet Paint','Bebas Neue',sans-serif;color:#d4ff00;letter-spacing:.02em}
-.wk-title span{display:inline-block;animation:wkLetter 1.6s ease-in-out infinite;animation-delay:var(--d)}
-.wk-title .sp{display:inline-block;width:.35em}
-@keyframes wkLetter{0%,100%{transform:translateY(0) rotate(0);color:#d4ff00}25%{transform:translateY(-3px) rotate(-4deg)}50%{color:#e9e3d1}75%{transform:translateY(2px) rotate(3deg);color:#d4ff00}}
-.wk-dist{font-family:'Rubik Glitch','Bebas Neue',sans-serif!important;animation:wkGlitch 2.2s steps(1) infinite}
-@keyframes wkGlitch{0%,92%,100%{transform:none}93%{transform:translate(2px,-1px) skewX(-8deg)}95%{transform:translate(-2px,1px)}}
-.wk-flyer span{font-family:'Rubik Glitch','Bebas Neue',sans-serif!important}
-.wk-flyer{left:54%;top:44%;width:28%;height:40%}
-.walk.arrive .wk-hands{animation:wkArrive 1.05s cubic-bezier(.6,0,.4,1) forwards}
-.walk.arrive .wk-world{animation:none;transform:scale(1.3);transition:opacity .9s .15s;opacity:0}
-.walk.still .wk-world,.walk.still .wk-hands,.walk.still .beam,.walk.still .wk-lasers,.walk.still .wk-title span{animation:none}
-@media (max-width:760px){.wk-flyer{left:40%;width:58%;top:50%;height:48%}}
-
-/* ===== v2.9.7: warm dithered art sky, letterbox bars (inspo: black bars + y2k date + checkers), heavier grain ===== */
-.wk-bar{position:absolute;left:0;right:0;height:11svh;background:#0b0a09;z-index:4;pointer-events:none}
-.wk-bar.top{top:0}.wk-bar.bot{bottom:0;display:flex;align-items:center;gap:18px;padding:0 max(18px,env(safe-area-inset-left));border-top:1px solid rgba(226,104,38,.55)}
-.wk-bar.bot::before{content:'';position:absolute;left:12px;right:12px;top:22%;bottom:22%;border:1px solid rgba(226,104,38,.6);border-radius:3px;pointer-events:none}
-.wk-obs{font:italic 400 clamp(14px,2.2vw,22px) 'Michroma',sans-serif;letter-spacing:.08em;color:#e9e3d1;transform:scaleX(1.25);transform-origin:left;text-transform:lowercase}
-.wk-date{margin-left:auto;font:400 clamp(16px,3vw,32px) 'Michroma',sans-serif;letter-spacing:.02em;color:#e9e3d1;opacity:.85}
-.wk-check{display:grid;grid-template-columns:repeat(3,14px);grid-template-rows:repeat(2,14px)}
-.wk-check i:nth-child(odd){background:#e2682a}.wk-check i:nth-child(even){background:#f2b234}.wk-check i:nth-child(2),.wk-check i:nth-child(5){background:transparent}
-.wk-hud{top:calc(11svh + 12px)}
-.wk-skip{bottom:calc(11svh + 12px)}
-.wk-grain{opacity:.32;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");mix-blend-mode:overlay;z-index:5}
-.wk-title{background:transparent;box-shadow:none;color:#f2b234;text-shadow:3px 3px 0 #c3141c}
-.wk-title span{animation-name:wkLetter2}
-@keyframes wkLetter2{0%,100%{transform:translateY(0) rotate(0);color:#f2b234}25%{transform:translateY(-3px) rotate(-4deg)}50%{color:#e9e3d1}75%{transform:translateY(2px) rotate(3deg);color:#e2682a}}
-.wk-dist{background:#e2682a!important;color:#0b0a09!important}
-@media (max-width:760px){.wk-obs{display:none}.wk-bar{height:9svh}.wk-hud{top:calc(9svh + 10px)}.wk-skip{bottom:calc(9svh + 10px)}}
-
-/* ===== vibe pass: synced to "Sorry" (130 BPM = 0.4615s a beat), haze + fog + sketch ===== */
-.wk-lasers,.wk-pulse,.wk-door,.wk-strip{animation-duration:.4615s!important}
-.wk-haze{mix-blend-mode:screen}
-.wk-fogs ellipse{animation:wkFogDrift 9s ease-in-out infinite alternate}
-.wk-fogs .fg2{animation-duration:12s;animation-direction:alternate-reverse}.wk-fogs .fg3{animation-duration:7s}
-@keyframes wkFogDrift{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
-.wk-world{filter:contrast(1.12) saturate(1.12)}
-.wk-world .ol{stroke-width:2.2}
-.wk-hands{opacity:.96;filter:drop-shadow(0 14px 18px rgba(0,0,0,.55))}
-.wk-hands path[fill="#c3141c"]{fill-opacity:.88}
-.walk::before{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at 50% 48%,transparent 30%,rgba(12,4,4,.55) 80%),linear-gradient(180deg,rgba(226,104,38,.08),rgba(120,16,20,.18));mix-blend-mode:multiply;animation:wkBreath .4615s ease-in-out infinite alternate}
-@keyframes wkBreath{to{opacity:.8}}
-.walk.still::before{animation:none}
 .pop-gate .pg-title{font-size:clamp(44px,6.4vw,92px);line-height:.9;white-space:nowrap}
