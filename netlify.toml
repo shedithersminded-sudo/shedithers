@@ -12,3 +12,17 @@
   for = "/index.html"
   [headers.values]
     Cache-Control = "no-cache"
+
+# short links
+[[redirects]]
+  from = "/art"
+  to = "/archive.html"
+  status = 301
+[[redirects]]
+  from = "/a"
+  to = "/archive.html"
+  status = 301
+[[redirects]]
+  from = "/lab"
+  to = "/"
+  status = 301

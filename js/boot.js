@@ -1,40 +1,27 @@
-/* SHEDITHERS — boot sequence, live dithered artist feed, startup. */
-const FEED = { v: null, raf: 0, busy: false, last: 0, ok: true };
-const FEED_STACK = [{ id: 'grayscale', mix: 100, p: {} }, { id: 'contrast', mix: 100, p: { amt: 35 } }, { id: 'bayer4', mix: 100, p: { pal: 'acid', size: 1, thr: 52 } }];
-function stackFull(st) { return st.map(e => ({ id: e.id, mix: e.mix, p: Object.assign(E.defaults(E.MAP[e.id]), e.p) })); }
-const tmpC = h_canvas(1, 1), tmpX = tmpC.getContext('2d', { willReadFrequently: true });
-async function ditherTo(src, sw, sh, dst, W, stack) {
-  const H2 = Math.max(1, Math.round(W * sh / sw)); tmpC.width = W; tmpC.height = H2; tmpX.drawImage(src, 0, 0, W, H2);
-  const id = tmpX.getImageData(0, 0, W, H2);
-  const m = await PV.run({ buf: id.data.buffer, w: W, h: H2, stack: stackFull(stack), ctx: { S: 1, t: 0, frame: 0 } }, [id.data.buffer]);
-  dst.width = W; dst.height = H2; dst.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(m.buf), W, H2), 0, 0);
-}
+/* SHEDITHERS — startup. The empty workspace shows the artist's reel untouched in a monitor frame. */
+const FEED = { v: null };
 function startArtFeed() {
-  const cv = $('#artFeed'); if (FEED.v) { FEED.v.play().catch(() => { }); loop(); return; }
-  const v = h('video', { src: ART.reel, loop: true, playsInline: true, preload: 'auto' }); v.muted = true; FEED.v = v;
-  v.addEventListener('loadeddata', () => { $('#feedState').textContent = 'SIGNAL LOCKED · BAYER 4×4 · ACID'; v.play().catch(() => { }); loop(); });
-  v.addEventListener('error', () => { $('#feedState').textContent = 'NO SIGNAL'; });
-  function loop() {
-    cancelAnimationFrame(FEED.raf); if (S.media) return;
-    FEED.raf = requestAnimationFrame(loop);
-    const now = performance.now(); if (FEED.busy || now - FEED.last < 66 || v.readyState < 2) return; FEED.last = now;
-    $('#feedClock').textContent = fmtTime(v.currentTime, 24);
-    if (!FEED.ok) { cv.width = v.videoWidth; cv.height = v.videoHeight; cv.getContext('2d').drawImage(v, 0, 0); return; }
-    FEED.busy = true;
-    ditherTo(v, v.videoWidth, v.videoHeight, cv, 320, FEED_STACK).catch(() => { FEED.ok = false; cv.style.filter = 'grayscale(1) contrast(1.6) sepia(1) hue-rotate(30deg) saturate(3)'; $('#feedState').textContent = 'RAW SIGNAL (RUN START.BAT FOR LIVE DITHER)'; }).finally(() => FEED.busy = false);
+  const em = $('#empty'); if (!em) return;
+  if (!FEED.v) {
+    const a = artById('become-unmarketable');
+    FEED.v = h('video', { src: a.src, loop: true, autoplay: true, playsInline: true, preload: 'metadata' }); FEED.v.muted = true;
+    FEED.v.addEventListener('contextmenu', e => e.preventDefault());
+    em.append(h('figure', { class: 'feed-frame', onclick: () => openExhibit('become-unmarketable') }, FEED.v, h('figcaption', null, h('b', null, '● NOW SHOWING'), ' BECOME UNMARKETABLE'), h('span', { class: 'feed-open' }, 'OPEN ARCHIVE ▸')));
+    FEED.v.addEventListener('loadeddata', () => { $('#feedState').textContent = 'SIGNAL LOCKED · ARCHIVE FEED'; });
+    setInterval(() => { if (FEED.v && !FEED.v.paused) $('#feedClock').textContent = fmtTime(FEED.v.currentTime, 24); }, 250);
   }
+  FEED.v.play().catch(() => { });
 }
-function stopArtFeed() { cancelAnimationFrame(FEED.raf); if (FEED.v) FEED.v.pause(); }
+function stopArtFeed() { if (FEED.v) FEED.v.pause(); }
 
 /* empty-state buttons */
-$('#emImport').onclick = openFile; $('#emExhibit').onclick = () => openExhibit(0); $('#railExhibit').onclick = () => openExhibit(0);
+$('#emImport').onclick = openFile; $('#emExhibit').onclick = () => openExhibit(); $('#railExhibit').onclick = () => openExhibit();
 
 /* boot sequence lives in intro.js */
 
 /* startup */
 (async function init() {
   applySettings();
-  document.body.append(h('img', { id: 'artCacheImg', src: ART.collage, style: { display: 'none' }, alt: '' }));
   $('#projName').value = '';
   try { S.library = (await DB.all('media')).sort((a, b) => (b.added || 0) - (a.added || 0)); } catch (e) { console.warn('IndexedDB unavailable', e); }
   H.reset(); renderAll(); runBoot();

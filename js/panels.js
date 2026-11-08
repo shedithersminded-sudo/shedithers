@@ -2,7 +2,7 @@
 let leftTab = 'import';
 const pad2 = n => String(n).padStart(2, '0');
 const CAT_NAME = Object.fromEntries(E.CATS);
-const ART = { collage: 'assets/art/collage.png', reel: 'assets/art/01M.mp4' };
+const ART = { collage: 'assets/archive/no-identity.png', reel: 'assets/archive/become-unmarketable.mp4' };
 
 function renderAll() { renderLeft(); renderStack(); renderCanvasPane(); layoutStage(); $('#roFx').textContent = pad2(S.stack.filter(f => f.on).length); }
 
@@ -78,7 +78,7 @@ const thumbCache = new Map(); let thumbGen = 0;
 function thumbSource() {
   const c = h_canvas(160, 120), cx = c.getContext('2d');
   if (S.media && cvB.width) { const s = Math.max(160 / cvB.width, 120 / cvB.height); cx.drawImage(cvB, (160 - cvB.width * s) / 2, (120 - cvB.height * s) / 2, cvB.width * s, cvB.height * s); return { c, key: S.media.id + JSON.stringify(S.source) + (isVideo() ? Math.round(curTime()) : '') }; }
-  const art = $('#artCacheImg'); if (art && art.complete && art.naturalWidth) { const s = Math.max(160 / art.naturalWidth, 120 / art.naturalHeight); cx.drawImage(art, (160 - art.naturalWidth * s) / 2, (120 - art.naturalHeight * s) / 2, art.naturalWidth * s, art.naturalHeight * s); return { c, key: 'art' }; }
+  const art = null; if (art) { const s = Math.max(160 / art.naturalWidth, 120 / art.naturalHeight); cx.drawImage(art, (160 - art.naturalWidth * s) / 2, (120 - art.naturalHeight * s) / 2, art.naturalWidth * s, art.naturalHeight * s); return { c, key: 'art' }; }
   const g = cx.createLinearGradient(0, 0, 160, 120); g.addColorStop(0, '#203050'); g.addColorStop(.5, '#d07a3a'); g.addColorStop(1, '#f0e8c0'); cx.fillStyle = g; cx.fillRect(0, 0, 160, 120); cx.fillStyle = '#111'; cx.beginPath(); cx.arc(80, 60, 30, 0, 7); cx.fill(); return { c, key: 'grad' };
 }
 function leftPresets(body) {

@@ -83,9 +83,8 @@ function thankYou(rec) {
   const art = ART_GALLERY[Math.floor(Math.random() * ART_GALLERY.length)], line = TY_LINES[Math.floor(Math.random() * TY_LINES.length)], quote = TICKER[Math.floor(Math.random() * TICKER.length)];
   const link = (show, label, fn, cls) => show ? h('button', { class: 'btn sm ' + (cls || ''), onclick: fn }, label) : null;
   const card = h('div', { class: 'ty-card' },
-    h('div', { class: 'ty-art', style: { backgroundImage: `url(${art.src})` } }),
+    h('figure', { class: 'ty-print' }, h('img', { src: art.src, alt: art.name, draggable: false, oncontextmenu: e => e.preventDefault() })),
     h('i', { class: 'ty-tape a' }), h('i', { class: 'ty-tape b' }),
-    h('img', { class: 'ty-gems', src: 'assets/art/gallery/sticker-gems.png', alt: '' }),
     h('div', { class: 'ty-paper' },
       h('div', { class: 'ty-hand' }, line, h('span', null, ' ♥')),
       h('div', { class: 'ty-file' }, `▸ ${rec && rec.file ? rec.file : 'your file'} saved`),
