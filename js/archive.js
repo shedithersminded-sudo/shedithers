@@ -114,22 +114,76 @@ function viewCollection(r) {
   drawPage(0);
 }
 
-/* ---------- ALL WORKS: ticket wall ---------- */
+/* ---------- ALL WORKS: THE EDIT (moving preview) · tickets as an option ---------- */
+let editTimer = null;
 function viewWorks(r) {
-  setHint([['TAP A TICKET', null], ['FILTER ▴', () => $('.chips') && $('.chips').scrollIntoView({ behavior: 'smooth' })], ['ESC BACK', () => location.hash = '#/']]);
-  keyNav = e => { if (e.key === 'Escape') location.hash = '#/'; };
+  clearTimeout(editTimer);
   const f = r.filter || 'all', list = f === 'all' ? ARTWORKS : worksIn(f);
+  let mode = 'edit'; try { mode = localStorage.getItem('shd.worksMode') || 'edit'; } catch (_) { }
+  setHint(mode === 'edit' ? [['TAP THE SCREEN TO OPEN', null], ['❚❚ / ▶ SPACE', null], ['ESC BACK', () => location.hash = '#/']] : [['TAP A TICKET', null], ['ESC BACK', () => location.hash = '#/']]);
   const chips = h('div', { class: 'chips', role: 'tablist' }, [['all', 'EVERYTHING'], ...COLLECTIONS.map(c => [c.id, c.name])].map(([id, n]) => h('a', { href: `#/works/${id}`, class: id === f ? 'on' : '', role: 'tab' }, n)));
-  const wall = h('div', { class: 'tickets' }, list.map((a, i) => {
-    const c = colOf(a.col);
-    return h('button', { class: 'ticket', style: `--i:${i}`, onclick: () => location.hash = `#/work/${a.id}`, 'aria-label': `View ${a.title}` },
-      h('span', { class: 't-top' }, h('span', null, 'SHEDITHERS ARCHIVE'), h('span', null, c.code)),
-      h('span', { class: 't-window' }, artNode(a)),
-      h('span', { class: 't-place' }, h('span', null, a.medium.toUpperCase()), h('span', null, a.date.slice(0, 4))),
-      h('span', { class: 't-title' }, a.title),
-      h('span', { class: 't-stub' }, h('span', { class: 't-eye', html: '<svg viewBox="0 0 48 28"><use href="#eye"/></svg>' }), h('span', { class: 't-admit' }, h('b', null, 'ADMIT ONE'), h('small', null, `FILE 0x${pad(a.n)} · VIEW ONLY · ${c.name}`)), h('span', { class: 't-no' }, `№${pad(a.n, 3)}`)));
-  }));
-  view.append(h('section', { class: 'works-head' }, h('h2', null, 'ALL WORKS'), h('p', null, `${list.length} files · tap any ticket to step inside`)), chips, wall);
+  const modes = h('div', { class: 'works-modes', role: 'radiogroup', 'aria-label': 'How to browse' }, [['edit', '▶ THE EDIT'], ['tickets', 'TICKETS']].map(([k, l]) => h('button', { role: 'radio', 'aria-checked': k === mode, onclick: () => { try { localStorage.setItem('shd.worksMode', k); } catch (_) { } renderView(r); } }, l)));
+  view.append(h('section', { class: 'works-head' }, h('h2', null, mode === 'edit' ? 'THE EDIT' : 'ALL WORKS'), h('p', null, `${list.length} files · ${mode === 'edit' ? 'sit back — or tap anything to step inside' : 'tap any ticket to step inside'}`), modes), chips);
+  if (mode === 'tickets') {
+    keyNav = e => { if (e.key === 'Escape') location.hash = '#/'; };
+    view.append(h('div', { class: 'tickets' }, list.map((a, i) => {
+      const c = colOf(a.col);
+      return h('button', { class: 'ticket', style: `--i:${i}`, onclick: () => location.hash = `#/work/${a.id}`, 'aria-label': `View ${a.title}` },
+        h('span', { class: 't-top' }, h('span', null, 'SHEDITHERS ARCHIVE'), h('span', null, c.code)),
+        h('span', { class: 't-window' }, artNode(a)),
+        h('span', { class: 't-place' }, h('span', null, a.medium.toUpperCase()), h('span', null, a.date.slice(0, 4))),
+        h('span', { class: 't-title' }, a.title),
+        h('span', { class: 't-stub' }, h('span', { class: 't-eye', html: '<svg viewBox="0 0 48 28"><use href="#eye"/></svg>' }), h('span', { class: 't-admit' }, h('b', null, 'ADMIT ONE'), h('small', null, `FILE 0x${pad(a.n)} · VIEW ONLY · ${c.name}`)), h('span', { class: 't-no' }, `№${pad(a.n, 3)}`)));
+    })));
+    return;
+  }
+  /* --- the montage screen --- */
+  const stage = h('div', { class: 'edit-stage', role: 'button', tabindex: '0', 'aria-label': 'Open the piece on screen' }), cap = h('div', { class: 'edit-cap', 'aria-live': 'polite' });
+  const tc = h('span', { class: 'edit-tc' }, '00:00:00'), cnt = h('span', { class: 'edit-cnt' }), dots = h('div', { class: 'edit-dots' });
+  const playB = h('button', { class: 'edit-btn', 'aria-label': 'Pause or play the edit' }, '❚❚');
+  const screen = h('div', { class: 'edit-screen' }, h('div', { class: 'edit-hud' }, h('span', { class: 'rec' }, '● REC'), h('span', null, 'THE EDIT // SHEDITHERS'), tc), stage, cap,
+    h('div', { class: 'edit-ctrl' }, h('button', { class: 'edit-btn', 'aria-label': 'Previous', onclick: () => go(-1) }, '‹'), playB, h('button', { class: 'edit-btn', 'aria-label': 'Next', onclick: () => go(1) }, '›'), cnt, dots));
+  const SHOTS = ['cut', 'slide-l', 'split', 'cut', 'slide-r', 'triple', 'rise', 'cut', 'split', 'drop'];
+  let k = 0, s = 0, playing = !reduce, t0 = performance.now();
+  const pick = n => Array.from({ length: n }, (_, j) => list[(k + j) % list.length]);
+  function shot() {
+    if (!list.length) return; const type = SHOTS[s % SHOTS.length], n = type === 'split' ? 2 : type === 'triple' ? 3 : 1;
+    const items = pick(Math.min(n, list.length)); stage.innerHTML = '';
+    stage.className = 'edit-stage shot-' + type + ' n' + items.length;
+    stage.append(h('i', { class: 'edit-flash' }), ...items.map((a, j) => h('span', { class: 'edit-cell', style: `--j:${j}` }, artNode(a, { lazy: false }))));
+    stage.dataset.id = items[0].id;
+    const a = items[0], words = a.words || '';
+    cap.innerHTML = ''; cap.append(h('b', null, a.title), words ? h('span', { class: 'marker' }, '“' + words + '”') : h('span', null, `${colOf(a.col).code} · ${a.date}`));
+    cnt.textContent = `${pad(k % list.length + 1)} / ${pad(list.length)}`;
+    dots.innerHTML = ''; for (let j = 0; j < Math.min(list.length, 24); j++) dots.append(h('i', { class: j === k % Math.min(list.length, 24) ? 'on' : '' }));
+    watchVideos(stage); k = (k + items.length) % list.length; s++;
+    const nxt = list[k % list.length]; if (nxt && nxt.type !== 'video') { const pre = new Image(); pre.src = nxt.src; }
+  }
+  function loop() {
+    clearTimeout(editTimer); if (!document.body.contains(stage)) return;
+    const music = window.SHD_ARCHIVE && SHD_ARCHIVE.player && !SHD_ARCHIVE.player.audio.paused;
+    const base = /split|triple/.test(stage.className) ? 2600 : 1900, dur = music ? base * 0.62 : base;
+    if (playing) { shot(); editTimer = setTimeout(loop, dur); }
+  }
+  function go(d) { if (d < 0) k = (k - 2 + list.length * 4) % list.length; shot(); if (playing) { clearTimeout(editTimer); editTimer = setTimeout(loop, 2400); } }
+  function setPlay(p) { playing = p; playB.textContent = p ? '❚❚' : '▶'; if (p) loop(); else clearTimeout(editTimer); }
+  playB.onclick = () => setPlay(!playing);
+  const open = () => { const id = stage.dataset.id; if (id) location.hash = `#/work/${id}`; };
+  stage.addEventListener('click', open); stage.addEventListener('keydown', e => { if (e.key === 'Enter') open(); });
+  swipe(stage, dx => go(dx < 0 ? 1 : -1));
+  keyNav = e => { if (e.key === 'Escape') location.hash = '#/'; else if (e.key === ' ') { e.preventDefault(); setPlay(!playing); } else if (e.key === 'ArrowRight') go(1); else if (e.key === 'ArrowLeft') go(-1); };
+  setInterval(() => { if (document.body.contains(tc)) { const sec = Math.floor((performance.now() - t0) / 1000); tc.textContent = `00:${pad(Math.floor(sec / 60))}:${pad(sec % 60)}`; } }, 500);
+  /* --- drifting rows of pieces (tap to open) --- */
+  const rows = h('div', { class: 'edit-rows' });
+  const third = Math.ceil(list.length / 3);
+  [0, 1, 2].forEach(ri => {
+    let part = list.slice(ri * third, ri * third + third); if (part.length < 4) part = list.slice(0, Math.min(list.length, 8));
+    const tiles = part.map(a => h('button', { class: 'edit-tile', onclick: () => location.hash = `#/work/${a.id}`, 'aria-label': `View ${a.title}` }, h('span', { class: 'et-win' }, artNode(a)), h('span', { class: 'et-cap' }, a.title)));
+    const track = h('div', { class: 'edit-track', style: `--dur:${40 + ri * 12}s` }, ...tiles, ...tiles.map(t => { const c = t.cloneNode(true); c.setAttribute('aria-hidden', 'true'); c.tabIndex = -1; const id = part[tiles.indexOf(t)].id; c.onclick = () => location.hash = `#/work/${id}`; $$('img,video', c).forEach(guard); return c; }));
+    rows.append(h('div', { class: 'edit-row' + (ri % 2 ? ' rev' : '') }, track));
+  });
+  view.append(screen, rows);
+  shot(); if (playing) editTimer = setTimeout(loop, 1900); else playB.textContent = '▶';
 }
 
 /* ---------- ABOUT ---------- */
