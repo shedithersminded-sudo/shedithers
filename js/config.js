@@ -8,7 +8,7 @@ const SHD_CONFIG = {
   redbubble: '',
   // Visitor + art counter: make a free account at goatcounter.com, then put your code here
   // (if your stats page is shedithers.goatcounter.com, the code is 'shedithers'). Empty = off.
-  goatcounter: '',
+  goatcounter: 'shedithers',
   // Your TikTok handle (without @)
   tiktok: 'shedithers',
   // Your YouTube handle (without @)
