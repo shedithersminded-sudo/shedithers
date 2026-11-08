@@ -102,7 +102,7 @@ function leftEffects(body) {
         const head = h('button', { type: 'button', class: 'fx-cat-h', 'aria-expanded': String(open), onclick: () => { const o = !grp.classList.contains('open'); grp.classList.toggle('open', o); head.setAttribute('aria-expanded', o); if (!s) { GROUP_OPEN[key] = o; saveGroupOpen(); } } },
           h('i', { class: 'chev' }, '▸'), h('span', { class: 'gt' }, h('b', null, gname), h('small', null, gwhat)), fresh ? h('em', { class: 'new' }, fresh + ' new') : null, h('span', { class: 'cnt' }, pad2(items.length)));
         grp.append(head, h('div', { class: 'fx-cat-b' }, items.map(e => {
-          const it = h('div', { class: 'fx-item' + (fxMoves(e) ? ' moves' : '') + (ORIGINALS.has(e.id) ? ' orig' : ''), draggable: true, 'data-tip': fxMoves(e) ? 'Click to add — this makes your picture move (GIF / video)' : 'Click to add · or drag into your layers', onclick: ev => libAdd(e.id, null, ev.shiftKey) },
+          const it = h('div', { class: 'fx-item' + (fxMoves(e) ? ' moves' : '') + (ORIGINALS.has(e.id) ? ' orig' : ''), draggable: true, 'data-tip': fxMoves(e) ? 'Click: add it or preview it — this one makes your picture move (GIF / video)' : 'Click: add it or just preview it · Shift+click adds straight away', onclick: ev => ev.shiftKey ? libAdd(e.id, null, true) : fxChooser(e.id, ev.currentTarget) },
             h('span', { class: 'ix' }, pad2(++n)), h('span', { class: 'nm' }, e.name, ORIGINALS.has(e.id) ? h('i', { class: 'orig-tag' }, '★ shedithers original') : null, h('span', { class: 'ds' }, fxHelp(e))), h('span', { class: 'add' }, fxMoves(e) ? '▶ add' : '+ add'));
           it.addEventListener('dragstart', ev => { ev.dataTransfer.setData('shd/add', e.id); ev.dataTransfer.effectAllowed = 'copy'; });
           return it;
@@ -446,3 +446,34 @@ addEventListener('load', () => {
   const L = document.getElementById('left'), R = document.getElementById('right');
   if (L) L.style.setProperty('--lib-art', url(pool[i])); if (R) R.style.setProperty('--lib-art', url(pool[(i + 3) % pool.length]));
 });
+
+/* clicking an effect in the library: add it, or just preview it on top of your layers first */
+let previewing = null;
+function stopPreview() { if (!previewing) return; previewing = null; S.override = null; const b = $('#pvBar'); if (b) b.remove(); requestRender(); }
+function startPreview(id) {
+  if (!S.media) { toast('Import a picture or video first, then you can preview effects on it', 'info'); return; }
+  stopPreview(); const f = mkFx(id); if (!f) return; previewing = id;
+  S.override = S.stack.filter(x => x.on !== false).concat([f]); requestRender();
+  if (fxMoves(E.MAP[id]) && typeof gifAutoMotion === 'function') gifAutoMotion([id]);
+  const bar = h('div', { id: 'pvBar', class: 'pv-bar', role: 'status' },
+    h('i', null, '👁'), h('span', null, h('b', null, 'previewing ' + E.MAP[id].name), S.stack.length ? ` on top of your ${S.stack.length} layer${S.stack.length > 1 ? 's' : ''}` : ' on your picture'),
+    h('button', { type: 'button', class: 'pv-add', onclick: () => { stopPreview(); libAdd(id); } }, '+ add it'),
+    h('button', { type: 'button', class: 'pv-x', onclick: stopPreview }, 'stop'));
+  $('#viewport').append(bar);
+}
+function fxChooser(id, anchor) {
+  document.querySelectorAll('.fx-choose').forEach(x => x.remove());
+  const def = E.MAP[id], have = S.stack.some(f => f.id === id);
+  const pop = h('div', { class: 'fx-choose', role: 'dialog', 'aria-label': def.name },
+    h('b', null, def.name), h('small', null, fxHelp(def)),
+    h('button', { type: 'button', class: 'fc-add', onclick: () => { pop.remove(); stopPreview(); libAdd(id); } }, have && !allowDoubles() ? '★ open it (already on)' : S.stack.length ? '+ add to my layers' : '+ start my layers with it'),
+    h('button', { type: 'button', class: 'fc-pv', onclick: () => { pop.remove(); startPreview(id); } }, S.stack.length ? '👁 preview it on top' : '👁 just preview it'),
+    h('button', { type: 'button', class: 'fc-x', 'aria-label': 'Close', onclick: () => pop.remove() }, '✕'));
+  document.body.append(pop);
+  const r = anchor.getBoundingClientRect(), pw = 250;
+  pop.style.left = Math.min(innerWidth - pw - 8, r.right + 8) + 'px'; pop.style.top = Math.max(8, Math.min(innerHeight - 190, r.top - 4)) + 'px';
+  if (r.right + pw + 16 > innerWidth) { pop.style.left = Math.max(8, r.left + 12) + 'px'; pop.style.top = Math.min(innerHeight - 190, r.bottom + 4) + 'px'; }
+  setTimeout(() => { const off = ev => { if (!pop.contains(ev.target)) { pop.remove(); document.removeEventListener('mousedown', off, true); } }; document.addEventListener('mousedown', off, true); }, 0);
+  pop.querySelector('.fc-add').focus();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { document.querySelectorAll('.fx-choose').forEach(x => x.remove()); stopPreview(); } });

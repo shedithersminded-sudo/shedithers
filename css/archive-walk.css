@@ -1,0 +1,55 @@
+/* ===== the way in: walking to the warehouse with a flyer ===== */
+.walk{position:fixed;inset:0;z-index:200;overflow:hidden;background:#0b0a09;color:#e9e3d1}
+.wk-bg,.wk-fg,.wk-tint,.wk-grain{position:absolute;inset:0;pointer-events:none}
+.wk-bg{background:url('../assets/ui/walk-bg.jpg') center 62%/cover no-repeat;transform-origin:50% 55%;animation:wkWalk 6.5s cubic-bezier(.3,.1,.4,1) forwards}
+.wk-fg{background:url('../assets/ui/walk-fg.png') center 62%/cover no-repeat;transform-origin:65% 80%;animation:wkBob .62s ease-in-out infinite alternate}
+.wk-tint{background:radial-gradient(ellipse at 50% 40%,transparent 35%,rgba(11,10,9,.55) 85%),linear-gradient(180deg,rgba(212,255,0,.12),transparent 40%)}
+.wk-grain{opacity:.18;background:repeating-linear-gradient(0deg,rgba(0,0,0,.4) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+@keyframes wkWalk{0%{transform:scale(1) translate(0,0)}25%{transform:scale(1.06) translate(.4%,.6%)}50%{transform:scale(1.13) translate(-.4%,0)}75%{transform:scale(1.2) translate(.4%,.6%)}100%{transform:scale(1.28) translate(0,0)}}
+@keyframes wkBob{from{transform:translateY(0) rotate(-.4deg)}to{transform:translateY(1.6%) rotate(.5deg)}}
+.wk-hud{position:absolute;left:max(16px,env(safe-area-inset-left));right:max(16px,env(safe-area-inset-right));top:max(16px,env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wk-hud b{padding:4px 10px;background:#0b0a09;color:#d4ff00;font:400 clamp(18px,3.4vw,30px)/1 'Bebas Neue',sans-serif;letter-spacing:.14em;box-shadow:3px 3px 0 #c3141c}
+.wk-dist{padding:4px 10px;background:#d4ff00;color:#0b0a09;font:400 clamp(16px,2.6vw,24px)/1 'Bebas Neue',sans-serif;letter-spacing:.1em;box-shadow:3px 3px 0 #0b0a09}
+.wk-steps{position:absolute;left:max(16px,env(safe-area-inset-left));top:22%;display:flex;flex-direction:column;gap:8px}
+.wk-steps span{align-self:flex-start;padding:3px 10px;background:#e9e3d1;color:#0b0a09;font:400 clamp(18px,3vw,26px) 'Patrick Hand',cursive;transform:rotate(-2deg);opacity:0;animation:wkLine .5s ease forwards}
+.wk-steps span:nth-child(1){animation-delay:.8s}.wk-steps span:nth-child(2){animation-delay:2.1s;transform:rotate(1.5deg);background:#d4ff00}
+@keyframes wkLine{from{opacity:0;translate:-20px 0}to{opacity:1;translate:0 0}}
+.wk-flyer{position:absolute;left:53%;top:40%;width:26%;height:52%;padding:0;background:transparent;border:0;cursor:pointer;animation:wkBob .62s ease-in-out infinite alternate}
+.wk-flyer span{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%) rotate(-3deg);white-space:nowrap;padding:5px 12px;background:#0b0a09;color:#d4ff00;font:400 clamp(16px,2.4vw,22px) 'Bebas Neue',sans-serif;letter-spacing:.12em;box-shadow:3px 3px 0 #c3141c;animation:wkTap 1.2s ease-in-out infinite}
+@keyframes wkTap{50%{transform:translateX(-50%) rotate(-3deg) scale(1.08)}}
+.wk-flyer:focus-visible{outline:3px dashed #d4ff00;outline-offset:4px}
+.wk-skip{position:absolute;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));padding:6px 14px;background:rgba(11,10,9,.7);color:#e9e3d1;border:1px solid rgba(233,227,209,.4);border-radius:4px;font:400 18px 'Bebas Neue',sans-serif;letter-spacing:.12em}
+/* arriving: the flyer comes up to your face, flash of lime, you're at the door */
+.walk.arrive .wk-fg{animation:wkArrive 1.05s cubic-bezier(.6,0,.4,1) forwards}
+.walk.arrive .wk-bg{animation:none;transform:scale(1.3);transition:opacity .9s .15s;opacity:0}
+.walk.arrive::after{content:'';position:absolute;inset:0;background:#d4ff00;animation:wkFlash 1.05s ease forwards;pointer-events:none}
+.walk.arrive .wk-hud,.walk.arrive .wk-steps,.walk.arrive .wk-flyer,.walk.arrive .wk-skip{opacity:0;transition:opacity .25s}
+@keyframes wkArrive{to{transform:scale(4.2) translate(-8%,-14%);opacity:0}}
+@keyframes wkFlash{0%,55%{opacity:0}75%{opacity:.85}100%{opacity:0}}
+.walk.still .wk-bg,.walk.still .wk-fg,.walk.still .wk-flyer,.walk.still .wk-flyer span{animation:none}
+@media (max-width:760px){.wk-bg,.wk-fg{background-position:70% 62%}.wk-flyer{left:44%;width:44%;top:42%;height:48%}}
+
+/* ===== the gate matches the inside: lime render behind, ink + lime panels ===== */
+.g-render{position:absolute;inset:0;z-index:0;overflow:hidden;background:#050604;pointer-events:none}
+.pop-gate>*:not(.g-render){position:relative;z-index:1}
+.pop-gate .pg-dots{position:absolute}
+.pop-gate .pg-dots::before{background:#d4ff00}
+.pop-gate .pg-dots::after{color:#0b0a09}
+.pop-gate .pg-fbody{background:rgba(11,10,9,.88);color:#e9e3d1;box-shadow:0 0 0 2px #d4ff00,8px 8px 0 #0b0a09;clip-path:none}
+.pop-gate .pg-folder{filter:none}
+.pop-gate .pg-title{color:#e9e3d1;text-shadow:4px 4px 0 #c3141c,0 0 0 #000}
+.pop-gate .gate-code,.pop-gate .gate-quote,.pop-gate .gate-log,.pop-gate .gate-lab{color:#e9e3d1}
+.pop-gate .gate-quote{font:400 19px/1.4 'Patrick Hand',cursive}
+.pop-gate .gate-code,.pop-gate .gate-log{color:#d4ff00}
+.pop-gate .gate-enter{background:#d4ff00;color:#0b0a09;border:0;border-radius:3px;box-shadow:5px 5px 0 #0b0a09}
+.pop-gate .gate-enter svg{color:#c3141c}
+.pop-gate .gate-enter:hover{background:#0b0a09;color:#d4ff00;box-shadow:5px 5px 0 #d4ff00}
+.pg-sound{color:#d4ff00!important;border-color:#d4ff00!important;background:transparent!important}
+.pg-sound[aria-pressed=true]{background:#d4ff00!important;color:#0b0a09!important}
+.pop-gate .pg-bubble{background:#d4ff00;color:#0b0a09;box-shadow:3px 3px 0 #0b0a09}
+.pop-gate .pg-sticker{background:#d4ff00}
+.pop-gate .pg-disc{box-shadow:0 0 0 3px #0b0a09,0 0 0 6px #d4ff00,0 30px 80px rgba(0,0,0,.8)}
+.pop-gate .pg-art::after{background:radial-gradient(circle,transparent 0 30%,rgba(11,10,9,.15) 48%,rgba(11,10,9,.82) 66%,#0b0a09 76%),linear-gradient(135deg,#9fbf00,rgba(212,255,0,.35) 55%,#3d4a00)}
+.pg-rimtxt{fill:#d4ff00;stroke:#0b0a09}
+.pop-gate .gate-hands{display:none}
+.pg-badges span{background:#0b0a09!important;color:#d4ff00!important;box-shadow:2px 2px 0 #d4ff00!important}
