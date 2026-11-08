@@ -71,11 +71,18 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
   enterBtn.addEventListener('click', () => {
     if (!on) return;
     let vol = 0.75; try { const v = parseFloat(localStorage.getItem('shd.introVol')); if (v >= 0 && v <= 1) vol = v; } catch (_) { }
-    const a = new Audio('assets/ui/intro.mp3'); a.volume = vol; a.play().catch(() => { });
-    a.title = 'Sorry — evo & crevo';
-    try { if ('mediaSession' in navigator && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: 'Sorry', artist: 'evo & crevo', album: 'SHEDITHERS ARCHIVE' }); } catch (_) { }
+    // the site's songs, played in order: "Sorry" by evo & crevo, then "you kno u" by evo
+    const SONGS = [{ src: 'assets/ui/intro.mp3', title: 'Sorry', artist: 'evo & crevo' }, { src: 'assets/ui/you-kno-u.mp3', title: 'you kno u', artist: 'evo' }];
+    let track = 0;
+    const a = new Audio(SONGS[0].src); a.volume = vol; a.play().catch(() => { });
     const chip = document.createElement('div'); chip.className = 'intro-chip';
-    chip.innerHTML = '<span class="ic-disc"></span><span class="ic-txt"><b>NOW PLAYING · SORRY</b><small>by evo &amp; crevo</small></span>';
+    chip.innerHTML = '<span class="ic-disc"></span><span class="ic-txt"><b></b><small></small></span>';
+    const label = () => {
+      const s = SONGS[track]; a.title = `${s.title} — ${s.artist}`;
+      chip.querySelector('.ic-txt b').textContent = 'NOW PLAYING · ' + s.title.toUpperCase(); chip.querySelector('.ic-txt small').textContent = 'by ' + s.artist;
+      try { if ('mediaSession' in navigator && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: s.title, artist: s.artist, album: 'SHEDITHERS ARCHIVE' }); } catch (_) { }
+    };
+    label();
     const mk = (cls, txt, label) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; b.setAttribute('aria-label', label); b.title = label; return b; };
     const pp = mk('ic-pp', '❚❚', 'Pause the song');
     const mute = mk('ic-mute', '🔊', 'Mute the song');
@@ -90,7 +97,8 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     a.addEventListener('play', paintPP); a.addEventListener('pause', paintPP);
     let gone = false;
     const end = () => { if (gone) return; gone = true; a.pause(); chip.classList.add('out'); setTimeout(() => chip.remove(), 400); };
-    stop.onclick = end; a.addEventListener('ended', end); paintVol();
+    const next = () => { if (gone) return; if (track >= SONGS.length - 1) return end(); track++; a.src = SONGS[track].src; label(); a.play().catch(() => { }); };
+    stop.onclick = end; a.addEventListener('ended', next); paintVol();
     const P = window.SHD_ARCHIVE && window.SHD_ARCHIVE.player; if (P) P.audio.addEventListener('play', end, { once: true });
     chip.setAttribute('data-drag', ''); chip.setAttribute('data-grip', '');
     document.body.append(chip); if (window.SHD_MOVE) window.SHD_MOVE(chip, 'introchip', 'the song');

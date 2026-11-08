@@ -1,5 +1,5 @@
 /* SHEDITHERS service worker — offline app shell. Bump VERSION when files change. */
-const VERSION = 'shedithers-v2.6.7';
+const VERSION = 'shedithers-v2.6.8';
 const SHELL = ['./', 'index.html', 'archive.html', 'css/archive.css', 'css/archive-plus.css', 'css/archive-edit.css', 'css/archive-portal.css', 'css/archive-artui.css', 'css/archive-pop.css', 'js/archive-pop.js', 'js/archive-watch.js', 'js/archive-portal.js', 'js/archive-artui.js', 'js/archive.js', 'js/archive-plus.js', 'js/archive-mess.js', 'js/archive-cute.js', 'css/archive-cute.css', 'css/archive-mess.css', 'manifest.webmanifest', 'css/app.css', 'css/skin-chrome.css', 'css/textures.css', 'js/engine.js', 'js/presets.js', 'js/util.js', 'js/app.js', 'js/panels.js', 'js/timeline.js', 'js/gif.js', 'js/brush.js', 'js/tools.js', 'js/export.js', 'js/config.js', 'js/support.js', 'js/artworks.js', 'js/intro.js', 'js/exhibit.js', 'css/exhibit.css', 'js/boot.js', 'assets/icon.svg', 'assets/icon-192.png', 'assets/icon-512.png'];
 // install never fails because of one missing file
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => null)))).then(() => self.skipWaiting())); });

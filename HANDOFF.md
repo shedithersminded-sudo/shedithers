@@ -1,4 +1,4 @@
-# SHEDITHERS — handoff (2026-11-07, live version v2.6.7)
+# SHEDITHERS — handoff (2026-11-07, live version v2.6.8)
 
 Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 
@@ -9,7 +9,7 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - **Deploys:** pushing `main` to github.com/shedithersminded-sudo/shedithers auto-deploys to https://shedithers.netlify.app and https://shedithersminded-sudo.github.io/shedithers/. The user always wants both sites updated and verified.
 
 ## Release steps (every change)
-1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=267 and v2.6.7 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
+1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=268 and v2.6.8 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
 2. Commit, ending the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then push.
 3. Check that both live sites serve the new `sw.js` version.
 
@@ -65,3 +65,4 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - v2.6.5: BUY ME A DRINK on the archive: red tab on the right edge of every page + ♥ DRINK in the menu; opens the same drink menu as the Dither Lab (config.drinks, Cash App, QR on desktop). Code at the end of archive-watch.js / archive-pop.css.
 - v2.6.6: editor right-click on the picture has EDIT (undo, redo, randomize, duplicate/hide/reset selected effect) and DELETE (delete effect, delete all effects, close media, delete from library) — `editMenuItems()` + `closeMedia()` in app.js. Disabled menu items no longer run.
 - v2.6.7: star-runner cursor from the artist (assets/ui/cursor-star*.png, red-glow version on links/buttons) on both pages; new art-collage share card; tip panel on both pages uses art (NO IDENTITY heart banner, drink cards on torn art scraps, Little Guy peeking); editor tip button is now a big red "BUY ME A DRINK".
+- v2.6.8: second song `assets/ui/you-kno-u.mp3` ("you kno u" by evo, byte-exact copy, md5 4bbe40e6…) plays after "Sorry"; song list is `SONGS` in archive-watch.js.
