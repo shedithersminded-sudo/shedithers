@@ -117,7 +117,7 @@ addEventListener('hashchange', () => {
   const r = routeName(); if (r === 'work' || lastSec === 'work' && r === 'work') { lastSec = r; return; }
   if (r !== lastSec && !reduce) {
     const id = colIdFromHash(), c = r === 'col' && COLLECTIONS.find(x => x.id === id);
-    $('span', pull).textContent = c ? `${c.code} // ${c.name}` : r === 'works' ? 'ALL WORKS // TICKET WALL' : r === 'about' ? 'FILE_00 // THE ARTIST' : 'FILE_01 // FOLDERS';
+    $('span', pull).textContent = c ? `${c.code} // ${c.name}` : r === 'works' || r === 'home' || r === '' ? 'THE EDIT // SHEDITHERS' : r === 'about' ? 'FILE_00 // THE ARTIST' : 'THE EDIT // SHEDITHERS';
     pull.style.setProperty('--c', c ? c.color : '#c4ab7c'); pull.classList.remove('go'); void pull.offsetWidth; pull.classList.add('go');
   }
   lastSec = r; setTimeout(decorate, 60);

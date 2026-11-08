@@ -46,8 +46,8 @@ function render() {
 }
 function renderView(r) {
   route = r; view.classList.remove('in'); view.innerHTML = '';
-  ({ home: viewHome, col: viewCollection, works: viewWorks, about: viewAbout })[r.name](r);
-  $$('#nav a').forEach(a => a.classList.toggle('on', a.dataset.r === r.name || (r.name === 'col' && a.dataset.r === 'home')));
+  ({ home: rr => viewWorks({ name: 'works', filter: 'all' }), col: viewCollection, works: viewWorks, about: viewAbout })[r.name](r);
+  $$('#nav a').forEach(a => a.classList.toggle('on', a.dataset.r === r.name || ((r.name === 'col' || r.name === 'home') && a.dataset.r === 'works')));
   requestAnimationFrame(() => view.classList.add('in')); watchVideos(view); window.scrollTo(0, 0); closeNav();
 }
 window.addEventListener('hashchange', render);
@@ -109,8 +109,8 @@ function viewCollection(r) {
   keyNav = e => { if (e.key === 'ArrowRight') go(page + 1); else if (e.key === 'ArrowLeft') go(page - 1); else if (e.key === 'Escape') location.hash = '#/'; };
   swipe(book, dx => go(page + (dx < 0 ? 1 : -1)));
   const others = COLLECTIONS.filter(x => x.id !== c.id).map(x => h('a', { class: 'mini-tab', href: `#/col/${x.id}`, style: `--c:${x.color};--ink:${x.ink}` }, `${x.code} // ${x.name}`));
-  view.append(h('section', { class: 'col-head' }, h('a', { class: 'back', href: '#/' }, '◂ FOLDERS'), h('div', null, h('span', { class: 'col-code' }, `${c.code} //`), h('h2', null, c.name), h('span', { class: 'col-sub' }, `${c.sub} · ${pad(works.length)} FILES`))),
-    h('section', { class: 'desk' }, book, pager), h('nav', { class: 'other-tabs', 'aria-label': 'Other folders' }, others));
+  view.append(h('section', { class: 'col-head' }, h('a', { class: 'back', href: '#/' }, '◂ THE EDIT'), h('div', null, h('span', { class: 'col-code' }, `${c.code} //`), h('h2', null, c.name), h('span', { class: 'col-sub' }, `${c.sub} · ${pad(works.length)} FILES`))),
+    h('section', { class: 'desk' }, book, pager));
   drawPage(0);
 }
 
