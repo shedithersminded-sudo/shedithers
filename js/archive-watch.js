@@ -70,11 +70,14 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
   paint(); enterBtn.parentNode.insertBefore(tog, enterBtn);
   enterBtn.addEventListener('click', () => {
     if (!on) return;
-    let vol = 0.75; try { const v = parseFloat(localStorage.getItem('shd.introVol')); if (v >= 0 && v <= 1) vol = v; } catch (_) { }
+    let vol = 0.3; try { const v = parseFloat(localStorage.getItem('shd.introVol')); if (v >= 0 && v <= 1) vol = v; } catch (_) { }
     // the site's songs, played in order: "Sorry" by evo & crevo, then "you kno u" by evo
     const SONGS = [{ src: 'assets/ui/intro.mp3', title: 'Sorry', artist: 'evo & crevo' }, { src: 'assets/ui/you-kno-u.mp3', title: 'you kno u', artist: 'evo' }];
     let track = 0;
-    const a = new Audio(SONGS[0].src); a.volume = vol; a.play().catch(() => { });
+    const a = new Audio(SONGS[0].src); a.volume = 0; a.play().catch(() => { });
+    // fade in softly over ~3s up to the starting volume (stops if the visitor touches the volume)
+    let fading = true; const t0 = performance.now();
+    const fadeT = setInterval(() => { if (!fading) return clearInterval(fadeT); const k = Math.min(1, (performance.now() - t0) / 3000); a.volume = vol * k; if (k >= 1) { fading = false; clearInterval(fadeT); } }, 60);
     const chip = document.createElement('div'); chip.className = 'intro-chip';
     chip.innerHTML = '<span class="ic-disc"></span><span class="ic-txt"><b></b><small></small></span>';
     const label = () => {
@@ -90,10 +93,10 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     const stop = mk('ic-stop', '✕', 'Stop the song');
     chip.append(pp, mute, slider, stop);
     const paintPP = () => { const p = a.paused; pp.textContent = p ? '▶' : '❚❚'; pp.setAttribute('aria-label', p ? 'Play the song' : 'Pause the song'); pp.title = pp.getAttribute('aria-label'); chip.classList.toggle('paused', p); };
-    const paintVol = () => { const m = a.muted || a.volume === 0; mute.textContent = m ? '🔇' : a.volume < 0.4 ? '🔉' : '🔊'; mute.setAttribute('aria-label', m ? 'Unmute the song' : 'Mute the song'); mute.title = mute.getAttribute('aria-label'); slider.value = a.muted ? 0 : Math.round(a.volume * 100); };
+    const paintVol = () => { const v = fading ? vol : a.volume, m = a.muted || v === 0; mute.textContent = m ? '🔇' : v < 0.4 ? '🔉' : '🔊'; mute.setAttribute('aria-label', m ? 'Unmute the song' : 'Mute the song'); mute.title = mute.getAttribute('aria-label'); slider.value = a.muted ? 0 : Math.round(v * 100); };
     pp.onclick = e => { e.stopPropagation(); a.paused ? a.play().catch(() => { }) : a.pause(); };
-    mute.onclick = e => { e.stopPropagation(); if (a.volume === 0) { a.volume = 0.5; a.muted = false; } else a.muted = !a.muted; paintVol(); };
-    slider.oninput = () => { a.volume = slider.value / 100; a.muted = false; try { localStorage.setItem('shd.introVol', a.volume); } catch (_) { } paintVol(); };
+    mute.onclick = e => { e.stopPropagation(); if (fading) { fading = false; a.volume = vol; } if (a.volume === 0) { a.volume = 0.5; a.muted = false; } else a.muted = !a.muted; paintVol(); };
+    slider.oninput = () => { fading = false; a.volume = slider.value / 100; a.muted = false; try { localStorage.setItem('shd.introVol', a.volume); } catch (_) { } paintVol(); };
     a.addEventListener('play', paintPP); a.addEventListener('pause', paintPP);
     let gone = false;
     const end = () => { if (gone) return; gone = true; a.pause(); chip.classList.add('out'); setTimeout(() => chip.remove(), 400); };
