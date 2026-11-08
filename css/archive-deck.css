@@ -1,0 +1,39 @@
+/* ===== THE DECK: 3D art cards ===== */
+.p-deck{--blood:#c3141c;--paper:#e9e3d1;--ink:#0b0a09}
+.d3-stage{--cw:190px;--r:420px;position:relative;height:calc(var(--cw) * 1.62);margin:10px 0 6px;perspective:1100px;perspective-origin:50% 40%;touch-action:pan-y;user-select:none;-webkit-user-select:none;outline:none}
+.d3-stage:focus-visible{box-shadow:0 0 0 2px var(--blood);border-radius:12px}
+.d3-stage::after{content:'';position:absolute;left:15%;right:15%;bottom:-2px;height:26px;background:radial-gradient(ellipse,rgba(195,20,28,.45),transparent 70%);filter:blur(4px);pointer-events:none}
+.d3-ring{position:absolute;left:50%;top:6px;width:var(--cw);height:calc(var(--cw) * 1.4);margin-left:calc(var(--cw) / -2);transform-style:preserve-3d;will-change:transform}
+.d3-card{--tx:0deg;--ty:0deg;--gx:50%;--gy:30%;position:absolute;inset:0;padding:0;border:0;background:none;transform:rotateY(calc(var(--i) * var(--step, 30deg))) translateZ(var(--r));transform-style:preserve-3d;cursor:pointer}
+.d3-inner{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateY(var(--tx)) rotateX(var(--ty));transition:transform .55s cubic-bezier(.2,.9,.2,1)}
+.d3-card.front .d3-inner{transform:translateZ(30px) scale(1.06) rotateY(var(--tx)) rotateX(var(--ty))}
+.d3-card.flipped .d3-inner{transform:translateZ(30px) scale(1.06) rotateY(180deg)}
+.d3-face{position:absolute;inset:0;overflow:hidden;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 0 0 2px var(--ink),0 14px 30px rgba(0,0,0,.55)}
+.d3-front{background:var(--ink);padding:9px 9px 34px}
+.ink-red .d3-front{background:var(--blood)}.ink-paper .d3-front{background:var(--paper)}
+.d3-art{position:absolute;left:9px;right:9px;top:9px;bottom:38px;border-radius:6px;background:center/cover no-repeat #1a1817;box-shadow:inset 0 0 0 2px rgba(11,10,9,.85)}
+.d3-glare{position:absolute;inset:0;border-radius:12px;background:radial-gradient(circle at var(--gx) var(--gy),rgba(255,255,255,.38),transparent 46%),linear-gradient(115deg,transparent 30%,rgba(255,80,80,.18) 45%,transparent 60%);mix-blend-mode:screen;opacity:0;transition:opacity .3s;pointer-events:none}
+.d3-card.front .d3-glare{opacity:1}
+.d3-code{position:absolute;left:14px;top:14px;padding:1px 7px;border-radius:999px;background:var(--ink);color:var(--paper);font:400 13px/1.3 'Bebas Neue',sans-serif;letter-spacing:.1em;box-shadow:0 0 0 1.5px var(--paper)}
+.d3-stars{position:absolute;right:13px;top:13px;color:var(--blood);font-size:12px;letter-spacing:1px;text-shadow:0 0 2px var(--paper),0 0 2px var(--paper)}
+.d3-title{position:absolute;left:10px;right:10px;bottom:7px;overflow:hidden;font:400 18px/1.15 'Bebas Neue',sans-serif;letter-spacing:.06em;color:var(--paper);white-space:nowrap;text-overflow:ellipsis;text-align:center}
+.ink-paper .d3-title{color:var(--ink)}
+.d3-back{display:flex;flex-direction:column;gap:8px;padding:16px 14px;transform:rotateY(180deg);background:var(--paper);color:var(--ink);clip-path:polygon(0 2%,12% 0,40% 1.5%,70% 0,100% 2%,99% 50%,100% 98%,66% 100%,30% 98.4%,0 100%,1% 50%)}
+.d3-mark{font:400 12px var(--mono,monospace);letter-spacing:.2em;color:var(--blood)}
+.d3-back b{font:400 26px/.95 'Bebas Neue',sans-serif;letter-spacing:.03em;text-shadow:3px 2px 0 var(--blood)}
+.d3-back q{font:400 15px/1.35 'Special Elite',monospace;quotes:'“' '”'}
+.d3-back small{font:400 11px 'Special Elite',monospace;color:#5a554c}
+.d3-look{align-self:flex-start;margin-top:auto;padding:7px 14px;border-radius:999px;background:var(--blood);color:var(--paper);font:400 17px 'Bebas Neue',sans-serif;letter-spacing:.12em;box-shadow:0 0 0 2px var(--ink)}
+.d3-look:hover{box-shadow:0 0 0 2px var(--ink),0 0 18px rgba(195,20,28,.8)}
+.d3-err{position:absolute;left:-10%;right:-10%;bottom:44px;padding:2px 0;background:var(--ink);color:var(--paper);font:400 12px 'Bebas Neue',sans-serif;letter-spacing:.2em;text-align:center;transform:rotate(-6deg);opacity:.85;pointer-events:none}
+.d3-card:not(.front) .d3-face{filter:brightness(.7) saturate(.85)}
+.d3-ctrl{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin-top:6px}
+.d3-btn{min-height:38px;padding:0 14px;border-radius:999px;background:var(--ink);color:var(--paper);font:400 17px 'Bebas Neue',sans-serif;letter-spacing:.1em;box-shadow:0 0 0 2px var(--paper)}
+.d3-btn:hover{box-shadow:0 0 0 2px var(--paper),0 0 16px rgba(195,20,28,.8)}
+.d3-btn.red{background:var(--blood)}
+.d3-btn[aria-pressed=false]{opacity:.7}
+.d3-count{min-width:70px;text-align:center;font:400 18px 'Bebas Neue',sans-serif;letter-spacing:.14em;color:var(--paper);text-shadow:2px 2px 0 var(--blood)}
+@media (max-width:760px){.d3-stage{perspective:800px}.d3-title{font-size:15px}.d3-back b{font-size:21px}.d3-back q{font-size:13px}}
+@media (prefers-reduced-motion:reduce){.d3-inner{transition:none}}
+.portal>.p-deck{grid-column:1/-1;grid-row:8}
+@media (max-width:1100px){.portal>.p-deck{grid-row:auto}}
