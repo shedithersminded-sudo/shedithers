@@ -72,7 +72,7 @@ function drawMaskOverlay() {
   const m = maskEntry(f, true); if (cvM.width !== m.cv.width || cvM.height !== m.cv.height) { cvM.width = m.cv.width; cvM.height = m.cv.height; }
   cvM.style.width = cvA.width + 'px'; cvM.style.height = cvA.height + 'px';
   mctx.globalCompositeOperation = 'source-over'; mctx.drawImage(m.cv, 0, 0); if (f.maskInv) { mctx.globalCompositeOperation = 'difference'; mctx.fillStyle = '#fff'; mctx.fillRect(0, 0, cvM.width, cvM.height); }
-  mctx.globalCompositeOperation = 'multiply'; mctx.fillStyle = '#ff4fa3'; mctx.fillRect(0, 0, cvM.width, cvM.height); mctx.globalCompositeOperation = 'source-over';
+  mctx.globalCompositeOperation = 'multiply'; mctx.fillStyle = '#c3141c'; mctx.fillRect(0, 0, cvM.width, cvM.height); mctx.globalCompositeOperation = 'source-over';
 }
 let stroke = null;
 function maskPoint(e) { const r = cvA.getBoundingClientRect(), md = maskDims(); return { x: (e.clientX - r.left) / r.width * md.w, y: (e.clientY - r.top) / r.height * md.h, s: md.w / Math.max(1, docDims().w) }; }

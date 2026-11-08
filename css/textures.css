@@ -5,9 +5,9 @@
 .tex-sw span{position:absolute;left:0;right:0;bottom:0;padding:2px 3px;font:600 7px/1.1 var(--mono);letter-spacing:.04em;color:#eef2e6;background:linear-gradient(transparent,rgba(0,0,0,.85));text-align:left}
 .tex-sw:hover{transform:translateY(-1px);border-color:var(--pink)}
 .tex-sw:hover img{transform:scale(1.15)}
-.tex-sw.on{border-color:var(--acid);box-shadow:0 0 0 1px var(--acid),0 0 10px rgba(212,255,0,.35)}
+.tex-sw.on{border-color:var(--acid);box-shadow:0 0 0 1px var(--acid),0 0 10px rgba(233,227,209,.35)}
 .tex-sw.on span{color:var(--acid)}
-.fx-cat.cat-texture h4{color:var(--xray,#5fe0c0)}
+.fx-cat.cat-texture h4{color:var(--xray,#c3141c)}
 .fx-cat.cat-gif h4{color:var(--pink)}
 .fx-cat.cat-gif h4::after{content:' ● LOOPS';font:600 8px var(--mono);letter-spacing:.14em;color:var(--acid);animation:blink 1.2s steps(2) infinite}
 .skin-chrome .tex-sw{border:2px solid #4a5157;box-shadow:inset 0 0 0 1px #0b0d0e}
@@ -18,14 +18,14 @@
 .ex-tabs b{font:700 15px var(--cond);letter-spacing:.18em;color:var(--tx)}
 .ex-tabs small{font:500 8.5px var(--mono);letter-spacing:.08em;color:var(--tx3)}
 .ex-tabs button:hover{border-color:var(--pink)}
-.ex-tabs button.on{border-color:var(--acid);background:linear-gradient(180deg,rgba(212,255,0,.16),rgba(212,255,0,.04));box-shadow:0 0 0 1px var(--acid)}
+.ex-tabs button.on{border-color:var(--acid);background:linear-gradient(180deg,rgba(233,227,209,.16),rgba(233,227,209,.04));box-shadow:0 0 0 1px var(--acid)}
 .ex-tabs button.on b{color:var(--acid)}
 .fmt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
 .fmt-grid button{display:flex;flex-direction:column;align-items:flex-start;padding:6px 7px;border:1px solid var(--ln);background:var(--bg0);border-radius:6px;text-align:left}
 .fmt-grid b{font:700 13px var(--cond);letter-spacing:.14em;color:var(--tx)}
 .fmt-grid small{font:500 7.5px/1.2 var(--mono);color:var(--tx3)}
 .fmt-grid button:hover{border-color:var(--pink)}
-.fmt-grid button.on{border-color:var(--acid);background:rgba(212,255,0,.12)}
+.fmt-grid button.on{border-color:var(--acid);background:rgba(233,227,209,.12)}
 .fmt-grid button.on b{color:var(--acid)}
 .fmt-grid button:disabled{opacity:.35;pointer-events:none}
 .skin-chrome .ex-tabs button,.skin-chrome .fmt-grid button{background:linear-gradient(180deg,#22272b,#121517);border-color:#4a5157}

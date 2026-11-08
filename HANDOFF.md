@@ -1,4 +1,4 @@
-# SHEDITHERS — handoff (2026-11-07, live version v2.6.2)
+# SHEDITHERS — handoff (2026-11-07, live version v2.6.3)
 
 Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 
@@ -9,7 +9,7 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - **Deploys:** pushing `main` to github.com/shedithersminded-sudo/shedithers auto-deploys to https://shedithers.netlify.app and https://shedithersminded-sudo.github.io/shedithers/. The user always wants both sites updated and verified.
 
 ## Release steps (every change)
-1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=262 and v2.6.2 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
+1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=263 and v2.6.3 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
 2. Commit, ending the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then push.
 3. Check that both live sites serve the new `sw.js` version.
 
@@ -59,3 +59,4 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - CD intro: whole disc = NO IDENTITY art (grayscale + red), words curve round the rim (`.pg-ring` SVG in archive.html).
 - Softer UI (pills, soft red glow instead of hard block shadows) + words glow on hover: end of `css/archive-pop.css`.
 - Phones: no overscroll bounce, svh instead of dvh, bobbing animations off, sideways overflow clipped (`html{overflow-x:clip}`).
+- v2.6.3: editor (index.html) + its intro recoloured to match the archive: lime → red gels, pink → paper gels, silver chrome → black lacquer, teal → red, torn red "ERROR: NO IDENTITY" band on the intro (`css/skin-chrome.css`, end of file). Effect default colours (engine.js) left alone on purpose.

@@ -14,7 +14,7 @@
 #rail button:hover svg,.rail-link:hover svg{animation:hop .4s var(--ease)}
 @keyframes hop{50%{transform:translateY(-3px) scale(1.12)}}
 .wordmark b{animation:wmgl 7s infinite steps(1)}
-@keyframes wmgl{0%,95%,100%{text-shadow:none}96%{text-shadow:2px 0 var(--pink),-2px 0 var(--acid)}98%{text-shadow:-2px 0 var(--pink),2px 0 var(--xray,#5fe0c0)}}
+@keyframes wmgl{0%,95%,100%{text-shadow:none}96%{text-shadow:2px 0 var(--pink),-2px 0 var(--acid)}98%{text-shadow:-2px 0 var(--pink),2px 0 var(--xray,#c3141c)}}
 
 /* intro: untouched prints dealt onto the table (the figure moves, never the image) */
 .boot-deck{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:1}
