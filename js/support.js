@@ -15,7 +15,7 @@ function openTip() {
   const qr = h('div', { class: 'tip-qr' }, h('span', { class: 'note' }, 'LOADING QR…'));
   const body = h('div', null,
     h('div', { class: 'tip-head' }, h('span', { class: 'tip-heart', html: '<svg viewBox="0 0 40 40"><use href="#i-mark"/></svg>' }), h('p', null, CFG.tipLine || 'Buy the artist a drink ♥')),
-    h('div', { class: 'drinks' }, (CFG.drinks || []).map(d => h('button', { class: 'drink', onclick: () => openExt(cashURL(d.amount)) }, h('i', null, d.emoji || '♥'), h('b', null, d.label), h('span', null, '$' + d.amount)))),
+    h('div', { class: 'drinks' }, (CFG.drinks || []).map(d => h('button', { class: 'drink', onclick: () => openExt(cashURL(d.amount)) }, d.icon ? h('i', { class: 'dk-ico' }, h('img', { src: `assets/ui/drinks/${d.icon}.svg`, alt: '', draggable: false })) : h('i', null, d.emoji || '♥'), h('b', null, d.label), h('span', null, '$' + d.amount)))),
     h('div', { class: 'tip-row' }, h('button', { class: 'btn primary', onclick: () => openExt(cashURL()) }, `OPEN CASH APP · $${cashtag()}`), rbUser() ? h('button', { class: 'btn pink', onclick: () => openExt(shopURL()) }, 'STICKERS & PRINTS') : null),
     h('div', { class: 'tip-scan' }, qr, h('p', { class: 'note' }, 'ON A COMPUTER? SCAN WITH YOUR PHONE CAMERA TO TIP IN CASH APP.', h('br'), h('br'), 'Payments go straight to the artist through Cash App. SHEDITHERS never sees your payment details.')));
   const art = id => { const w = typeof artById === 'function' && artById(id); return w ? `url('${new URL(w.src, location.href).href}')` : 'none'; };

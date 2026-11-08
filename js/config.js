@@ -35,11 +35,12 @@ const SHD_CONFIG = {
   ],
   // Where the suggestion box sends messages
   email: 'shedithersminded@gmail.com',
-  tipLine: 'all of this is free. if something in here got to u, buy me a drink. no pressure. i’ll still love u either way ♥',
+  tipLine: 'no paywall, no catch. stay as long as u want. if something in here stuck with u, pull up a seat and buy me a drink ♥',
+  // icon = little doodle in assets/ui/drinks/ (emoji is the fallback)
   drinks: [
-    { label: 'SLUSHY', emoji: '🍧', amount: 3 },
-    { label: 'FRUIT CUP', emoji: '🍓', amount: 5 },
-    { label: 'COCKTAIL', emoji: '🍹', amount: 10 },
-    { label: 'ROUND FOR THE STUDIO', emoji: '🍾', amount: 25 },
+    { label: 'SLUSHY', emoji: '🍧', icon: 'slushy', amount: 3 },
+    { label: 'FRUIT CUP', emoji: '🍓', icon: 'fruit', amount: 5 },
+    { label: 'COCKTAIL', emoji: '🍹', icon: 'cocktail', amount: 10 },
+    { label: 'ROUND FOR THE STUDIO', emoji: '🍾', icon: 'bottle', amount: 25 },
   ],
 };

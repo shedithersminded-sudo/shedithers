@@ -170,3 +170,6 @@ body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url
 .tag-note{margin-right:auto;max-width:300px;font:400 12px/1.35 'Special Elite',monospace;color:#e9e3d1}
 .tag-note b{display:block;font:400 17px/1 'Permanent Marker',cursive;color:#e8434a;transform:rotate(-2deg)}
 .empty-card .row+.tag-note{display:block;margin:10px auto 0;text-align:center;max-width:none}
+
+/* drink doodles */
+.dk-ico{display:block;width:64px;height:64px;margin-bottom:2px;filter:drop-shadow(2px 3px 0 rgba(11,10,9,.6));transform:rotate(-4deg);transition:transform .25s}.dk-ico img{width:100%;height:100%;display:block}.dk-drink:hover .dk-ico,.drink:hover .dk-ico{transform:rotate(4deg) scale(1.12)}@media (max-width:760px){.dk-ico{width:54px;height:54px}}

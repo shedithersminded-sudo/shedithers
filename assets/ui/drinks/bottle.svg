@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <g transform="rotate(-24 32 36)">
+    <path d="M24 60 V34 Q24 28 29 25 V14 H35 V25 Q40 28 40 34 V60 Z" stroke="#e9e3d1" stroke-width="7"/>
+    <path d="M24 60 V34 Q24 28 29 25 V14 H35 V25 Q40 28 40 34 V60 Z" fill="#0b0a09" stroke="#0b0a09" stroke-width="2.4"/>
+    <path d="M28.5 18 H35.5 V13 H28.5 Z" fill="#c3141c" stroke="#0b0a09" stroke-width="2"/>
+    <!-- torn paper label with S -->
+    <path d="M24 38 l3 -1 3 1 3 -1 3 1 4 -1 V52 l-4 1 -3 -1 -3 1 -3 -1 -3 1 Z" fill="#e9e3d1" stroke="#0b0a09" stroke-width="1.6"/>
+    <path d="M35 41 q-3 -2 -5 0 q-1 2 2 3 q3 1 2 3 q-2 2 -5 0" stroke="#c3141c" stroke-width="2"/>
+    <path d="M26.5 30 q2 -3 4 -3" stroke="#e9e3d1" stroke-width="1.4"/>
+  </g>
+  <!-- cork popping off -->
+  <path d="M8 13 h7 v6 h-7 Z" transform="rotate(-35 11 16)" fill="#e9e3d1" stroke="#0b0a09" stroke-width="2"/>
+  <path d="M17 18 q2 2 1 4 M14 22 q3 0 4 2" stroke="#0b0a09" stroke-width="1.4"/>
+  <!-- bursts + stars -->
+  <path d="M22 6 l1 4 M28 4 l-1 4 M6 26 l4 -1" stroke="#c3141c" stroke-width="2"/>
+  <path d="M50 8 l1.6 3.4 3.6.4 -2.7 2.4 .8 3.6 -3.3 -1.9 -3.3 1.9 .8 -3.6 -2.7 -2.4 3.6 -.4 Z" fill="#c3141c" stroke="#0b0a09" stroke-width="1.4"/>
+  <path d="M56 26 l1 2.2 2.4.3 -1.8 1.6 .5 2.4 -2.1 -1.2 -2.1 1.2 .5 -2.4 -1.8 -1.6 2.4 -.3 Z" fill="#e9e3d1" stroke="#0b0a09" stroke-width="1.2"/>
+  <circle cx="44" cy="16" r="1.4" fill="#c3141c"/><circle cx="16" cy="32" r="1.2" fill="#c3141c"/>
+</svg>

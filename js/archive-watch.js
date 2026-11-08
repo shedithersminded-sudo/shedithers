@@ -207,7 +207,7 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     const x = el('button', 'dk-x', '✕'); x.setAttribute('aria-label', 'Close'); x.onclick = close;
     const head = el('div', 'dk-head'); head.append(el('small', null, 'TIP JAR // $' + tag.toUpperCase()), el('h3', null, 'BUY ME A DRINK'), el('p', null, CFG.tipLine || 'Buy the artist a drink ♥'));
     const menu = el('div', 'dk-menu');
-    (CFG.drinks || []).forEach((d, i) => { const a = el('a', 'dk-drink'); a.href = cashURL(d.amount); a.target = '_blank'; a.rel = 'noopener'; a.style.setProperty('--r', [-2, 1.5, -1, 2][i % 4] + 'deg'); a.append(el('i', null, d.emoji || '♥'), el('b', null, d.label), el('span', null, '$' + d.amount)); menu.append(a); });
+    (CFG.drinks || []).forEach((d, i) => { const a = el('a', 'dk-drink'); a.href = cashURL(d.amount); a.target = '_blank'; a.rel = 'noopener'; a.style.setProperty('--r', [-2, 1.5, -1, 2][i % 4] + 'deg'); const ic = el('i', d.icon ? 'dk-ico' : null, d.icon ? null : (d.emoji || '♥')); if (d.icon) { const im = el('img'); im.src = `assets/ui/drinks/${d.icon}.svg`; im.alt = ''; im.draggable = false; ic.append(im); } a.append(ic, el('b', null, d.label), el('span', null, '$' + d.amount)); menu.append(a); });
     const any = el('a', 'dk-any', 'ANY AMOUNT · OPEN CASH APP ▸'); any.href = cashURL(); any.target = '_blank'; any.rel = 'noopener';
     const scan = el('div', 'dk-scan'); const box = el('div', 'dk-qr', 'loading QR…');
     scan.append(box, el('p', null, 'On a computer? Scan with your phone camera to tip in Cash App. Payments go straight to the artist — SHEDITHERS never sees your payment details.'));
