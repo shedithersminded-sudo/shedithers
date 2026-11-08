@@ -206,17 +206,29 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     modal = el('div', 'dk'); modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true'); modal.setAttribute('aria-label', 'Buy me a drink');
     const card = el('div', 'dk-card');
     const x = el('button', 'dk-x', '✕'); x.setAttribute('aria-label', 'Close'); x.onclick = close;
-    const head = el('div', 'dk-head'); head.append(el('small', null, 'TIP JAR // $' + tag.toUpperCase()), el('h3', null, 'BUY ME A DRINK'), el('p', null, CFG.tipLine || 'Buy the artist a drink ♥'));
+    const head = el('div', 'dk-head');
+    // news-panel look: kana, loud orange title (letters bounce in), a dated meta row, then the tip line
+    const h3 = el('h3'); h3.setAttribute('aria-label', 'BUY ME A DRINK'); [...'BUY ME A DRINK'].forEach((c, i) => { const sp = el('span', c === ' ' ? 'sp' : null, c === ' ' ? ' ' : c); sp.style.setProperty('--i', i); sp.setAttribute('aria-hidden', 'true'); h3.append(sp); });
+    const d = new Date(), dd = [d.getMonth() + 1, d.getDate(), d.getFullYear() % 100].map(n => String(n).padStart(2, '0')).join('/');
+    const meta = el('div', 'dk-meta'); meta.append(el('span', null, dd), el('b', null, 'TIP JAR'), el('span', null, '$' + tag.toUpperCase()));
+    head.append(el('small', null, 'チップ・ジャー'), h3, meta, el('p', null, CFG.tipLine || 'Buy the artist a drink ♥'));
+    const tick = el('div', 'dk-tick'); tick.setAttribute('aria-hidden', 'true'); const tr = el('span'); tr.textContent = ('no paywall ✦ no catch ✦ stay as long as u want ✦ straight to the artist ✦ keeps the weird stuff coming ✦ ').repeat(2); tick.append(tr);
     const menu = el('div', 'dk-menu');
     (CFG.drinks || []).forEach((d, i) => { const a = el('a', 'dk-drink'); a.href = cashURL(d.amount); a.target = '_blank'; a.rel = 'noopener'; a.style.setProperty('--r', [-2, 1.5, -1, 2][i % 4] + 'deg'); const ic = el('i', d.icon ? 'dk-ico' : null, d.icon ? null : (d.emoji || '♥')); if (d.icon) { const im = el('img'); im.src = `assets/ui/drinks/${d.icon}.svg`; im.alt = ''; im.draggable = false; ic.append(im); } a.append(ic, el('b', null, d.label), el('span', null, '$' + d.amount)); menu.append(a); });
-    const any = el('a', 'dk-any', 'ANY AMOUNT · OPEN CASH APP ▸'); any.href = cashURL(); any.target = '_blank'; any.rel = 'noopener';
+    const any = el('a', 'dk-any'); any.append(el('span', null, 'ANY AMOUNT · OPEN CASH APP'), el('i', null, '▸')); any.href = cashURL(); any.target = '_blank'; any.rel = 'noopener';
     const scan = el('div', 'dk-scan'); const box = el('div', 'dk-qr', 'loading QR…');
     scan.append(box, el('p', null, 'On a computer? Scan with your phone camera to tip in Cash App. Payments go straight to the artist — SHEDITHERS never sees your payment details.'));
     const art = id => { const w = typeof ARTWORKS !== 'undefined' && ARTWORKS.find(z => z.id === id); return w ? `url('${new URL(w.src, location.href).href}')` : 'none'; };
     card.style.setProperty('--tip-banner', art('no-identity')); card.style.setProperty('--tip-guy', `url('${new URL('assets/archive/little-guy.png', location.href).href}')`);
     ['i-love-shedithers', 'not-in-my-nature', 'when-you-rain', 'mad-women-and-poets'].forEach((id, i) => menu.children[i] && menu.children[i].style.setProperty('--art', art(id)));
     const banner = el('div', 'tip-banner'); banner.setAttribute('aria-hidden', 'true'); const guy = el('i', 'tip-guy'); guy.setAttribute('aria-hidden', 'true');
-    card.append(guy, banner, x, head, menu, any, scan, el('div', 'dk-foot', 'SHEDITHERS LOVES YOU ♥'));
+    const foot = el('div', 'dk-foot'); foot.append('SHEDITHERS LOVES YOU ', el('i', null, '♥'));
+    card.append(guy, banner, x, head, tick, menu, any, scan, foot);
+    // behind the panel: the artist's art, tinted acid yellow like the news board, drifting
+    const bg = el('div', 'dk-bg'); bg.setAttribute('aria-hidden', 'true');
+    ['are-we-alive-yet', 'who-will-you-be', 'mad-women-and-poets'].forEach((id, i) => { const L = el('i', 'dk-bgl' + (i ? '' : ' on')); L.style.backgroundImage = art(id); bg.append(L); });
+    bg.append(el('i', 'dk-bgt')); modal.append(bg);
+    let bi = 0; const bT = setInterval(() => { if (!bg.isConnected) return clearInterval(bT); const L = bg.querySelectorAll('.dk-bgl'); L[bi].classList.remove('on'); bi = (bi + 1) % L.length; L[bi].classList.add('on'); }, 5000);
     modal.append(card); modal.addEventListener('click', ev => { if (ev.target === modal) close(); });
     document.body.append(modal); requestAnimationFrame(() => modal.classList.add('in')); document.addEventListener('keydown', key, true); x.focus(); qr(box);
   }

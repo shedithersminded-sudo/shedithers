@@ -604,3 +604,78 @@ nav a.drink-nav{box-shadow:2px 2px 0 #0b0a09}
 @keyframes spkEq{from{height:15%}to{height:100%}}
 @media (max-width:760px){.pp-spk{width:180px;height:248px}.spk-cone{width:140px;height:140px}.pp-spk::before,.pp-spk::after{box-shadow:0 226px 0 #5a5550}}
 @media (prefers-reduced-motion:reduce){.spk-cone,.spk-tw,.spk-eq i{animation:none!important}}
+
+/* ===== v3.0.6: tip jar = the NEWS board — olive glass over the art tinted acid yellow, lime tags, loud orange title ===== */
+.dk{background:#0a0b05;overflow:hidden}
+.dk-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.dk-bgl{position:absolute;inset:-8%;background:center/cover no-repeat;opacity:0;filter:grayscale(1) contrast(1.9) brightness(.55);transform:scale(1.08) rotate(-2deg);transition:opacity 2s ease;animation:dkDrift 30s ease-in-out infinite alternate}
+.dk-bgl.on{opacity:1}
+@keyframes dkDrift{to{transform:scale(1.2) rotate(2deg) translate(-2%,1%)}}
+.dk-bgt{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 25%,rgba(230,255,40,.9),transparent 55%),radial-gradient(ellipse at 15% 85%,rgba(255,170,0,.7),transparent 50%),linear-gradient(135deg,rgba(10,12,4,.4),rgba(212,255,0,.55) 45%,rgba(20,24,6,.7) 70%,rgba(255,200,0,.5));mix-blend-mode:color-dodge;animation:dkTint 12s ease-in-out infinite alternate}
+.dk-bgt::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+@keyframes dkTint{to{filter:hue-rotate(-18deg) brightness(1.1)}}
+.dk-card{z-index:1;width:min(540px,100%);padding:26px 22px 18px;background:linear-gradient(180deg,rgba(14,16,6,.86),rgba(5,6,3,.93));color:#eef2e6;border:1px solid #6c7a2a;box-shadow:0 0 0 2px #0b0a09,10px 10px 0 rgba(11,10,9,.85),0 30px 80px rgba(0,0,0,.7);backdrop-filter:blur(6px) saturate(1.3);-webkit-backdrop-filter:blur(6px) saturate(1.3);clip-path:none;scrollbar-width:thin;scrollbar-color:#9fb52a #1a1d10}
+.dk-card::-webkit-scrollbar{width:12px}.dk-card::-webkit-scrollbar-track{background:#1a1d10}.dk-card::-webkit-scrollbar-thumb{background:#9fb52a;border:2px solid #1a1d10}
+.dk.in .dk-card{transform:none;animation:dkGlitchIn .55s steps(1,end) both}
+@keyframes dkGlitchIn{0%{opacity:0;clip-path:inset(0 0 100% 0)}15%{opacity:1;clip-path:inset(0 0 70% 0);transform:translateX(-10px) skewX(-6deg)}30%{clip-path:inset(30% 0 30% 0);transform:translateX(8px)}45%{clip-path:inset(0 0 25% 0);transform:translateX(-4px) skewX(3deg)}60%{clip-path:inset(0);transform:none;filter:hue-rotate(60deg) contrast(1.6)}75%{filter:none}100%{clip-path:inset(0);transform:none}}
+/* top banner: the art, duotoned acid yellow + olive, with a scanline sweeping down */
+.tip-banner{height:88px;margin:-26px -22px 12px;border-bottom:1px solid #6c7a2a;clip-path:none}
+.tip-banner::before{filter:grayscale(1) contrast(1.6) brightness(.9)}
+.tip-banner::after{background:linear-gradient(100deg,rgba(212,255,0,.95),rgba(242,178,52,.7) 50%,rgba(20,24,6,.85));mix-blend-mode:multiply}
+.dk-card .tip-banner{background:#11130a}
+.dk-card .tip-banner+.dk-x{top:22px}
+.dk-card::before{content:'';position:absolute;left:0;right:0;top:0;height:88px;z-index:1;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(212,255,0,.55) 50%,transparent);background-size:100% 26px;background-repeat:no-repeat;animation:dkScan 2.6s linear infinite;mix-blend-mode:screen}
+@keyframes dkScan{from{background-position:0 -26px}to{background-position:0 100px}}
+.tip-guy{filter:drop-shadow(2px 3px 0 #0b0a09) sepia(1) saturate(3) hue-rotate(20deg) brightness(1.05)}
+.dk-x{background:#0b0a09;color:#d4ff00;border:1px solid #9fb52a;box-shadow:none;border-radius:3px;transition:transform .2s,background .2s}
+.dk-x:hover{background:#d4ff00;color:#0b0a09;transform:rotate(90deg)}
+/* header: kana, orange title on a cut label, dated meta row like a news post */
+.dk-head{text-align:center}
+.dk-head small{display:block;font:600 10px/1 sans-serif;letter-spacing:.3em;color:#e9f7a6}
+.dk-head h3{display:inline-flex;flex-wrap:wrap;justify-content:center;margin:4px 0 10px;padding:2px 14px 0;font:400 clamp(40px,8.5vw,60px)/.95 'Bebas Neue',sans-serif;letter-spacing:.04em;color:#ff5a3c;text-shadow:3px 3px 0 #0b0a09,-1px -1px 0 #0b0a09,1px -1px 0 #0b0a09,-1px 1px 0 #0b0a09;background:linear-gradient(transparent 55%,rgba(226,104,38,.9) 55%,rgba(226,104,38,.9) 86%,transparent 86%);transform:rotate(-1.2deg)}
+.dk-head h3 span{display:inline-block;animation:dkDrop .5s cubic-bezier(.2,1.6,.4,1) both,dkWave 2.4s ease-in-out infinite;animation-delay:calc(var(--i) * 35ms + .25s),calc(var(--i) * 90ms + 1s)}
+.dk-head h3 .sp{width:.3em}
+@keyframes dkDrop{from{opacity:0;transform:translateY(-30px) rotate(-12deg)}}
+@keyframes dkWave{0%,100%{transform:translateY(0)}25%{transform:translateY(-3px) rotate(-3deg);color:#f2b234}75%{transform:translateY(2px) rotate(2deg)}}
+.dk-meta{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-top:1px solid #44502a;border-bottom:1px dotted #44502a;font:700 12px Verdana,Tahoma,sans-serif;color:#eef2e6}
+.dk-meta b{color:#d4ff00;text-decoration:underline;text-underline-offset:2px;letter-spacing:.06em}
+.dk-meta span:last-child{color:#9cff3a}
+.dk-head p{margin:10px 0 0;text-align:left;font:400 13px/1.6 Verdana,Tahoma,sans-serif;color:#eef2e6}
+/* ticker */
+.dk-tick{position:relative;z-index:2;margin:12px -22px 0;overflow:hidden;white-space:nowrap;background:#d4ff00;color:#0b0a09;border-block:1px solid #0b0a09;font:700 11px/22px Verdana,Tahoma,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.dk-tick span{display:inline-block;padding-left:100%;animation:dkTick 18s linear infinite}
+@keyframes dkTick{to{transform:translateX(-100%)}}
+/* drinks: art cards duotoned olive/yellow, lime underlined price, a lime scan on hover */
+.dk-menu{gap:10px;margin:14px 0 12px}
+.dk-drink{min-height:122px;background:#0b0a09;border:1px solid #6c7a2a;border-radius:2px;clip-path:none;box-shadow:4px 4px 0 #0b0a09;transform:rotate(var(--r,0deg));opacity:0;animation:dkCardIn .5s cubic-bezier(.2,1.4,.4,1) forwards}
+.dk-drink:nth-child(1){animation-delay:.35s}.dk-drink:nth-child(2){animation-delay:.45s}.dk-drink:nth-child(3){animation-delay:.55s}.dk-drink:nth-child(4){animation-delay:.65s}
+@keyframes dkCardIn{from{opacity:0;transform:translateY(16px) scale(.9) rotate(calc(var(--r,0deg) * 4))}to{opacity:1;transform:rotate(var(--r,0deg))}}
+.dk-drink::before{filter:grayscale(1) contrast(1.7) brightness(.85) sepia(1) saturate(2.6) hue-rotate(28deg);opacity:.8}
+.dk-drink::after,.dk-drink:nth-child(2n)::after{background:linear-gradient(180deg,rgba(212,255,0,.18),rgba(8,9,4,.9) 70%)}
+.dk-drink:nth-child(2n)::after{background:linear-gradient(180deg,rgba(242,178,52,.25),rgba(8,9,4,.9) 70%)}
+.dk-drink b{font:400 22px/1 'Bebas Neue',sans-serif;color:#eef2e6;text-shadow:2px 2px 0 #0b0a09}
+.dk-drink span,.dk-drink:nth-child(n) span{padding:0;border-radius:0;background:none;color:#d4ff00;font:700 13px Verdana,Tahoma,sans-serif;text-decoration:underline;text-underline-offset:2px}
+.dk-drink .dk-ico{position:relative;z-index:1}
+.dk-drink:hover{transform:rotate(0) translateY(-3px);box-shadow:4px 4px 0 #0b0a09,0 0 0 1px #d4ff00;border-color:#d4ff00}
+.dk-drink:hover b{color:#f2b234}
+.dk-drink .dk-ico,.dk-drink i{animation:dkBob 2.2s ease-in-out infinite}
+.dk-drink:nth-child(2) .dk-ico{animation-delay:-.6s}.dk-drink:nth-child(3) .dk-ico{animation-delay:-1.2s}.dk-drink:nth-child(4) .dk-ico{animation-delay:-1.7s}
+@keyframes dkBob{50%{translate:0 -4px}}
+.dk-drink>b::after{content:'';position:absolute;left:-200%;top:-80px;width:60%;height:300px;background:linear-gradient(90deg,transparent,rgba(212,255,0,.35),transparent);transform:rotate(18deg);pointer-events:none}
+.dk-drink:hover>b::after{animation:dkShine .7s ease-out}
+@keyframes dkShine{to{left:220%}}
+/* any amount: lime with marching stripes + a nudging arrow */
+.dk-any{display:flex;justify-content:center;align-items:center;gap:10px;padding:13px;background:repeating-linear-gradient(-45deg,#d4ff00 0 14px,#c4ee00 14px 28px);background-size:40px 40px;color:#0b0a09;border:1px solid #0b0a09;border-radius:2px;box-shadow:4px 4px 0 #0b0a09;font:400 22px 'Bebas Neue',sans-serif;letter-spacing:.12em;animation:dkMarch 1s linear infinite}
+@keyframes dkMarch{to{background-position:40px 0}}
+.dk-any i{font-style:normal;display:inline-block;animation:dkNudge .923s ease-in-out infinite}
+@keyframes dkNudge{50%{transform:translateX(5px)}}
+.dk-any:hover{background:#0b0a09;color:#d4ff00;box-shadow:4px 4px 0 #d4ff00;text-shadow:none}
+/* QR row like a news item */
+.dk-scan{padding:10px 0;border-top:1px dotted #44502a;border-bottom:1px dotted #44502a}
+.dk-qr{border:1px solid #9fb52a;box-shadow:3px 3px 0 #0b0a09}
+.dk-scan p{font:400 11px/1.6 Verdana,Tahoma,sans-serif;color:#cfd6c0}
+.dk-foot{margin-top:12px;font:700 13px Verdana,Tahoma,sans-serif;letter-spacing:.14em;color:#d4ff00;text-decoration:underline;text-underline-offset:3px}
+.dk-foot i{display:inline-block;font-style:normal;color:#ff5a3c;text-decoration:none;animation:dkBeat .923s ease-in-out infinite}
+@keyframes dkBeat{0%,100%{transform:scale(1)}15%{transform:scale(1.35)}30%{transform:scale(1)}45%{transform:scale(1.2)}}
+@media (max-width:760px){.dk-any{font-size:18px;letter-spacing:.08em;padding:12px 8px}.dk-card{padding:22px 16px 16px}.tip-banner{margin:-22px -16px 12px}.dk-tick{margin:12px -16px 0}.dk-drink{min-height:108px}}
+@media (prefers-reduced-motion:reduce){.dk-bgl,.dk-bgt,.dk-card::before,.dk-head h3 span,.dk-tick span,.dk-drink,.dk-drink .dk-ico,.dk-any,.dk-any i,.dk-foot i{animation:none!important;opacity:1}.dk.in .dk-card{animation:none}}
