@@ -220,7 +220,7 @@ function viewAbout() {
     try {
       const r = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(mail), { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ _subject: `SHEDITHERS ${kind} ♥ (archive)`, _template: 'table', _captcha: 'false', type: kind, message: text, name: who.value || '', email: reply.value || '' }) });
       const j = await r.json().catch(() => ({})); if (!r.ok || String(j.success) === 'false') throw new Error(j.message || 'HTTP ' + r.status);
-      lastSent = Date.now(); msg.value = ''; sbStatus.textContent = 'sent. i read every single one ♥';
+      lastSent = Date.now(); msg.value = ''; sbStatus.textContent = 'sent. i read every single one ♥'; window.shdCount && window.shdCount('suggestion-sent', 'Sent a suggestion');
     } catch (e) { sbStatus.innerHTML = ''; sbStatus.append('couldn’t send that one. ', h('a', { href: `mailto:${mail}?subject=${encodeURIComponent('SHEDITHERS ' + kind)}&body=${encodeURIComponent(msg.value)}` }, 'email it to me instead ▸')); }
     sendBtn.disabled = false;
   } }, 'send it ▸');

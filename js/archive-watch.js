@@ -35,7 +35,7 @@ function openTheater(start) {
 }
 function key(e) { if (!theater) return; if (e.key === 'Escape') { e.stopPropagation(); close(); } }
 function close() { if (!theater) return; const t = theater; theater = null; t.classList.remove('in'); document.body.classList.remove('locked'); document.removeEventListener('keydown', key, true); setTimeout(() => t.remove(), 300); }
-window.SHD_WATCH = openTheater;
+window.SHD_WATCH = s => { window.shdCount && !theater && window.shdCount('tiktok-theater-opened', 'Opened the TikTok theater'); openTheater(s); };
 
 /* hook the little TV: big-screen button + double-tap */
 function hookTV() {
@@ -217,8 +217,9 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     modal.append(card); modal.addEventListener('click', ev => { if (ev.target === modal) close(); });
     document.body.append(modal); requestAnimationFrame(() => modal.classList.add('in')); document.addEventListener('keydown', key, true); x.focus(); qr(box);
   }
-  window.SHD_DRINK = open;
-  const tab = el('button', 'drink-tab'); tab.type = 'button'; tab.setAttribute('aria-label', 'Buy me a drink'); tab.innerHTML = '<i>🍹</i><b>BUY ME A DRINK</b>'; tab.onclick = open;
+  const openCounted = e => { if (!modal && window.shdCount) window.shdCount('tip-jar-opened', 'Opened the tip jar'); open(e); };
+  window.SHD_DRINK = openCounted;
+  const tab = el('button', 'drink-tab'); tab.type = 'button'; tab.setAttribute('aria-label', 'Buy me a drink'); tab.innerHTML = '<i>🍹</i><b>BUY ME A DRINK</b>'; tab.onclick = openCounted;
   document.body.append(tab);
-  document.querySelectorAll('[data-drink]').forEach(a => a.addEventListener('click', open));
+  document.querySelectorAll('[data-drink]').forEach(a => a.addEventListener('click', openCounted));
 })();

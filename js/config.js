@@ -6,6 +6,9 @@ const SHD_CONFIG = {
   cashapp: '$olace6',
   // Your Redbubble username (from redbubble.com/people/USERNAME), e.g. 'shedithers'
   redbubble: '',
+  // Visitor + art counter: make a free account at goatcounter.com, then put your code here
+  // (if your stats page is shedithers.goatcounter.com, the code is 'shedithers'). Empty = off.
+  goatcounter: '',
   // Your TikTok handle (without @)
   tiktok: 'shedithers',
   // Your YouTube handle (without @)

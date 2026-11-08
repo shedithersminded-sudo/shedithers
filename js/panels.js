@@ -156,7 +156,7 @@ function leftHistory(body) {
       h('div', { class: 'meta' }, h('b', null, x.file), h('span', null, `${x.fmt} · ${x.w}×${x.h} · ${fmtBytes(x.size)}`), h('span', null, fmtDate(x.at)))));
   }
 }
-function logExport(rec) { const t = cvA.width ? (() => { const c = h_canvas(80, Math.round(80 * cvA.height / cvA.width) || 60); c.getContext('2d').drawImage(cvA, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', 0.6); })() : ''; S.exports.unshift(Object.assign({ at: Date.now(), thumb: t, stack: stackToPreset(S.stack) }, rec)); S.exports = S.exports.slice(0, 60); LS.set('shd.exports', S.exports); if (leftTab === 'history') renderLeft(); if (typeof tipNudge === 'function') tipNudge(rec); }
+function logExport(rec) { const t = cvA.width ? (() => { const c = h_canvas(80, Math.round(80 * cvA.height / cvA.width) || 60); c.getContext('2d').drawImage(cvA, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', 0.6); })() : ''; S.exports.unshift(Object.assign({ at: Date.now(), thumb: t, stack: stackToPreset(S.stack) }, rec)); S.exports = S.exports.slice(0, 60); LS.set('shd.exports', S.exports); if (leftTab === 'history') renderLeft(); if (typeof tipNudge === 'function') tipNudge(rec); if (window.shdCount) { const ext = (String(rec && rec.file || '').match(/\.([a-z0-9]+)$/i) || [])[1] || 'file'; window.shdCount('made-art/' + ext.toLowerCase(), 'Someone made art in the Dither Lab (' + ext.toUpperCase() + ')'); } }
 
 /* ---------- STACK ---------- */
 let SYNC = [];

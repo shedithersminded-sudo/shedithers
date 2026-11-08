@@ -7,6 +7,11 @@ const CUSTOM_ENC = { gif: 1, bmp: 1, tiff: 1 };
 const NO_ALPHA = { jpeg: 1, gif: 1, bmp: 1 };
 let AVIF_OK = null;
 async function avifSupported() { if (AVIF_OK !== null) return AVIF_OK; try { const c = h_canvas(2, 2); const b = await new Promise(r => c.toBlob(r, 'image/avif', 0.8)); AVIF_OK = !!b && b.type === 'image/avif'; } catch (_) { AVIF_OK = false; } return AVIF_OK; }
+/* reminder in every export window: post it + tag the artist */
+function tagNote() {
+  const tt = String((typeof SHD_CONFIG !== 'undefined' && SHD_CONFIG.tiktok) || 'shedithers').replace(/^@/, '');
+  return h('span', { class: 'tag-note' }, h('b', null, 'made something?'), ` post it + tag @${tt} or #shedithers ♥ i wanna see`);
+}
 function openExport() { if (!S.media) return toast('Import media first', 'err'); return isTimed() ? openVideoExport() : openImageExport(); }
 /* PICTURE / GIF / VIDEO tab bar shared by both export windows */
 function exportTabs(active, close) {
@@ -114,7 +119,7 @@ function openImageExport() {
       h('div', { class: 'field' }, qRow), h('div', { class: 'field' }, alphaRow, bgRow),
       h('div', { class: 'field' }, h('label', null, 'File name'), name))); body.append(grid1);
   body.prepend(exportTabs('picture', () => md.close()));
-  const md = openModal({ title: 'EXPORT', sub: `${isVideo() ? 'PICTURE OF CURRENT FRAME · ' : ''}${S.stack.filter(f => f.on).length} FX · ${d.w}×${d.h} DOC`, body, foot: [h('span', { class: 'note' }, 'Processed in a background worker.'), h('button', { class: 'btn', onclick: () => md.close() }, 'CANCEL'), h('button', { class: 'btn', onclick: () => { if (blob) shareBlob(blob, `${name.value.trim() || 'shedithers'}.${EXT[o.fmt]}`); } }, '♥ SHARE'), h('button', { class: 'btn primary', id: 'exGo', disabled: true, onclick: go, html: '<svg><use href="#i-export"/></svg>EXPORT' })], onClose: () => { token++; if (url) setTimeout(() => URL.revokeObjectURL(url), 5000); } });
+  const md = openModal({ title: 'EXPORT', sub: `${isVideo() ? 'PICTURE OF CURRENT FRAME · ' : ''}${S.stack.filter(f => f.on).length} FX · ${d.w}×${d.h} DOC`, body, foot: [tagNote(),h('button', { class: 'btn', onclick: () => md.close() }, 'CANCEL'), h('button', { class: 'btn', onclick: () => { if (blob) shareBlob(blob, `${name.value.trim() || 'shedithers'}.${EXT[o.fmt]}`); } }, '♥ SHARE'), h('button', { class: 'btn primary', id: 'exGo', disabled: true, onclick: go, html: '<svg><use href="#i-export"/></svg>EXPORT' })], onClose: () => { token++; if (url) setTimeout(() => URL.revokeObjectURL(url), 5000); } });
   rerender();
 }
 
@@ -230,7 +235,7 @@ function openVideoExport() {
       h('p', { class: 'note' }, `RANGE ${fmtTime(S.video.in, o.fps)} → ${fmtTime(S.video.out, o.fps)} · SPEED ${S.video.speed}× · Every frame is processed through all layers at output resolution, then encoded. MP4/WEBM include your soundtrack${isVideo() ? ' and/or the original audio' : ''}. Use 9:16 VERTICAL for TikTok / Reels.`)));
   body.append(grid2); body.prepend(exportTabs(o.fmt === 'gif' ? 'gif' : 'video', () => md.close()));
   if (!isVideo()) body.querySelector('.ex-grid > div:last-child').prepend(h('div', { class: 'field' }, h('label', null, 'Clip length (seconds)'), h('input', { class: 'inp', type: 'number', min: 0.5, max: 600, step: 0.5, value: S.still.dur, onchange: e => { setStillDur(e.target.value); upd(); } })));
-  const md = openModal({ title: 'EXPORT', sub: isVideo() ? 'VIDEO · GIF · FRAMES' : 'ANIMATED STILL · GIF · VIDEO', body, foot: [cancelBtn, shareBtn, goBtn], onClose: () => { if (running) running.cancel = true; } });
+  const md = openModal({ title: 'EXPORT', sub: isVideo() ? 'VIDEO · GIF · FRAMES' : 'ANIMATED STILL · GIF · VIDEO', body, foot: [tagNote(), cancelBtn, shareBtn, goBtn], onClose: () => { if (running) running.cancel = true; } });
   upd();
   (async () => {
     const x = dims(); const fm = await detectVideoFormats(x.w, x.h, o.fps, o.mbps * 1e6);

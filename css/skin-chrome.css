@@ -165,3 +165,8 @@ body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url
 .ty .ty-badge{z-index:4}
 .ty-pp{margin:12px 2px 2px;font:400 15px 'Special Elite',monospace;color:#0b0a09;text-align:center}
 .ty .ty-links .btn.pink{background:linear-gradient(180deg,#e8434a 0%,#c3141c 45%,#8f0d13 55%,#d32a31 100%);color:#f4eee0;border-color:#4a0609}
+
+/* export windows: "post it + tag me" reminder */
+.tag-note{margin-right:auto;max-width:300px;font:400 12px/1.35 'Special Elite',monospace;color:#e9e3d1}
+.tag-note b{display:block;font:400 17px/1 'Permanent Marker',cursive;color:#e8434a;transform:rotate(-2deg)}
+.empty-card .row+.tag-note{display:block;margin:10px auto 0;text-align:center;max-width:none}
