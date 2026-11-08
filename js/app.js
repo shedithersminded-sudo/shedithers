@@ -446,7 +446,7 @@ $('#btnRandAll').onclick = () => randomizeAll();
 function randomizeAll() { if (!S.stack.length) return toast('Stack is empty', 'err'); S.stack.forEach(randomizeFx); changed(true); toast('Stack randomized', 'info', 1400); }
 
 /* ---------- keyboard ---------- */
-const typing = e => e.target.matches('input:not([type=range]):not([type=checkbox]),textarea,select');
+const typing = e => !!(e.target && e.target.matches && (e.target.matches('input:not([type=range]):not([type=checkbox]),textarea,select') || e.target.isContentEditable));
 let holdOrig = null;
 window.addEventListener('keydown', e => {
   if ($('#modalRoot').children.length) return;

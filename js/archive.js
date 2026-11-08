@@ -255,7 +255,7 @@ function viewAbout() {
 /* ---------- hint bar (game-style controls, all tappable) ---------- */
 let keyNav = null;
 function setHint(items) { hint.innerHTML = ''; items.forEach(([label, fn]) => hint.append(fn ? h('button', { onclick: fn }, label) : h('span', null, label))); }
-document.addEventListener('keydown', e => { if (!viewer.hidden) return vKey(e); if (e.target.matches('input,textarea')) return; keyNav && keyNav(e); });
+document.addEventListener('keydown', e => { if (!viewer.hidden) return vKey(e); if (e.target.matches?.('input,textarea')) return; keyNav && keyNav(e); });
 
 /* ---------- swipe helper ---------- */
 function swipe(el, fn) { let sx = null, sy = 0; el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true }); el.addEventListener('touchend', e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.3) fn(dx); sx = null; }, { passive: true }); }

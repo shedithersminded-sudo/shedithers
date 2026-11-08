@@ -48,7 +48,7 @@ let taps = 0, tapT = 0; const brandSvg = $('.brand svg');
 $('.brand').addEventListener('click', e => { if (Date.now() - tapT > 900) taps = 0; tapT = Date.now(); if (++taps >= 5) { e.preventDefault(); taps = 0; discover('core', ...at(e)); } });
 // (b) typed words + konami
 let typed = ''; const KON = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a']; let kpos = 0;
-document.addEventListener('keydown', e => { if (e.target.matches('input,textarea')) return; typed = (typed + (e.key.length === 1 ? e.key.toLowerCase() : '')).slice(-12); if (typed.endsWith('shedithers')) { typed = ''; discover('word', innerWidth / 2, innerHeight / 2); rain(); } kpos = e.key === KON[kpos] ? kpos + 1 : (e.key === KON[0] ? 1 : 0); if (kpos === KON.length) { kpos = 0; document.body.classList.add('lab-open'); discover('konami', innerWidth - 120, 40); } });
+document.addEventListener('keydown', e => { if (e.target.matches?.('input,textarea')) return; typed = (typed + (e.key.length === 1 ? e.key.toLowerCase() : '')).slice(-12); if (typed.endsWith('shedithers')) { typed = ''; discover('word', innerWidth / 2, innerHeight / 2); rain(); } kpos = e.key === KON[kpos] ? kpos + 1 : (e.key === KON[0] ? 1 : 0); if (kpos === KON.length) { kpos = 0; document.body.classList.add('lab-open'); discover('konami', innerWidth - 120, 40); } });
 function rain() { if (reduce) return; for (let i = 0; i < 26; i++) { const p = h('span', { class: 'rain-h', style: `left:${Math.random() * 100}vw;--d:${1.6 + Math.random() * 1.6}s;--delay:${Math.random() * .8}s;font-size:${14 + Math.random() * 22}px`, html: '<svg viewBox="0 0 40 40"><use href="#mk"/></svg>' }); document.body.append(p); setTimeout(() => p.remove(), 3500); } }
 // (c) idle note
 let idleT; const resetIdle = () => { clearTimeout(idleT); idleT = setTimeout(() => { if (!document.hidden && document.body.classList.contains('entered')) discover('idle', innerWidth / 2, innerHeight - 140); }, 75000); };
@@ -167,7 +167,7 @@ function setDrift(on) { clearInterval(drift); drift = on ? setInterval(() => { i
 function wake() { document.body.classList.remove('sleepy'); clearTimeout(hideT); if (zone) hideT = setTimeout(() => document.body.classList.add('sleepy'), 2600); }
 zoneBtn.onclick = () => setZone(!zone);
 ['pointermove', 'pointerdown', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, wake, { passive: true }));
-document.addEventListener('keydown', e => { if (e.target.matches('input,textarea')) return; const k = e.key.toLowerCase(); if (k === 'z') setZone(!zone); else if (k === 'd' && zone && A.viewer.hidden === false && !e.ctrlKey) { setDrift(!drift); note('DRIFT', drift ? 'drifting · a new piece every 11 seconds' : 'drift paused'); } else if (e.key === 'Escape' && zone && A.viewer.hidden) setZone(false); });
+document.addEventListener('keydown', e => { if (e.target.matches?.('input,textarea')) return; const k = e.key.toLowerCase(); if (k === 'z') setZone(!zone); else if (k === 'd' && zone && A.viewer.hidden === false && !e.ctrlKey) { setDrift(!drift); note('DRIFT', drift ? 'drifting · a new piece every 11 seconds' : 'drift paused'); } else if (e.key === 'Escape' && zone && A.viewer.hidden) setZone(false); });
 document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && zone) setZone(false); });
 // a zone button inside the viewer too
 $('.v-actions').prepend(h('button', { class: 'v-btn', onclick: () => setZone(!zone), title: 'Zone mode · Z' }, 'ZONE'));

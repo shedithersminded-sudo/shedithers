@@ -1,4 +1,4 @@
-# SHEDITHERS — handoff (2026-11-07, live version v2.9.0)
+# SHEDITHERS — handoff (2026-11-07, live version v2.9.1)
 
 Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 
@@ -9,7 +9,7 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - **Deploys:** pushing `main` to github.com/shedithersminded-sudo/shedithers auto-deploys to https://shedithers.netlify.app and https://shedithersminded-sudo.github.io/shedithers/. The user always wants both sites updated and verified.
 
 ## Release steps (every change)
-1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=290 and v2.9.0 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
+1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=291 and v2.9.1 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
 2. Commit, ending the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then push.
 3. Check that both live sites serve the new `sw.js` version.
 
@@ -75,3 +75,4 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - v2.8.0: editor effects library sorted into PICTURE LOOKS / MAKE IT MOVE (turns it into GIF/video) / ADD ON TOP (FX_SECTIONS in panels.js), plain-words help for every effect (FX_HELP), the selected effect is pinned on top of the layers as NOW EDITING while ALL LAYERS keeps process order, starry red/paper styling, star toggles. Fixed #main growing past the window (layers panel was off-screen at 1440px).
 - v2.8.1: THE DECK on the archive home (js/archive-deck.js + css/archive-deck.css): 12 newest artworks as 3D trading cards on a spinning ring; drag/swipe/arrows to spin, hover tilt + glare, tap front card to flip (title, words, medium, date, "look closer"), shuffle/pause/flip buttons; only spins while on screen.
 - v2.9.0: 22 SHEDITHERS-original effects in engine.js (block before CATS): bloodink, stardither, heartdither, scrawl, tornpixels, inkdrip, starmosaic, tornpaper, tape, xerox, crumple, redroom, lightleak, halo, searchlight/leakdrift/flarepass (`moves: true` → auto motion), eyes, channelsurf, papertear, stopmotion, starrays — 91 effects total. Library groups collapsible (state in localStorage shd.fxOpen), search opens matching groups, collage styling with art-scrap section banners. NOTE: no `-x ** 2` (unary before **) — it breaks the whole engine.
+- v2.9.1: bug sweep (all 91 effects × default/min/max run clean; every editor panel/modal + archive route opened clean). Fixed: editor unusable on phones (now one column: picture, layers, library), keyboard handlers crashing on document-level key events, pink THE LAB nav tag. Slop check: removed "neon glow on everything" — hard offset ink/red shadows + tags instead of glowing pills. Editor frame now matches the archive (kraft torn top bar, paper panel headers, ink tags).
