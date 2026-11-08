@@ -52,7 +52,12 @@ const ARTWORKS = [
   { id: 'ditherer-0704b', file: 'ditherer-0704b.mp4', type: 'video', w: 0, h: 0, title: 'DITHERER · 07.04 B', col: 'motion', date: '2026-07-04', medium: 'Dithered moving image', words: '' },
   { id: 'ditherer-0704c', file: 'ditherer-0704c.mp4', type: 'video', w: 0, h: 0, title: 'DITHERER · 07.04 C', col: 'motion', date: '2026-07-04', medium: 'Dithered moving image', words: '' },
   { id: 'ditherer-0704d', file: 'ditherer-0704d.webm', type: 'video', w: 0, h: 0, title: 'DITHERER · 07.04 D', col: 'motion', date: '2026-07-04', medium: 'Dithered moving image', words: '' },
+  { id: 'not-lonely', file: 'i-stand-alone-orange.png', w: 1728, h: 2304, title: 'I STAND ALONE BUT I’M NOT LONELY', col: 'collage', date: '2026-11-03', medium: 'Mixed media collage', words: 'I stand alone but I’m not lonely.' },
+  { id: 'shedithers-eyes', file: 'shedithers-eyes.jpg', w: 1080, h: 762, title: 'SHEDITHERS (EYES)', col: 'signal', date: '2026-08-14', medium: 'Digital painting', words: 'shedithers' },
+  { id: 'prettier-in-fragments', file: 'prettier-in-fragments.jpg', w: 984, h: 554, title: 'I LOOK PRETTIER IN FRAGMENTS', col: 'screens', date: '2026-08-14', medium: 'Digital collage', words: 'I look prettier in fragments · I work on my problems and then release them' },
+  { id: 'motion-03', file: 'shedithers-motion-03.mp4', type: 'video', w: 0, h: 0, title: 'SHEDITHERS · MOTION 03', col: 'motion', date: '2026-11-07', medium: 'Moving image', words: '' },
 ];
+const UI_HANDS = 'assets/ui/hands.mp4'; /* the artist asked for this one in the interface, not the exhibit */
 COLLECTIONS.push({ id: 'screens', code: 'CODE_006', name: 'WIDESCREEN', sub: 'LANDSCAPE WORKS', color: '#a9a28a', ink: '#1d1b16' });
 ARTWORKS.forEach((a, i) => { a.src = ARCHIVE_DIR + a.file; a.n = i + 1; });
 const artById = id => ARTWORKS.find(a => a.id === id);
