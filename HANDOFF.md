@@ -1,4 +1,4 @@
-# SHEDITHERS — handoff (2026-11-07, live version v2.9.6)
+# SHEDITHERS — handoff (2026-11-07, live version v2.9.7)
 
 Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 
@@ -9,7 +9,7 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - **Deploys:** pushing `main` to github.com/shedithersminded-sudo/shedithers auto-deploys to https://shedithers.netlify.app and https://shedithersminded-sudo.github.io/shedithers/. The user always wants both sites updated and verified.
 
 ## Release steps (every change)
-1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=296 and v2.9.6 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
+1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=297 and v2.9.7 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
 2. Commit, ending the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then push.
 3. Check that both live sites serve the new `sw.js` version.
 
@@ -81,3 +81,4 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - v2.9.4: editor library click → chooser (add / preview on top; Shift+click adds) — preview uses S.override + #pvBar. Archive: walk-in intro (js/archive-walk.js, css/archive-walk.css) from the artist's WANTED street drawing, split into assets/ui/walk-bg.jpg (street, hands filled in, graded ink→blood→acid) + walk-fg.png (hands + flyer, recoloured paper/blood) — made at the artist's request; once per visit, tap flyer/skip/6.5s. Gate restyled to the inside's lime render (.g-render reuses portal .pr-* layers), lime #d4ff00 accents.
 - v2.9.5: walk-in intro redrawn from scratch in SVG (artist said the WANTED picture is inspiration only — walk-bg/fg photos removed): dusk rave street, broken Japanese huts, SHE DITHERS warehouse with lasers pulsing at 120bpm, Little Guy on a cut-paper standee, orange-outlined hands with a lime glowstick + SHE DITHERS rave flyer. Fonts: Rubik Wet Paint (title, moving letters), Rubik Glitch (labels).
 - v2.9.6: deck cards carry the art's own words as cut-out scraps in 6 fonts that jump on hover; TikTok TV Mars-style (rust cratered porthole, orbit ring, spinning star); drink tab = hanging bar sign (tape, cocktail doodle, Rubik Wet Paint, drip) + drink spots: slushy sticker by the CD, deck "tip the artist", footer link, viewer "liked this one?", about-page bottle, cocktail button in the song chip.
+- v2.9.7: inspo = artist's Pinterest (warm orange/red, black letterbox bars, y2k date + checkers, grain) rebuilt from their own art: assets/ui/dither-sky.png (untitled-wide-01 dithered warm), dither-tv.png (are-we-alive-yet), dither-drink.png (stop-asking), flower-cut.png (their flower doodle IMG_8048 cut out). Intro: dithered art sky, red bone-striped hands w/ orange outline, flower + Little Guy standees, Michroma date bar. TikTok TV = Y2K egg handheld with dithered art shell. Drink tab = their art recoloured red/black/orange. NOT used: IMG_6775/7706/7716 (personal selfies).

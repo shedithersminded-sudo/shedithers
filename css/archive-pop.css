@@ -553,3 +553,25 @@ nav a.drink-nav{box-shadow:2px 2px 0 #0b0a09}
 .ds-about img{width:48px;height:48px}
 .ds-about:hover{transform:rotate(0) scale(1.03)}
 .intro-chip .ic-tip{padding:0;background:#e9e3d1!important}.intro-chip .ic-tip img{width:24px;height:24px}
+
+/* ===== TikTok TV, Y2K: a translucent egg handheld (virtual-pet style) with the artist's dithered art inside the shell ===== */
+.tv::before{display:none}
+.tv::after{content:'';right:auto;left:50%;top:-10px;width:22px;height:22px;margin-left:-11px;background:#f2b234;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);animation:tvStar 6s linear infinite}
+.tv-ant{display:none}
+.tv-body{border-radius:50% 50% 46% 46%/58% 58% 42% 42%;padding:34px 22px 22px;background:linear-gradient(160deg,rgba(255,226,170,.35),rgba(226,104,38,.15) 40%,rgba(120,16,20,.35)),url('../assets/ui/dither-tv.png') center/cover,#2a0c0a;image-rendering:pixelated;box-shadow:inset 0 0 0 3px rgba(255,236,200,.35),inset 0 10px 24px rgba(255,255,255,.25),inset 0 -14px 30px rgba(0,0,0,.45),0 0 0 2px #0b0a09,0 18px 40px rgba(0,0,0,.6)}
+.tv-body::before{background:radial-gradient(ellipse at 30% 18%,rgba(255,255,255,.45),transparent 30%);opacity:1;mix-blend-mode:screen;border-radius:inherit}
+.tv-screen{border-radius:16px;box-shadow:0 0 0 3px #0b0a09,0 0 0 7px #e9e3d1,0 0 0 9px #0b0a09,inset 0 0 26px rgba(0,0,0,.9)}
+.tv-panel{justify-content:center;background:transparent;margin-top:12px}
+.tv-k{min-width:30px!important;min-height:30px!important;border-radius:50%!important;background:radial-gradient(circle at 35% 30%,#f6c96a,#e2682a 60%,#8a3418)!important;color:#0b0a09!important;box-shadow:0 0 0 2px #0b0a09,0 3px 0 #0b0a09!important}
+.tv-ch{color:#f2b234}
+.tv-tag{left:50%;transform:translateX(-50%) rotate(-3deg);top:-26px;background:#0b0a09;color:#f2b234;font-family:'Michroma',sans-serif;font-size:11px;letter-spacing:.04em;padding:4px 10px}
+.tv.min .tv-body{border-radius:22px}
+
+/* ===== buy me a drink tab: cut from the artist's piece, recoloured red / black / orange ===== */
+.drink-tab{background:url('../assets/ui/dither-drink.png') center/cover,#c3141c;image-rendering:pixelated;color:#e9e3d1;box-shadow:-4px 4px 0 #e2682a,0 0 0 2px #0b0a09}
+.drink-tab::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,10,9,.55),rgba(195,20,28,.35) 45%,rgba(11,10,9,.7));pointer-events:none}
+.drink-tab>*{position:relative}
+.drink-tab b{color:#f2b234;text-shadow:2px 2px 0 #0b0a09}
+.drink-tab small{color:#e9e3d1;text-shadow:1px 1px 0 #0b0a09}
+.drink-tab .dt-ico{filter:drop-shadow(2px 2px 0 #0b0a09)}
+.drink-tab:hover{box-shadow:-7px 7px 0 #e2682a,0 0 0 2px #0b0a09}

@@ -53,11 +53,14 @@ const world = `<svg class="wk-world" viewBox="0 0 1200 860" preserveAspectRatio=
 <defs>
   <linearGradient id="wkSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d0b14"/><stop offset=".55" stop-color="#2b1a2c"/><stop offset=".86" stop-color="#5a2a24"/><stop offset="1" stop-color="#8a5a1e"/></linearGradient>
   <radialGradient id="wkGlow" cx="600" cy="420" r="420" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${LIME}" stop-opacity=".75"/><stop offset=".35" stop-color="${LIME}" stop-opacity=".18"/><stop offset="1" stop-color="${LIME}" stop-opacity="0"/></radialGradient>
+  <linearGradient id="wkDusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2682a" stop-opacity="0"/><stop offset="1" stop-color="#2a0c0a" stop-opacity=".95"/></linearGradient>
   <linearGradient id="wkRoad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3a1a"/><stop offset=".25" stop-color="#1a1714"/><stop offset="1" stop-color="#0e0c0a"/></linearGradient>
   <filter id="wkInk"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="4"/></filter>
   <filter id="wkCut"><feMorphology in="SourceAlpha" operator="dilate" radius="6" result="d"/><feFlood flood-color="${PAPER}"/><feComposite in2="d" operator="in" result="paper"/><feMerge><feMergeNode in="paper"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 </defs>
 <rect width="1200" height="860" fill="url(#wkSky)"/>
+<image href="${abs('assets/ui/dither-sky.png')}" x="-60" y="-40" width="1320" height="520" preserveAspectRatio="xMidYMid slice" style="image-rendering:pixelated" opacity=".92"/>
+<rect x="0" y="300" width="1200" height="170" fill="url(#wkDusk)"/>
 <g class="wk-stars" fill="${PAPER}">${Array.from({ length: 40 }, (_, i) => `<circle cx="${(i * 233) % 1200}" cy="${(i * 97) % 300}" r="${i % 5 ? 1.2 : 2.2}" opacity="${.3 + (i % 4) * .15}"/>`).join('')}</g>
 <g class="wk-lasers" opacity=".55">${lasers}</g>
 <g fill="#1c1622" class="ol"><rect x="250" y="300" width="22" height="160"/><rect x="300" y="330" width="16" height="130"/><rect x="920" y="320" width="18" height="140"/></g>
@@ -80,13 +83,18 @@ const world = `<svg class="wk-world" viewBox="0 0 1200 860" preserveAspectRatio=
   <g clip-path="url(#wkCutShape)"><image href="${abs('assets/archive/little-guy.png')}" x="-22" y="-74" width="284" height="82" style="mix-blend-mode:multiply"/></g>
   <path d="M110 14 v26 M138 14 v26" stroke="#3a2a1e" stroke-width="7"/>
 </g>
+<g class="wk-cut2" transform="translate(300 700) rotate(5)">
+  <path d="M10 0 L-70 46 L120 50 L96 0z" fill="#000" opacity=".45"/>
+  <g filter="url(#wkCut)"><image href="${abs('assets/ui/flower-cut.png')}" x="-20" y="-235" width="130" height="240"/></g>
+</g>
 </svg>`;
 const flyer = `<svg class="wk-hands" viewBox="0 0 1200 860" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
 <g class="wk-stick">
   <path d="M150 760 L250 560" stroke="${LIME}" stroke-width="22" stroke-linecap="round"/>
   <path d="M150 760 L250 560" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".8"/>
-  <path d="M120 860 C110 790 130 730 175 710 C215 692 250 712 252 745 C256 790 236 830 230 860 Z" fill="#efe3c8" stroke="${ORANGE}" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M120 860 C110 790 130 730 175 710 C215 692 250 712 252 745 C256 790 236 830 230 860 Z" fill="#c3141c" stroke="${ORANGE}" stroke-width="7" stroke-linejoin="round"/>
   <path d="M168 712 q34 -18 52 4 M176 738 q40 -14 62 8 M182 766 q38 -10 58 10" fill="none" stroke="${ORANGE}" stroke-width="6" stroke-linecap="round"/>
+  <path d="M150 800 l60 -6 M146 830 l70 -4 M190 720 l8 18 M214 742 l6 16" stroke="${PAPER}" stroke-width="5" stroke-linecap="round" opacity=".9"/>
 </g>
 <g class="wk-flyer-g">
   <g transform="rotate(5 820 680)">
@@ -107,8 +115,9 @@ const flyer = `<svg class="wk-hands" viewBox="0 0 1200 860" preserveAspectRatio=
     <text x="820" y="842" text-anchor="middle" class="fl-line r">♪ evo &amp; crevo</text>
     <path d="M690 500 l8 -16 8 16 -16 -10 h16z" fill="${LIME}" stroke="${INK}" stroke-width="2"/>
   </g>
-  <path d="M1010 860 C1000 800 985 760 950 735 C930 720 905 724 896 742 L870 704 C858 684 830 690 832 714 L848 760 C850 790 870 820 880 860 Z" fill="#efe3c8" stroke="${ORANGE}" stroke-width="7" stroke-linejoin="round"/>
-  <path d="M952 600 q24 6 26 26 q-2 20 -24 22 M960 652 q26 6 26 26 q-2 20 -24 22 M962 704 q22 8 20 26" fill="#efe3c8" stroke="${ORANGE}" stroke-width="7" stroke-linecap="round"/>
+  <path d="M1010 860 C1000 800 985 760 950 735 C930 720 905 724 896 742 L870 704 C858 684 830 690 832 714 L848 760 C850 790 870 820 880 860 Z" fill="#c3141c" stroke="${ORANGE}" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M952 600 q24 6 26 26 q-2 20 -24 22 M960 652 q26 6 26 26 q-2 20 -24 22 M962 704 q22 8 20 26" fill="#c3141c" stroke="${ORANGE}" stroke-width="7" stroke-linecap="round"/>
+  <path d="M850 712 l14 28 M872 760 l40 -10 M900 790 l50 -6 M930 820 l50 0 M966 616 l8 14 M972 668 l8 14" stroke="${PAPER}" stroke-width="5" stroke-linecap="round" opacity=".9"/>
 </g>
 </svg>`;
 const title = 'SHE DITHERS WAREHOUSE'.split('').map((ch, i) => ch === ' ' ? '<i class="sp"></i>' : `<span style="--d:${(i * 0.09).toFixed(2)}s">${ch}</span>`).join('');
@@ -118,7 +127,9 @@ walk.innerHTML = `${world}<i class="wk-vig"></i>${flyer}
   <div class="wk-hud"><b class="wk-title" aria-label="SHE DITHERS WAREHOUSE">${title}</b><span class="wk-dist">0.40 MI ▸</span></div>
   <div class="wk-steps" aria-hidden="true"><span>you found a flyer.</span><span>follow the bass.</span></div>
   <button class="wk-flyer" type="button" aria-label="Tap the flyer to go in"><span>tap the flyer ▸</span></button>
-  <button class="wk-skip" type="button">skip ▸</button><i class="wk-grain"></i>`;
+  <button class="wk-skip" type="button">skip ▸</button><i class="wk-grain"></i>
+  <div class="wk-bar top" aria-hidden="true"></div>
+  <div class="wk-bar bot" aria-hidden="true"><span class="wk-obs">she dithers</span><span class="wk-date">08✦11✦2026</span><span class="wk-check"><i></i><i></i><i></i><i></i><i></i><i></i></span></div>`;
 document.body.append(walk); document.body.classList.add('walking');
 let done = false, dist = 0.4;
 const dEl = walk.querySelector('.wk-dist');
