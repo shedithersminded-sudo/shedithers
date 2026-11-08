@@ -104,3 +104,17 @@
 @keyframes wkLetter2{0%,100%{transform:translateY(0) rotate(0);color:#f2b234}25%{transform:translateY(-3px) rotate(-4deg)}50%{color:#e9e3d1}75%{transform:translateY(2px) rotate(3deg);color:#e2682a}}
 .wk-dist{background:#e2682a!important;color:#0b0a09!important}
 @media (max-width:760px){.wk-obs{display:none}.wk-bar{height:9svh}.wk-hud{top:calc(9svh + 10px)}.wk-skip{bottom:calc(9svh + 10px)}}
+
+/* ===== vibe pass: synced to "Sorry" (130 BPM = 0.4615s a beat), haze + fog + sketch ===== */
+.wk-lasers,.wk-pulse,.wk-door,.wk-strip{animation-duration:.4615s!important}
+.wk-haze{mix-blend-mode:screen}
+.wk-fogs ellipse{animation:wkFogDrift 9s ease-in-out infinite alternate}
+.wk-fogs .fg2{animation-duration:12s;animation-direction:alternate-reverse}.wk-fogs .fg3{animation-duration:7s}
+@keyframes wkFogDrift{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
+.wk-world{filter:contrast(1.12) saturate(1.12)}
+.wk-world .ol{stroke-width:2.2}
+.wk-hands{opacity:.96;filter:drop-shadow(0 14px 18px rgba(0,0,0,.55))}
+.wk-hands path[fill="#c3141c"]{fill-opacity:.88}
+.walk::before{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at 50% 48%,transparent 30%,rgba(12,4,4,.55) 80%),linear-gradient(180deg,rgba(226,104,38,.08),rgba(120,16,20,.18));mix-blend-mode:multiply;animation:wkBreath .4615s ease-in-out infinite alternate}
+@keyframes wkBreath{to{opacity:.8}}
+.walk.still::before{animation:none}

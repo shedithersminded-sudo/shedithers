@@ -575,3 +575,8 @@ nav a.drink-nav{box-shadow:2px 2px 0 #0b0a09}
 .drink-tab small{color:#e9e3d1;text-shadow:1px 1px 0 #0b0a09}
 .drink-tab .dt-ico{filter:drop-shadow(2px 2px 0 #0b0a09)}
 .drink-tab:hover{box-shadow:-7px 7px 0 #e2682a,0 0 0 2px #0b0a09}
+
+/* music player art cut to fit: strip on the mini blade, tall piece in the arch, centred piece on the disc */
+.art-player .p-mini{background:linear-gradient(90deg,rgba(11,10,9,.82),rgba(11,10,9,.25) 50%,rgba(11,10,9,.82)),var(--p-strip,var(--p-art)) center/cover no-repeat,#0b0a09;image-rendering:pixelated}
+.art-player .p-full{background:linear-gradient(180deg,rgba(11,10,9,.15),rgba(11,10,9,.78) 46%,rgba(11,10,9,.94)),var(--p-art2) center top/cover no-repeat,#0b0a09;image-rendering:pixelated}
+.rl-disc{background:var(--p-art) center/cover no-repeat,#0b0a09;image-rendering:pixelated}

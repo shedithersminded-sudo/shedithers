@@ -49,7 +49,9 @@ if (A && player) {
   const art = (i) => IM[(i * 7 + 3) % IM.length];
   const setTrackArt = i => {
     const a = art(i < 0 ? 0 : i), b = art(i + 5);
-    player.style.setProperty('--p-art', `url('${absU(a.src)}')`); player.style.setProperty('--p-art2', `url('${absU(b.src)}')`);
+    // art cut to fit each part of the player (strip → mini blade, tall → arch, centred → disc), dithered warm
+    const set = ((i < 0 ? 0 : i) % 3 + 3) % 3, pa = n => `url('${absU('assets/ui/player-' + set + '-' + n + '.png')}')`;
+    player.style.setProperty('--p-art', pa('disc')); player.style.setProperty('--p-art2', pa('arch')); player.style.setProperty('--p-strip', pa('strip'));
     const lab = $('.cs-label'); if (lab) { lab.style.setProperty('--lab-art', `url('${absU(a.src)}')`); }
     const cover = $('#pCover'); if (cover && !cover.querySelector('img')) { cover.style.backgroundImage = `url('${(EYES || a).src}')`; cover.classList.add('art-cover'); }
     const cap = $('.p-art-cap'); if (cap) cap.textContent = 'tape art: ' + a.title.toLowerCase();
