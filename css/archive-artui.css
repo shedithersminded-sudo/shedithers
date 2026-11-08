@@ -1,0 +1,37 @@
+/* every little thing, cut from the artist's work */
+.art-crop{background-repeat:no-repeat!important}
+.wall .w.scrap.art-crop{background-color:#111;box-shadow:0 8px 18px rgba(0,0,0,.45)}
+.wall .w.scrap.art-crop .q{background:rgba(242,238,226,.92);color:#1d1b16;padding:2px 6px;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.art-sticker{border-radius:50%;box-shadow:0 0 0 3px #fff,0 6px 14px rgba(0,0,0,.45);color:transparent!important;aspect-ratio:1;min-width:26px;min-height:26px}
+.art-sticker.torn{border-radius:2px;clip-path:polygon(0 8%,12% 0,30% 6%,48% 0,66% 5%,84% 0,100% 7%,96% 40%,100% 70%,94% 100%,70% 95%,50% 100%,26% 94%,8% 100%,0 72%,4% 40%)}
+.art-sticker.gem{box-shadow:0 0 0 2px rgba(255,255,255,.8),0 0 14px rgba(255,79,163,.45),0 6px 14px rgba(0,0,0,.45)}
+.wall .w.artbit{display:block;width:110px;padding:6px 6px 18px;background:#f4f0e3;box-shadow:0 10px 22px rgba(0,0,0,.45);transform:rotate(var(--r));pointer-events:auto;cursor:grab}
+.wall .w.artbit i{display:block;width:100%;aspect-ratio:1;background-color:#111}
+.wall .w.artbit::after{content:'';position:absolute;top:-8px;left:30%;width:44px;height:16px;background:rgba(228,219,190,.85);transform:rotate(-6deg)}
+.float-heart.art-sticker,.click-spark.art-sticker,.burst.art-sticker{width:22px;height:22px;font-size:0}
+.float-heart.big.art-sticker{width:38px;height:38px}
+.peep.art-eyes{background-size:240%!important;background-position:50% 44%!important;background-repeat:no-repeat;border-radius:40% 40% 46% 46%;box-shadow:0 0 0 2px #000}
+.peep.art-eyes .eye{opacity:0}
+.ring.art-sticker{border:0!important;width:70px;height:70px}
+.sticky.art-sticker{color:#fff!important;text-shadow:0 1px 4px #000;border-radius:0}
+.clip.art-sticker{border-radius:12px;width:26px;height:58px;box-shadow:0 0 0 2px #9aa0a6}
+
+/* ===== the music player, made out of the art ===== */
+.art-player .p-mini{background:linear-gradient(90deg,rgba(14,12,9,.82),rgba(14,12,9,.55) 60%,rgba(14,12,9,.82)),var(--p-art) center 40%/cover no-repeat,#1d1b16;color:#f2eee2;box-shadow:0 14px 34px rgba(0,0,0,.55),inset 0 0 0 2px rgba(255,255,255,.18)}
+.art-player .p-mini-info span{color:#e9e3d1;opacity:.85}
+.art-player.art-on .p-mini{animation:artPan 22s linear infinite;box-shadow:0 14px 34px rgba(0,0,0,.55),inset 0 0 0 2px var(--pink),0 0 22px rgba(255,79,163,.35)}
+@keyframes artPan{0%{background-position:center 40%,0% 30%}50%{background-position:center 40%,100% 70%}100%{background-position:center 40%,0% 30%}}
+.art-player .p-ico{background:rgba(0,0,0,.65);box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+.art-player .p-full{background:linear-gradient(rgba(231,220,192,.88),rgba(231,220,192,.94)),var(--p-art2) center/cover no-repeat}
+.art-player .cs-label{background:linear-gradient(90deg,rgba(242,238,226,.95) 0 46%,rgba(242,238,226,.25)),var(--lab-art) center/cover no-repeat;background-size:auto,180%;animation:labPan 18s ease-in-out infinite alternate}
+@keyframes labPan{to{background-position:0 0,100% 80%}}
+.gem-reel{background-size:420%!important;background-position:46% 52%!important;background-repeat:no-repeat!important;-webkit-mask:radial-gradient(circle,#0000 0 4px,#000 5px)!important;mask:radial-gradient(circle,#0000 0 4px,#000 5px)!important}
+.reel.gem-reel{box-shadow:0 0 0 3px #2a2116,0 0 12px rgba(255,79,163,.4)}
+.reel.r.gem-reel{background-position:58% 30%!important}
+.mini-reel.gem-reel{box-shadow:0 0 0 2px #fff}
+.art-cover{background:center/cover no-repeat}
+.art-cover svg{opacity:0}
+.p-art-cap{font:500 9px var(--mono);letter-spacing:.1em;color:#5a4f3a;margin-top:8px;text-transform:uppercase}
+.art-player.art-on .p-cover{animation:coverBeat 1.6s ease-in-out infinite}
+@keyframes coverBeat{50%{transform:scale(1.04) rotate(-1deg)}}
+@media (prefers-reduced-motion:reduce){.art-player .p-mini,.art-player .cs-label{animation:none!important}}

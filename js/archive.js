@@ -46,8 +46,8 @@ function render() {
 }
 function renderView(r) {
   route = r; view.classList.remove('in'); view.innerHTML = '';
-  ({ home: rr => viewWorks({ name: 'works', filter: 'all' }), col: viewCollection, works: viewWorks, about: viewAbout })[r.name](r);
-  $$('#nav a').forEach(a => a.classList.toggle('on', a.dataset.r === r.name || ((r.name === 'col' || r.name === 'home') && a.dataset.r === 'works')));
+  ({ home: rr => window.SHD_PORTAL ? SHD_PORTAL(view, { h, setHint, open: id => location.hash = `#/work/${id}`, player }) : viewWorks({ name: 'works', filter: 'all' }), col: viewCollection, works: viewWorks, about: viewAbout })[r.name](r);
+  $$('#nav a').forEach(a => a.classList.toggle('on', a.dataset.r === r.name || (r.name === 'col' && a.dataset.r === 'works')));
   requestAnimationFrame(() => view.classList.add('in')); watchVideos(view); window.scrollTo(0, 0); closeNav();
 }
 window.addEventListener('hashchange', render);
