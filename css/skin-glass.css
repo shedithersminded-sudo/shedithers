@@ -117,3 +117,34 @@
 :root body #boot .boot-inner{width:min(760px,92vw);box-sizing:border-box}
 :root body #boot .boot-title{font-size:clamp(32px,6vw,84px)!important;letter-spacing:.2em!important;white-space:nowrap;margin-right:-.2em}
 @media (max-width:520px){:root body #boot .boot-hud.tr{display:none}:root body #boot .boot-hud{font-size:9px}}
+
+/* ===== v3.1.1: black base, muted jewel glass, broken-glass shards; the logo block fits + glints ===== */
+:root{--ruby:#8e2a38;--sapph:#355a92;--emer:#2f6b55;--amber:#a5772e;--ameth:#5f4183;--rose:#8a4766;
+  --glass-hi:linear-gradient(118deg,rgba(255,255,255,.2) 0 34%,rgba(255,255,255,.04) 34.6% 61%,rgba(0,0,0,.18) 61.6% 100%),linear-gradient(180deg,rgba(255,255,255,.12),rgba(0,0,0,.25));
+  --cracks:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='80' viewBox='0 0 520 80'%3E%3Cg fill='none' stroke-linejoin='round' stroke-linecap='round'%3E%3Cg stroke='%23000' stroke-width='3'%3E%3Cpath d='M130 38 L0 10 M130 38 L40 80 M130 38 L190 0 M130 38 L250 62 M130 38 L95 80 M130 38 L60 0'/%3E%3Cpath d='M98 30 L112 52 L150 50 L160 26 L120 20 Z'/%3E%3Cpath d='M390 44 L520 20 M390 44 L470 80 M390 44 L330 0 M390 44 L300 80 M390 44 L430 0 M250 62 L300 80 M250 62 L330 0'/%3E%3Cpath d='M362 36 L376 60 L414 56 L420 32 L392 24 Z'/%3E%3C/g%3E%3Cg stroke='%23fff' stroke-opacity='.18' stroke-width='1'%3E%3Cpath d='M131 36 L1 8 M131 36 L191 -2 M391 42 L521 18 M391 42 L331 -2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+/* bars: near-black glass, the art only a low ember behind the cracks */
+:root body #top::before,:root body #viewTools::before,:root body .ph::before,:root body .rtabs::before,:root body .stack-head::before,:root body #brushBar::before{filter:blur(16px) saturate(1.5) brightness(.34) contrast(1.2)!important;animation:glassEmber 18s ease-in-out infinite alternate!important}
+@keyframes glassEmber{from{transform:translateX(-14px) scale(1.05);opacity:.75}to{transform:translateX(14px) scale(1.12);opacity:1}}
+:root body #top::after,:root body #viewTools::after,:root body .ph::after,:root body .rtabs::after,:root body .stack-head::after,:root body #brushBar::after{background:var(--cracks) 0 0/520px 100% repeat-x,linear-gradient(180deg,rgba(255,255,255,.06),transparent 40%,rgba(0,0,0,.45))!important;opacity:.95}
+/* shard panes: muted jewel, split facets like a broken pane */
+:root body #top .btn,:root body #top .ib,:root body #top .seg button,:root body #viewTools .tbtn,:root body #viewTools .ib,:root body #viewTools .zlabel,:root body #viewTools .seg button,:root body .rtabs button,:root body #brushBar .seg button,:root body #top .readout,:root body #top .pill,:root body #top #projName{background:var(--glass-hi),color-mix(in srgb,var(--t) 70%,#050406)!important;border-radius:3px 8px 2px 7px/7px 2px 8px 3px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 10px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.6)!important}
+:root body #top .seg button.on,:root body #viewTools .seg button.on,:root body .tool-seg button.on,:root body .rtabs button.on,:root body #brushBar .seg button.on{background:var(--glass-hi),color-mix(in srgb,var(--t) 92%,#000)!important;filter:brightness(1.25) saturate(1.1)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 0 14px rgba(255,255,255,.12),0 0 14px color-mix(in srgb,var(--t) 60%,transparent)!important}
+:root body #top .seg button,:root body #viewTools .seg button,:root body #brushBar .seg button{--t:#2a2433}
+:root body #top .readout,:root body #top #projName,:root body #top .pill{--t:#141118}
+:root body #top .pill{--t:var(--ruby)}
+/* the logo block: everything fits, the name catches light like glass, the mark sways */
+:root body #top .logo{min-width:0!important;flex:0 0 auto;gap:10px;padding:0 16px 0 10px!important;overflow:hidden}
+:root body #top .wordmark{display:flex;flex-direction:column;justify-content:center;min-width:0;line-height:1.05}
+:root body #top .wordmark b{font-size:20px!important;letter-spacing:.14em!important;white-space:nowrap;background:linear-gradient(100deg,#e9e6f2 0 38%,#fff 44%,#f0c98a 48%,#c9b3ff 52%,#fff 56%,#e9e6f2 62% 100%) 0 0/260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent;text-shadow:none!important;filter:drop-shadow(0 0 6px rgba(255,255,255,.18)) drop-shadow(0 1px 0 #000);animation:logoGlint 5.5s ease-in-out infinite}
+@keyframes logoGlint{0%,55%{background-position:100% 0}85%,100%{background-position:0 0}}
+:root body #top .wordmark span{margin-top:3px;white-space:nowrap;font-size:9px!important;letter-spacing:.2em!important;color:#b9aed6!important;-webkit-text-fill-color:#b9aed6}
+:root body #top .logo .logo-img{animation:logoSway 4.8s ease-in-out infinite;transform-origin:50% 60%}
+@keyframes logoSway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateY(-1px)}}
+:root body #top .logo::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.1) 48%,transparent 56%) -200% 0/200% 100% no-repeat;animation:logoSheen 5.5s ease-in-out infinite}
+:root body #top .logo{position:relative}
+@keyframes logoSheen{0%,55%{background-position:-200% 0}85%,100%{background-position:300% 0}}
+@media (max-width:760px){:root body #top .wordmark b{font-size:17px!important}:root body #top .wordmark span{display:block!important;font-size:8px!important;letter-spacing:.14em!important}}
+:root body #top .wordmark span::after{color:#c4566e}
+/* intro band + bar follow the muted palette */
+:root body #boot .boot-ticker{filter:saturate(.8) brightness(.8)}
+@media (prefers-reduced-motion:reduce){:root body #top .wordmark b,:root body #top .logo .logo-img,:root body #top .logo::after{animation:none}}

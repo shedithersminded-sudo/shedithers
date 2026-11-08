@@ -54,3 +54,10 @@ function openShare() {
     h('p', { class: 'note' }, 'Every export window has a ♥ SHARE button: on phones it opens the share sheet (TikTok, Instagram, Messages); on desktop it saves the file for upload.'));
   openModal({ title: 'SHARE SHEDITHERS', sub: 'FRIENDS · STORE', cls: 'sm', body, foot: h('span', { class: 'note' }, 'SHEDITHERS LOVES YOU ♥') }).el.style.width = 'min(560px,94vw)';
 }
+
+/* the version under the logo follows the release number in the script tags (?v=311 → v3.1.1) */
+(() => {
+  const s = document.querySelector('script[src*="boot.js?v="]'), m = s && s.getAttribute('src').match(/v=(\d)(\d)(\d+)/);
+  const el = document.querySelector('.logo .wordmark span'); if (!m || !el) return;
+  el.textContent = `DITHER LAB · v${m[1]}.${m[2]}.${m[3]}`; el.title = 'SHEDITHERS Dither Lab version';
+})();
