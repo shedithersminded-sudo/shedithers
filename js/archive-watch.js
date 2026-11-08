@@ -230,7 +230,7 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     bg.append(el('i', 'dk-bgt')); modal.append(bg);
     let bi = 0; const bT = setInterval(() => { if (!bg.isConnected) return clearInterval(bT); const L = bg.querySelectorAll('.dk-bgl'); L[bi].classList.remove('on'); bi = (bi + 1) % L.length; L[bi].classList.add('on'); }, 5000);
     modal.append(card); modal.addEventListener('click', ev => { if (ev.target === modal) close(); });
-    document.body.append(modal); requestAnimationFrame(() => modal.classList.add('in')); document.addEventListener('keydown', key, true); x.focus(); qr(box);
+    document.body.append(modal); { const m = modal; requestAnimationFrame(() => m.classList.add('in')); } document.addEventListener('keydown', key, true); x.focus(); qr(box);
   }
   const openCounted = e => { if (!modal && window.shdCount) window.shdCount('tip-jar-opened', 'Opened the tip jar'); open(e); };
   window.SHD_DRINK = openCounted;

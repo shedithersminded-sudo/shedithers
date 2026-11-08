@@ -54,7 +54,7 @@ function openForm() {
     h('div', { class: 'cb-row end' }, status, send));
   modal = h('div', { class: 'cb', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Collab request' }, card);
   modal.addEventListener('click', e => { if (e.target === modal) closeForm(); });
-  document.body.append(modal); requestAnimationFrame(() => modal.classList.add('in')); document.addEventListener('keydown', esc, true);
+  document.body.append(modal); { const m = modal; requestAnimationFrame(() => m.classList.add('in')); } document.addEventListener('keydown', esc, true);
   setTimeout(() => who.focus({ preventScroll: true }), 60);
 }
 window.SHD_COLLAB = openForm;
