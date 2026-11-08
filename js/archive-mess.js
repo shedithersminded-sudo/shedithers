@@ -9,7 +9,7 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const routeKey = () => (location.hash.replace(/^#\/?/, '').split('/').slice(0, 2).join('/') || 'home');
 function rng(seed) { let a = 0; for (const c of seed) a = (a * 31 + c.charCodeAt(0)) | 0; return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const QUOTES = ['don’t try', 'just look ♥', 'I don’t want ordinary', 'not in my nature', 'becoming + unbecoming', 'are we alive yet?', 'error: no identity', 'dreams aren’t dreams', 'who will you be?', 'I look prettier in fragments', 'stop asking me about my future', 'all signs point to yes', 'click to be saved', 'you keep forgetting', 'shedithers loves you', 'I stand alone', 'when you rain you pour'];
-const INKS = ['#ff4fa3', '#d4ff00', '#e9e3d1', '#ff3b3b', '#5fe0c0'];
+const INKS = ['#c3141c', '#e9e3d1', '#e9e3d1', '#ff3b3b', '#c3141c'];
 const HEART = '<svg viewBox="0 0 40 40"><use href="#mk"/></svg>';
 const STAR = '<svg viewBox="0 0 24 24"><path d="M12 2l2.6 6.4 6.9.5-5.3 4.4 1.7 6.7L12 16.3 6.1 20l1.7-6.7L2.5 8.9l6.9-.5z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
 const SCR = ['M5 40 C 30 5, 60 70, 90 25 S 140 10, 160 45', 'M10 30 c 20 -30 40 30 60 0 s 40 30 60 0 s 40 -30 50 0', 'M20 40 c 30 -40 60 40 20 20 c -30 -15 10 -40 40 -20 c 30 20 60 -10 70 0'];
@@ -44,7 +44,7 @@ function buildWall() {
   const n = Math.round(Math.min(64, 14 + W * H / 55000)), gut = Math.max(0, (W - 1240) / 2), kinds = ['scrap', 'quote', 'quote', 'star', 'heart', 'splat', 'scrib', 'tape', 'barb', 'arrow', 'num', 'scrap'];
   for (let i = 0; i < n; i++) {
     const k = kinds[Math.floor(R() * kinds.length)], inGut = gut > 70 && R() < 0.7, x = inGut ? (R() < 0.5 ? R() * (gut - 40) : W - gut + R() * (gut - 60)) : R() * (W - 120), y = 70 + R() * (H - 160), r = (R() - 0.5) * 34;
-    const extra = { q: QUOTES[Math.floor(R() * QUOTES.length)], size: k === 'quote' ? 18 + R() * 26 : k === 'barb' ? 220 + R() * 260 : k === 'splat' ? 60 + R() * 120 : k === 'tape' ? 70 + R() * 70 : 26 + R() * 50, bg: ['#e9e3d1', '#c4ab7c', '#ffb3d6', '#e6ff8a', '#cfd8dc'][Math.floor(R() * 5)], n: i, ink: INKS[Math.floor(R() * INKS.length)] };
+    const extra = { q: QUOTES[Math.floor(R() * QUOTES.length)], size: k === 'quote' ? 18 + R() * 26 : k === 'barb' ? 220 + R() * 260 : k === 'splat' ? 60 + R() * 120 : k === 'tape' ? 70 + R() * 70 : 26 + R() * 50, bg: ['#e9e3d1', '#c4ab7c', '#e9e3d1', '#e6ff8a', '#cfd8dc'][Math.floor(R() * 5)], n: i, ink: INKS[Math.floor(R() * INKS.length)] };
     if (k === 'num') extra.q = '0x' + String(Math.floor(R() * 99)).padStart(2, '0');
     if (k === 'arrow') extra.q = ['→ look', '← here', '↓ keep going', '?', '✕ ✕ ✕'][Math.floor(R() * 5)];
     const el = spawn(k, x, y, r, extra); el.dataset.id = key + ':' + i; const m = moved[el.dataset.id]; if (m) { el.style.left = m[0] + 'px'; el.style.top = m[1] + 'px'; }

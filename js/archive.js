@@ -196,7 +196,7 @@ function viewAbout() {
       h('div', { class: 'about-code' }, 'FILE_00 // THE ARTIST'), h('h2', null, 'SHEDITHERS'),
       h('p', { class: 'type' }, 'Collage, drawing, signals and moving images — made from scraps, static and feelings that don’t fit the ordinary.'),
       h('p', { class: 'marker big' }, 'shedithers loves you ♥'),
-      h('ul', { class: 'quotes' }, ['I don’t want ordinary. It’s not in my nature.', 'becoming and unbecoming so I can become who I always have been and never was', 'dream without action is hallucination', 'dreams aren’t dreams'].map(q => h('li', null, '“' + q + '”'))),
+      h('ul', { class: 'quotes' }, (() => { const seen = new Set(), out = []; ['I don’t want ordinary. It’s not in my nature.', 'becoming and unbecoming so I can become who I always have been and never was'].concat(...ARTWORKS.map(a => (w => { const parts = w.split(' · '); return parts.every(x => !x.includes(' ')) ? [w] : parts; })(String(a.words || '')))).forEach(q => { q = q.trim(); const k = q.toLowerCase().replace(/[^a-z]/g, ''); if (q && k !== 'shedithers' && !seen.has(k)) { seen.add(k); out.push(q); } }); return out; })().map((q, i) => h('li', { style: `--r:${[-1.5, 1, -0.5, 2, -2, 0.5][i % 6]}deg` }, '“' + q + '”'))),
       h('div', { class: 'links' }, link(tt, '♪ TIKTOK', `https://www.tiktok.com/@${tt}`), link(yt, '▶ YOUTUBE', `https://www.youtube.com/@${yt}`), link(cash, '♥ BUY ME A DRINK', `https://cash.app/$${cash}`), h('a', { class: 'stamp', href: 'index.html' }, 'THE LAB ▸')),
       h('p', { class: 'rights' }, 'All artwork © SHEDITHERS. Shown for viewing only — please don’t download, edit, reproduce or use it to train or generate images.'))));
 }
@@ -291,11 +291,11 @@ const player = (() => {
   function setIcons() { const p = audio.paused; $('#pPlay').textContent = p ? '▶' : '❚❚'; $('#pMiniPlay').textContent = p ? '▶' : '❚❚'; el.classList.toggle('playing', !p); }
   function viz() {
     const cv = $('#pViz'), cx = cv.getContext('2d'); cancelAnimationFrame(raf);
-    const draw = () => { raf = requestAnimationFrame(draw); cx.clearRect(0, 0, 60, 24); if (!an || audio.paused) { for (let i = 0; i < 10; i++) { cx.fillStyle = '#5a5648'; cx.fillRect(i * 6, 22, 4, 2); } return; } const d = new Uint8Array(an.frequencyBinCount); an.getByteFrequencyData(d); for (let i = 0; i < 10; i++) { const v = d[2 + i * 3] / 255, hh = Math.max(2, v * 24); cx.fillStyle = i % 3 === 0 ? '#ff4fa3' : '#d4ff00'; cx.fillRect(i * 6, 24 - hh, 4, hh); } };
+    const draw = () => { raf = requestAnimationFrame(draw); cx.clearRect(0, 0, 60, 24); if (!an || audio.paused) { for (let i = 0; i < 10; i++) { cx.fillStyle = '#5a5648'; cx.fillRect(i * 6, 22, 4, 2); } cancelAnimationFrame(raf); raf = 0; return; } const d = new Uint8Array(an.frequencyBinCount); an.getByteFrequencyData(d); for (let i = 0; i < 10; i++) { const v = d[2 + i * 3] / 255, hh = Math.max(2, v * 24); cx.fillStyle = i % 3 === 0 ? '#ff4fa3' : '#d4ff00'; cx.fillRect(i * 6, 24 - hh, 4, hh); } };
     draw();
   }
   function ensureAudioGraph() { if (ctx || !window.AudioContext) return; try { ctx = new AudioContext(); const src = ctx.createMediaElementSource(audio); an = ctx.createAnalyser(); an.fftSize = 64; src.connect(an); an.connect(ctx.destination); } catch (_) { ctx = null; an = null; } }
-  audio.addEventListener('play', () => { ensureAudioGraph(); ctx && ctx.resume(); setIcons(); });
+  audio.addEventListener('play', () => { ensureAudioGraph(); ctx && ctx.resume(); setIcons(); viz(); });
   audio.addEventListener('pause', setIcons); audio.addEventListener('ended', () => next(true));
   audio.addEventListener('timeupdate', () => { $('#pCur').textContent = fmt(audio.currentTime); $('#pDur').textContent = fmt(audio.duration); if (!seeking) $('#pSeek').value = audio.duration ? audio.currentTime / audio.duration * 1000 : 0; });
   let seeking = false; const sk = $('#pSeek'); sk.addEventListener('input', () => { seeking = true; }); sk.addEventListener('change', () => { if (audio.duration) audio.currentTime = sk.value / 1000 * audio.duration; seeking = false; });

@@ -40,7 +40,7 @@ function note(title, text, list) {
 }
 function burst(x, y) {
   if (reduce || x == null) return; const n = 10;
-  for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2, d = 40 + Math.random() * 50, p = h('span', { class: 'burst', style: `left:${x}px;top:${y}px;--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px;--c:${i % 2 ? '#ff4fa3' : '#d4ff00'}`, html: i % 3 ? '✦' : '♥' }); document.body.append(p); setTimeout(() => p.remove(), 900); }
+  for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2, d = 40 + Math.random() * 50, p = h('span', { class: 'burst', style: `left:${x}px;top:${y}px;--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px;--c:${i % 2 ? '#c3141c' : '#e9e3d1'}`, html: i % 3 ? '✦' : '♥' }); document.body.append(p); setTimeout(() => p.remove(), 900); }
 }
 const at = e => [e.clientX || (e.touches && e.touches[0].clientX) || innerWidth / 2, e.clientY || (e.touches && e.touches[0].clientY) || innerHeight / 2];
 // (a) brand heart: five quick taps
@@ -147,7 +147,7 @@ audio.addEventListener('timeupdate', () => { $('#csCount').textContent = pad(Mat
 let ac = null, an = null;
 function level() { try { if (!an) { const ctxs = window.__shdAn; if (ctxs) an = ctxs; } } catch (_) { } return 0; }
 const edge = h('div', { class: 'edge-glow', 'aria-hidden': 'true' }); document.body.append(edge);
-(function pulse() { requestAnimationFrame(pulse); if (audio.paused || mood === 'off' || reduce) { edge.style.opacity = 0; return; } const t = performance.now() / 1000; const v = 0.35 + 0.25 * Math.sin(t * 4.2) * Math.sin(t * 1.3); edge.style.opacity = (mood === 'dim' ? v * 0.5 : v).toFixed(3); })();
+(function pulse() { requestAnimationFrame(pulse); if (audio.paused || mood === 'off' || reduce || document.hidden) { if (edge.style.opacity !== '0') edge.style.opacity = 0; return; } const t = performance.now() / 1000; const v = 0.35 + 0.25 * Math.sin(t * 4.2) * Math.sin(t * 1.3); edge.style.opacity = (mood === 'dim' ? v * 0.5 : v).toFixed(3); })();
 void level; void ac;
 
 /* =====================================================================
@@ -173,9 +173,9 @@ document.addEventListener('fullscreenchange', () => { if (!document.fullscreenEl
 $('.v-actions').prepend(h('button', { class: 'v-btn', onclick: () => setZone(!zone), title: 'Zone mode · Z' }, 'ZONE'));
 // dust motes — painted on the background canvas, under every artwork
 (function dustLoop() {
-  if (reduce) return; const cx = dust.getContext('2d'); let W, H; const motes = Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.8 + .3, v: Math.random() * .00025 + .00005, a: Math.random() * Math.PI * 2 }));
+  if (reduce) return; const cx = dust.getContext('2d'); let W, H; const motes = Array.from({ length: matchMedia('(pointer:coarse)').matches ? 28 : 55 }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.8 + .3, v: Math.random() * .00025 + .00005, a: Math.random() * Math.PI * 2 }));
   const size = () => { W = dust.width = innerWidth; H = dust.height = innerHeight; }; size(); addEventListener('resize', size);
-  (function f() { requestAnimationFrame(f); cx.clearRect(0, 0, W, H); const boost = document.body.classList.contains('tape-on') ? 1.6 : 1; for (const m of motes) { m.y -= m.v * boost; m.a += .01; if (m.y < -0.02) { m.y = 1.02; m.x = Math.random(); } const x = (m.x + Math.sin(m.a) * .01) * W, y = m.y * H; cx.fillStyle = zone ? 'rgba(233,227,209,.45)' : 'rgba(233,227,209,.18)'; cx.beginPath(); cx.arc(x, y, m.r, 0, 7); cx.fill(); } })();
+  let last = 0; (function f(t) { requestAnimationFrame(f); if (document.hidden || t - last < 40) return; last = t; cx.clearRect(0, 0, W, H); const boost = document.body.classList.contains('tape-on') ? 1.6 : 1; for (const m of motes) { m.y -= m.v * boost; m.a += .01; if (m.y < -0.02) { m.y = 1.02; m.x = Math.random(); } const x = (m.x + Math.sin(m.a) * .01) * W, y = m.y * H; cx.fillStyle = zone ? 'rgba(233,227,209,.45)' : 'rgba(233,227,209,.18)'; cx.beginPath(); cx.arc(x, y, m.r, 0, 7); cx.fill(); } })();
 })();
 
 /* =====================================================================
@@ -185,7 +185,7 @@ if (fine && !reduce) {
   const ink = h('canvas', { class: 'ink', 'aria-hidden': 'true' }); document.body.prepend(ink); const cx = ink.getContext('2d'); let pts = [];
   const size = () => { ink.width = innerWidth; ink.height = innerHeight; }; size(); addEventListener('resize', size);
   addEventListener('pointermove', e => { pts.push({ x: e.clientX, y: e.clientY, t: performance.now() }); if (pts.length > 40) pts.shift(); }, { passive: true });
-  (function f() { requestAnimationFrame(f); cx.clearRect(0, 0, ink.width, ink.height); const now = performance.now(); pts = pts.filter(p => now - p.t < 650); for (let i = 1; i < pts.length; i++) { const a = 1 - (now - pts[i].t) / 650; cx.strokeStyle = `rgba(255,79,163,${a * .55})`; cx.lineWidth = a * 3; cx.lineCap = 'round'; cx.beginPath(); cx.moveTo(pts[i - 1].x, pts[i - 1].y); cx.lineTo(pts[i].x, pts[i].y); cx.stroke(); } })();
+  let clean = false; (function f() { requestAnimationFrame(f); const now = performance.now(); pts = pts.filter(p => now - p.t < 650); if (!pts.length) { if (!clean) { cx.clearRect(0, 0, ink.width, ink.height); clean = true; } return; } clean = false; cx.clearRect(0, 0, ink.width, ink.height); for (let i = 1; i < pts.length; i++) { const a = 1 - (now - pts[i].t) / 650; cx.strokeStyle = `rgba(255,79,163,${a * .55})`; cx.lineWidth = a * 3; cx.lineCap = 'round'; cx.beginPath(); cx.moveTo(pts[i - 1].x, pts[i - 1].y); cx.lineTo(pts[i].x, pts[i].y); cx.stroke(); } })();
 }
 
 /* first-visit whisper */
