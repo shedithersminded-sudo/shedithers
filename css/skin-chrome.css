@@ -112,3 +112,4 @@ body.skin-chrome{
 /* words glow when you hover over them (same as the archive) */
 .skin-chrome :is(button,a,.rail-link,label,summary):hover{text-shadow:0 0 4px rgba(255,236,230,.9),0 0 10px rgba(195,20,28,.95),0 0 20px rgba(195,20,28,.6)}
 .skin-chrome :is(button,a,.rail-link){transition:text-shadow .25s ease,filter .15s,color .15s}
+#ctx button.danger{color:#ff5a5f}#ctx button.danger:hover{background:#c3141c;color:#f4eee0}#ctx button.dis{opacity:.35;pointer-events:none}

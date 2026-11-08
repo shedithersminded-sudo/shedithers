@@ -1,4 +1,4 @@
-# SHEDITHERS — handoff (2026-11-07, live version v2.6.5)
+# SHEDITHERS — handoff (2026-11-07, live version v2.6.6)
 
 Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 
@@ -9,7 +9,7 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - **Deploys:** pushing `main` to github.com/shedithersminded-sudo/shedithers auto-deploys to https://shedithers.netlify.app and https://shedithersminded-sudo.github.io/shedithers/. The user always wants both sites updated and verified.
 
 ## Release steps (every change)
-1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=265 and v2.6.5 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
+1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=266 and v2.6.6 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
 2. Commit, ending the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then push.
 3. Check that both live sites serve the new `sw.js` version.
 
@@ -63,3 +63,4 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - v2.6.4: About page = torn paper card + every quote from the art (pulled from `words` in artworks.js); wall/sparkle inks red+paper (no pink/lime/teal). Speed: dust canvas ~25fps and paused when hidden, ink trail idle when still, visualiser stops when music paused, grain no longer blends, no backdrop blur, `content-visibility` on home modules.
 - Netlify stopped auto-deploying after v2.6.2 (GitHub Pages fine). Check the Netlify dashboard (build minutes / auto publishing / deploy log).
 - v2.6.5: BUY ME A DRINK on the archive: red tab on the right edge of every page + ♥ DRINK in the menu; opens the same drink menu as the Dither Lab (config.drinks, Cash App, QR on desktop). Code at the end of archive-watch.js / archive-pop.css.
+- v2.6.6: editor right-click on the picture has EDIT (undo, redo, randomize, duplicate/hide/reset selected effect) and DELETE (delete effect, delete all effects, close media, delete from library) — `editMenuItems()` + `closeMedia()` in app.js. Disabled menu items no longer run.

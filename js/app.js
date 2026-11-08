@@ -36,7 +36,7 @@ function showCtx(x, y, items) {
   for (const it of items) {
     if (it === '-') { m.append(h('hr')); continue; }
     if (it.title) { m.append(h('div', { class: 'ctx-t' }, it.title)); continue; }
-    m.append(h('button', { class: (it.dis ? 'dis ' : '') + (it.danger ? 'danger' : ''), onclick: () => { hideCtx(); it.act(); } }, it.label, it.kbd ? h('kbd', null, it.kbd) : null));
+    m.append(h('button', { class: (it.dis ? 'dis ' : '') + (it.danger ? 'danger' : ''), onclick: () => { if (it.dis) return; hideCtx(); it.act(); } }, it.label, it.kbd ? h('kbd', null, it.kbd) : null));
   }
   m.classList.remove('hidden'); const r = m.getBoundingClientRect();
   m.style.left = clampN(x, 4, innerWidth - r.width - 4) + 'px'; m.style.top = clampN(y, 4, innerHeight - r.height - 4) + 'px';
@@ -293,9 +293,34 @@ viewport.addEventListener('contextmenu', e => {
     { title: 'PREVIEW' }, { label: 'Fit to screen', kbd: 'F', act: fitView }, { label: 'Actual pixels', kbd: '0', act: () => setDocZoom(100) },
     '-', { label: 'Result only', act: () => setCmp('off') }, { label: 'Wipe compare', act: () => setCmp('wipe') }, { label: 'Split view', act: () => setCmp('split') }, { label: 'Show original', act: () => setCmp('orig') },
     '-', { label: 'Copy frame to clipboard', act: copyFrame }, { label: 'Export…', kbd: 'Ctrl+E', act: () => openExport() }, { label: 'Fullscreen', kbd: 'Shift+F', act: toggleFull },
+    ...editMenuItems(),
   ]);
 });
 new ResizeObserver(() => { if (V.fit && S.media) fitView(); }).observe(viewport);
+/* right-click: edit + delete options for the picture you're working on */
+function editMenuItems() {
+  const f = selFx(), name = f ? E.MAP[f.id].name.toUpperCase() : '', lib = S.media && S.library.find(x => x.id === S.media.id);
+  return [
+    '-', { title: 'EDIT' },
+    { label: 'Undo', kbd: 'Ctrl+Z', dis: H.i <= 0, act: () => H.undo() }, { label: 'Redo', kbd: 'Ctrl+Shift+Z', dis: H.i >= H.st.length - 1, act: () => H.redo() },
+    { label: 'Randomize all effects', dis: !S.stack.length, act: randomizeAll },
+    { label: f ? `Duplicate ${name}` : 'Duplicate effect', dis: !f, act: () => dupFx(f.uid) },
+    { label: f ? (f.on ? `Hide ${name}` : `Show ${name}`) : 'Hide effect', dis: !f, act: () => { f.on = !f.on; changed(true); } },
+    { label: f ? `Reset ${name}` : 'Reset effect', dis: !f, act: () => resetFx(f.uid) },
+    '-', { title: 'DELETE' },
+    { label: f ? `Delete ${name}` : 'Delete effect', kbd: 'Del', dis: !f, danger: true, act: () => removeFx(f.uid) },
+    { label: `Delete all effects (${S.stack.length})`, dis: !S.stack.length, danger: true, act: () => confirmModal('DELETE ALL EFFECTS', `Remove all ${S.stack.length} effects from this picture? You can undo this.`, () => { S.stack = []; S.sel = null; changed(true); toast('All effects deleted', 'info'); }, 'DELETE') },
+    { label: 'Close this media', danger: true, act: () => confirmModal('CLOSE MEDIA', 'Close this picture and go back to the start screen? It stays in your library, and your project is autosaved.', closeMedia, 'CLOSE') },
+    { label: 'Delete from library', dis: !lib, danger: true, act: () => confirmModal('DELETE FROM LIBRARY', `Delete ${S.media.name} from your library on this device? This cannot be undone.`, () => { S.library = S.library.filter(x => x !== lib); DB.del('media', lib.id).catch(() => { }); closeMedia(); toast('Deleted from library', 'info'); }, 'DELETE') },
+  ];
+}
+function closeMedia() {
+  if (!S.media) return; S.still.playing = false; if (typeof sndPause === 'function') sndPause();
+  if (S.media.type === 'video') { S.media.el.pause(); S.media.el.removeAttribute('src'); S.media.el.load(); }
+  S.media = null; S.stack = []; S.sel = null; H.reset();
+  $('#empty').classList.remove('hidden'); if (typeof startArtFeed === 'function') startArtFeed();
+  renderAll();
+}
 async function copyFrame() { try { const b = await new Promise(r => cvA.toBlob(r, 'image/png')); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); toast('Preview frame copied to clipboard'); } catch (e) { toast('Clipboard write not permitted: ' + e.message, 'err'); } }
 function toggleFull() { const el = $('#center'); if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen && el.requestFullscreen().catch(e => toast(e.message, 'err')); }
 document.addEventListener('fullscreenchange', () => setTimeout(fitView, 60));
