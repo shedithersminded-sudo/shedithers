@@ -12,7 +12,7 @@ const FX_HELP = {
   rgbsplit: 'pulls red, green and blue apart', chroma: 'rainbow edges like a cheap lens', distort: 'torn, sliced digital look', hdisp: 'wavy sideways shift', vdisp: 'wavy up-and-down shift', interference: 'bad TV signal bands', scanlines: 'old TV screen lines', datamosh: 'smeared broken-video blocks (best on video)', noise: 'static and grain', vhs: 'wobbly old VHS tape',
   posterize: 'fewer colours, flat poster look', threshold: 'pure black + white', duotone: 'two-colour print', tritone: 'three-colour print', invert: 'negative colours', grayscale: 'black and white', contrast: 'more or less punch', brightness: 'lighter or darker', saturation: 'more or less colour', exposure: 'like a camera’s exposure', gamma: 'brighten or darken the mid-tones', sharpen: 'crisper edges', blur: 'soft and blurry', edges: 'turns it into an outline drawing', sobel: 'glowing edge lines', vignette: 'dark corners', hue: 'shifts every colour',
   htcircle: 'round print dots', htsquare: 'square print dots', htline: 'print made of lines', newspaper: 'old newspaper print', cmyk: 'four-colour comic print',
-  glow: 'glow, light streaks and star rays', ghost: 'ghostly echoes that drift — makes it move', texture: 'paper, grain, metal or holo surface',
+  glow: 'glow, light streaks and star rays', ghost: 'ghostly echoes that drift — makes it move', texture: 'paper, grain, metal or holo surface', emboss: 'press your picture into stone, metal or paper — raised + shadowed',
   imglayer: 'put another picture on top', fill: 'colour or gradient over it', text: 'write words on it', bgremove: 'cut out the background',
   boil: 'hand-drawn wobble', shake: 'shaky camera', pulse: 'heartbeat zoom', wave: 'liquid ripple', huecycle: 'colours loop like a rainbow', strobe: 'flashing', flicker: 'random glitch flashes', sparkle: 'twinkling stars', particles: 'falling hearts, stars, snow or rain', rollbars: 'rolling TV bars', dithercrawl: 'moving dither pattern', zoomloop: 'endless zoom tunnel',
   // shedithers originals
@@ -432,6 +432,8 @@ function openSettings() {
     h('div', null, h('div', { class: 'sec-t' }, 'PERFORMANCE'),
       h('div', { class: 'field' }, h('label', null, 'Preview resolution cap'), h('select', { onchange: e => { SETTINGS.pmax = +e.target.value; applySettings(); S.fitPending = true; requestRender(); } }, [[720, '720 PX'], [1280, '1280 PX'], [1920, '1920 PX'], [2560, '2560 PX'], [0, 'FULL']].map(([v, l]) => h('option', { value: v, selected: SETTINGS.pmax === v }, l)))),
       h('p', { class: 'note' }, 'Effects run in Web Workers on a preview proxy; exports always process at full output resolution in a background worker.'),
+      h('div', { class: 'sec-t', style: { marginTop: '16px' } }, 'PREVIEW VS ADD'),
+      h('p', { class: 'note set-tip' }, 'previewing an effect (or a preset, or anything) only shows you what it looks like. to tweak its settings — strength, colour, size, motion — you have to ADD it to your layers first. press + add it on the preview bar, or esc to stop previewing.'),
       h('div', { class: 'sec-t', style: { marginTop: '16px' } }, 'DATA'),
       h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', onclick: openShortcuts }, 'SHORTCUTS'), h('button', { class: 'btn sm danger', onclick: () => confirmModal('CLEAR ALL LOCAL DATA', 'Permanently delete all saved projects, library media, custom presets, palettes and export history from this browser? This cannot be undone.', async () => { try { DB.db && DB.db.close(); DB.db = null; await new Promise(r => { const q = indexedDB.deleteDatabase('shedithers'); q.onsuccess = q.onerror = q.onblocked = r; }); } catch (_) { } ['shd.presets', 'shd.palettes', 'shd.exports', 'shd.last'].forEach(k => localStorage.removeItem(k)); toast('Local data cleared — reloading'); setTimeout(() => location.reload(), 900); }, 'DELETE ALL') }, 'CLEAR DATA'))));
   openModal({ title: 'SETTINGS', sub: 'SYSTEM CONFIG', body, cls: 'sm', foot: h('span', { class: 'note' }, 'SHEDITHERS LOVES YOU ♥') }).el.style.width = 'min(640px,94vw)';
@@ -449,14 +451,18 @@ addEventListener('load', () => {
 
 /* clicking an effect in the library: add it, or just preview it on top of your layers first */
 let previewing = null;
-function stopPreview() { if (!previewing) return; previewing = null; S.override = null; const b = $('#pvBar'); if (b) b.remove(); requestRender(); }
+function stopPreview() { if (!previewing && !S.pv) return; previewing = null; S.pv = null; const b = $('#pvBar'); if (b) b.remove(); requestRender(); }
+// Esc stops a preview; a preview whose bar has gone missing is cleared so the canvas can never stay stuck on it
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && previewing) stopPreview(); });
+setInterval(() => { if ((previewing || S.pv) && !document.getElementById('pvBar')) stopPreview(); }, 800);
+const PV_TIP = 'preview only — to change its settings, add it to your layers';
 function startPreview(id) {
   if (!S.media) { toast('Import a picture or video first, then you can preview effects on it', 'info'); return; }
   stopPreview(); const f = mkFx(id); if (!f) return; previewing = id;
-  S.override = S.stack.filter(x => x.on !== false).concat([f]); requestRender();
+  S.pv = f; requestRender();
   if (fxMoves(E.MAP[id]) && typeof gifAutoMotion === 'function') gifAutoMotion([id]);
   const bar = h('div', { id: 'pvBar', class: 'pv-bar', role: 'status' },
-    h('i', null, '👁'), h('span', null, h('b', null, 'previewing ' + E.MAP[id].name), S.stack.length ? ` on top of your ${S.stack.length} layer${S.stack.length > 1 ? 's' : ''}` : ' on your picture'),
+    h('i', null, '👁'), h('span', null, h('b', null, 'previewing ' + E.MAP[id].name), S.stack.length ? ` on top of your ${S.stack.length} layer${S.stack.length > 1 ? 's' : ''}` : ' on your picture', h('small', { class: 'pv-tip' }, PV_TIP + ' (+ add it) · esc to stop')),
     h('button', { type: 'button', class: 'pv-add', onclick: () => { stopPreview(); libAdd(id); } }, '+ add it'),
     h('button', { type: 'button', class: 'pv-x', onclick: stopPreview }, 'stop'));
   $('#viewport').append(bar);
@@ -465,7 +471,7 @@ function fxChooser(id, anchor) {
   document.querySelectorAll('.fx-choose').forEach(x => x.remove());
   const def = E.MAP[id], have = S.stack.some(f => f.id === id);
   const pop = h('div', { class: 'fx-choose', role: 'dialog', 'aria-label': def.name },
-    h('b', null, def.name), h('small', null, fxHelp(def)),
+    h('b', null, def.name), h('small', null, fxHelp(def)), h('small', { class: 'fc-tip' }, 'previewing only shows it — to tweak its settings, add it.'),
     h('button', { type: 'button', class: 'fc-add', onclick: () => { pop.remove(); stopPreview(); libAdd(id); } }, have && !allowDoubles() ? '★ open it (already on)' : S.stack.length ? '+ add to my layers' : '+ start my layers with it'),
     h('button', { type: 'button', class: 'fc-pv', onclick: () => { pop.remove(); startPreview(id); } }, S.stack.length ? '👁 preview it on top' : '👁 just preview it'),
     h('button', { type: 'button', class: 'fc-x', 'aria-label': 'Close', onclick: () => pop.remove() }, '✕'));

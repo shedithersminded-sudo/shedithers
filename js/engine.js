@@ -659,6 +659,34 @@ EFFECTS.push({ id: 'texture', cat: 'texture', name: 'Texture', desc: 'Materials 
   R('light', 'Light / relief shading', 0, 200, 60, 1, '%'), R('relief', 'Relief depth', 0, 300, 100, 1, '%'), R('lang', 'Light angle', 0, 360, 225, 1, '°'), R('lelev', 'Light height', 5, 90, 45, 1, '°'),
   R('spec', 'Shine (specular)', 0, 300, 40, 1, '%'), R('shine', 'Shine tightness', 0, 100, 40, 1, '%'), C('lcol', 'Light color', '#ffffff'),
   R('drift', 'Drift speed', 0, 5, 0, 0.05), SEED(), ANIM()], fn: textureFx });
+/* ---------- EMBOSS: the picture pressed into a surface — stone, colour relief, metal, or blind-embossed paper ---------- */
+EFFECTS.push({ id: 'emboss', cat: 'texture', name: 'Emboss', desc: 'Press the picture into stone, metal or paper', params: [
+  SEL('mode', 'Look', [['stone', 'STONE'], ['color', 'COLOUR RELIEF'], ['metal', 'METAL'], ['paper', 'BLIND EMBOSS (PAPER)']], 'stone'),
+  R('depth', 'Depth', 0, 400, 160, 1, '%'), R('dist', 'Edge width', 1, 10, 2, 1, 'px'), R('lang', 'Light angle', 0, 360, 135, 1, '°'),
+  R('soft', 'Softness', 0, 4, 1, 1, 'px'), C('tint', 'Metal / paper colour', '#c9b37a'), R('mix', 'Mix with picture', 0, 100, 100, 1, '%')], fn: embossFx });
+function embossFx(s, d, w, h, p, c) {
+  const N = w * h, L = new Float32Array(N);
+  for (let i = 0, k = 0; i < N; i++, k += 4) L[i] = s[k] * 0.3 + s[k + 1] * 0.59 + s[k + 2] * 0.11;
+  // a little softening so the relief reads as pressed, not noisy
+  const sr = Math.round(p.soft * (c.S || 1));
+  if (sr > 0) { const T = new Float32Array(N);
+    for (let y = 0; y < h; y++) { let acc = 0, n = 0; for (let x = -sr; x < w; x++) { if (x + sr < w) { acc += L[y * w + x + sr]; n++; } if (x - sr - 1 >= 0) { acc -= L[y * w + x - sr - 1]; n--; } if (x >= 0) T[y * w + x] = acc / n; } }
+    for (let x = 0; x < w; x++) { let acc = 0, n = 0; for (let y = -sr; y < h; y++) { if (y + sr < h) { acc += T[(y + sr) * w + x]; n++; } if (y - sr - 1 >= 0) { acc -= T[(y - sr - 1) * w + x]; n--; } if (y >= 0) L[y * w + x] = acc / n; } } }
+  const a = p.lang * Math.PI / 180, dd = Math.max(1, p.dist * (c.S || 1)), dx = Math.cos(a) * dd, dy = -Math.sin(a) * dd;
+  const ox = Math.round(dx), oy = Math.round(dy), k2 = p.depth / 100, mix = p.mix / 100, tc = hex(p.tint);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x, k = i * 4;
+    const x1 = Math.min(w - 1, Math.max(0, x - ox)), y1 = Math.min(h - 1, Math.max(0, y - oy)), x2 = Math.min(w - 1, Math.max(0, x + ox)), y2 = Math.min(h - 1, Math.max(0, y + oy));
+    const rel = (L[y1 * w + x1] - L[y2 * w + x2]) * k2;      // + lit side, - shadow side
+    let r, g, b;
+    if (p.mode === 'color') { r = s[k] + rel; g = s[k + 1] + rel; b = s[k + 2] + rel; }
+    else if (p.mode === 'metal') { const v = 128 + rel, sh = Math.pow(Math.max(0, rel) / 255, 2) * 400; r = tc[0] * v / 160 + sh; g = tc[1] * v / 160 + sh; b = tc[2] * v / 160 + sh; }
+    else if (p.mode === 'paper') { const v = 236 + rel * 0.7; r = tc[0] * 0.25 + v * 0.75; g = tc[1] * 0.25 + v * 0.75; b = tc[2] * 0.25 + v * 0.75; }
+    else { const v = 128 + rel, n = (hash2(x, y, 11) - 0.5) * 18; r = g = b = v + n; }
+    d[k] = s[k] + (r - s[k]) * mix; d[k + 1] = s[k + 1] + (g - s[k + 1]) * mix; d[k + 2] = s[k + 2] + (b - s[k + 2]) * mix; d[k + 3] = s[k + 3];
+  }
+  return d;
+}
 function texSwatch(type, size, seed) {
   const out = new Uint8ClampedArray(size * size * 4), col = [0, 0, 0, 0], sc = type === 'grain' || type === 'static' ? 1.5 : type === 'crt' || type === 'lcd' ? 3 : type === 'glitter' ? 6 : 5;
   for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) { const hv = texSample(type, x / sc, y / sc, 0.5, 4, seed || 7, 0, 0.6, col, x, y), k = (y * size + x) * 4; const r = col[3] ? col[0] : hv, g = col[3] ? col[1] : hv, b = col[3] ? col[2] : hv; out[k] = r * 255; out[k + 1] = g * 255; out[k + 2] = b * 255; out[k + 3] = 255; }

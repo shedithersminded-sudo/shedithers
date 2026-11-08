@@ -182,7 +182,8 @@ function resolveP(f, t, w, hh) {
   return p;
 }
 function resolveStack(t, stack, w, hh) {
-  stack = stack || S.override || S.stack;
+  // an effect being previewed always sits on top of the CURRENT layers, so edits made during a preview still show
+  stack = stack || (S.pv ? S.stack.filter(x => x.on !== false).concat([S.pv]) : null) || S.override || S.stack;
   return stack.filter(f => f.on && E.MAP[f.id]).map(f => ({ id: f.id, mix: valAt(f, 'mix', t), p: resolveP(f, t, w, hh), blend: f.blend || 'normal', mask: w && typeof maskArray === 'function' ? maskArray(f, w, hh) : null }));
 }
 const hasMosh = st => st.some(f => f.id === 'datamosh' || (f.id === 'ghost' && (f.p.trail ?? 55) > 0));

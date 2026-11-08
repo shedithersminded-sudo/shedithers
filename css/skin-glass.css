@@ -148,3 +148,20 @@
 /* intro band + bar follow the muted palette */
 :root body #boot .boot-ticker{filter:saturate(.8) brightness(.8)}
 @media (prefers-reduced-motion:reduce){:root body #top .wordmark b,:root body #top .logo .logo-img,:root body #top .logo::after{animation:none}}
+
+/* ===== v3.1.2: the top bar always fits (it used to overflow by ~300px and slide sideways when a button got focus) ===== */
+:root body #top{overflow:clip!important;gap:10px!important;padding-right:10px!important;min-width:0}
+:root body #top .proj{flex:1 1 200px;min-width:0;gap:6px}
+:root body #top #projName{width:100%!important;min-width:80px}
+:root body #top .tb{flex:0 1 auto;min-width:0;gap:4px}
+:root body #top .sys{flex:0 1 auto;min-width:0;gap:6px!important}
+:root body #top .btn,:root body #top .seg button{letter-spacing:.08em!important;padding-left:10px!important;padding-right:10px!important}
+@media (max-width:1700px){:root body #top .readout:nth-child(1),:root body #top .readout:nth-child(2){display:none!important}}
+@media (max-width:1400px){:root body #top .readout,:root body #top .heart,:root body #top #saveState,:root body #top .proj label{display:none!important}}
+@media (max-width:1180px){:root body #top #btnShare{display:none!important}}
+/* the canvas frame stays the same thickness at every zoom (it used to scale up into a big red block) */
+:root body .cv-wrap canvas{box-shadow:0 0 0 calc(2px * var(--inv,1)) #07060a,0 0 0 calc(3px * var(--inv,1)) rgba(255,255,255,.12),0 calc(18px * var(--inv,1)) calc(46px * var(--inv,1)) rgba(0,0,0,.7)!important}
+/* preview reminders */
+.pv-bar .pv-tip{display:block;margin-top:3px;font-size:11px;line-height:1.35;opacity:.85;font-style:italic}
+.fx-choose .fc-tip{display:block;margin-top:6px;font-size:11px;opacity:.8;font-style:italic}
+.set-tip{font-size:12px!important;line-height:1.5!important;opacity:.9}
