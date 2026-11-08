@@ -201,7 +201,11 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     const any = el('a', 'dk-any', 'ANY AMOUNT · OPEN CASH APP ▸'); any.href = cashURL(); any.target = '_blank'; any.rel = 'noopener';
     const scan = el('div', 'dk-scan'); const box = el('div', 'dk-qr', 'loading QR…');
     scan.append(box, el('p', null, 'On a computer? Scan with your phone camera to tip in Cash App. Payments go straight to the artist — SHEDITHERS never sees your payment details.'));
-    card.append(x, head, menu, any, scan, el('div', 'dk-foot', 'SHEDITHERS LOVES YOU ♥'));
+    const art = id => { const w = typeof ARTWORKS !== 'undefined' && ARTWORKS.find(z => z.id === id); return w ? `url('${new URL(w.src, location.href).href}')` : 'none'; };
+    card.style.setProperty('--tip-banner', art('no-identity')); card.style.setProperty('--tip-guy', `url('${new URL('assets/archive/little-guy.png', location.href).href}')`);
+    ['i-love-shedithers', 'not-in-my-nature', 'when-you-rain', 'mad-women-and-poets'].forEach((id, i) => menu.children[i] && menu.children[i].style.setProperty('--art', art(id)));
+    const banner = el('div', 'tip-banner'); banner.setAttribute('aria-hidden', 'true'); const guy = el('i', 'tip-guy'); guy.setAttribute('aria-hidden', 'true');
+    card.append(guy, banner, x, head, menu, any, scan, el('div', 'dk-foot', 'SHEDITHERS LOVES YOU ♥'));
     modal.append(card); modal.addEventListener('click', ev => { if (ev.target === modal) close(); });
     document.body.append(modal); requestAnimationFrame(() => modal.classList.add('in')); document.addEventListener('keydown', key, true); x.focus(); qr(box);
   }

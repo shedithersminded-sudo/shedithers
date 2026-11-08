@@ -386,3 +386,33 @@ nav a.drink-nav{background:#c3141c;color:#e9e3d1}
   .dk-scan{display:none}
 }
 @media (hover:none) and (pointer:coarse){.dk-scan{display:none}}
+
+/* ===== star runner cursor (from the artist) ===== */
+html,body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url("../assets/ui/cursor-star.png") 1x, url("../assets/ui/cursor-star@2x.png") 2x) 16 16, auto}
+a,button,[role=button],label,summary,select,.w,.obj,.scrap,[data-drag],.drink-tab,.tv-screen,.pp-cd{cursor:url("../assets/ui/cursor-star-hot.png") 16 16, pointer!important;cursor:image-set(url("../assets/ui/cursor-star-hot.png") 1x, url("../assets/ui/cursor-star-hot@2x.png") 2x) 16 16, pointer!important}
+input[type=text],input[type=email],textarea{cursor:text}
+
+/* ===== tip panel made from the art (shared look: archive .dk-card + editor .tip-modal) ===== */
+.tip-banner{position:relative;height:96px;margin:-28px -24px 14px;background:#0b0a09;overflow:hidden;clip-path:polygon(0 0,100% 0,100% 82%,94% 92%,86% 80%,76% 95%,66% 83%,55% 96%,44% 82%,33% 94%,22% 81%,12% 93%,4% 84%,0 92%)}
+.tip-banner::before{content:'';position:absolute;inset:0;background:var(--tip-banner) 6% 4%/260% no-repeat;filter:grayscale(1) contrast(1.25)}
+.tip-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,#c3141c 0,rgba(195,20,28,.55) 45%,rgba(11,10,9,.7));mix-blend-mode:multiply}
+.tip-guy{position:absolute;right:62px;top:6px;z-index:3;width:84px;height:84px;background:var(--tip-guy) center/contain no-repeat;pointer-events:none;filter:drop-shadow(2px 3px 0 #0b0a09);animation:tipPeek 3.2s ease-in-out infinite}
+@keyframes tipPeek{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-6px) rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.tip-guy{animation:none}}
+.dk-card{padding-top:28px}
+.dk-head{position:relative;z-index:2}
+.dk-x{z-index:4;box-shadow:0 0 0 2px #e9e3d1}
+.dk-drink{position:relative;overflow:hidden;min-height:118px;justify-content:flex-end;background:#0b0a09;border-radius:6px;clip-path:polygon(0 4%,12% 0,40% 3%,70% 0,100% 3%,98% 50%,100% 97%,66% 100%,34% 96%,8% 100%,0 96%,2% 50%)}
+.dk-drink::before{content:'';position:absolute;inset:0;background:var(--art) center 30%/cover no-repeat;filter:grayscale(1) contrast(1.2);opacity:.85;transition:transform .4s,opacity .3s}
+.dk-drink::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(195,20,28,.35),rgba(11,10,9,.92) 72%);}
+.dk-drink:nth-child(2n)::after{background:linear-gradient(180deg,rgba(11,10,9,.25),rgba(195,20,28,.88) 78%)}
+.dk-drink>*{position:relative;z-index:1}
+.dk-drink:hover::before{transform:scale(1.08);opacity:1}
+.dk-drink i{font-size:34px;filter:drop-shadow(0 2px 0 #0b0a09)}
+.dk-drink b{font-size:21px;text-shadow:2px 2px 0 #0b0a09}
+.dk-drink span{padding:2px 10px;border-radius:999px;background:#e9e3d1;color:#c3141c}
+.dk-any{font-size:22px;padding:15px}
+.drink-tab{padding:16px 10px 18px 11px;animation:tabCall 6s ease-in-out infinite}
+.drink-tab b{font-size:20px}
+@keyframes tabCall{0%,88%,100%{box-shadow:0 0 0 2px #0b0a09,0 0 24px rgba(195,20,28,.6)}93%{box-shadow:0 0 0 2px #0b0a09,0 0 46px rgba(255,60,60,1)}}
+@media (max-width:760px),(hover:none) and (pointer:coarse){.drink-tab{animation:none}.tip-guy{width:64px;height:64px;right:58px}.dk-drink{min-height:104px}}

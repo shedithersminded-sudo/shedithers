@@ -113,3 +113,41 @@ body.skin-chrome{
 .skin-chrome :is(button,a,.rail-link,label,summary):hover{text-shadow:0 0 4px rgba(255,236,230,.9),0 0 10px rgba(195,20,28,.95),0 0 20px rgba(195,20,28,.6)}
 .skin-chrome :is(button,a,.rail-link){transition:text-shadow .25s ease,filter .15s,color .15s}
 #ctx button.danger{color:#ff5a5f}#ctx button.danger:hover{background:#c3141c;color:#f4eee0}#ctx button.dis{opacity:.35;pointer-events:none}
+
+/* ===== star runner cursor (from the artist) ===== */
+:root{--cur:url("../assets/ui/cursor-star.png") 16 16, auto;--curp:url("../assets/ui/cursor-star-hot.png") 16 16, pointer}
+body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url("../assets/ui/cursor-star.png") 1x, url("../assets/ui/cursor-star@2x.png") 2x) 16 16, auto}
+
+/* ===== tip panel made from the art (shared look: archive .dk-card + editor .tip-modal) ===== */
+.tip-banner{position:relative;height:96px;margin:-28px -24px 14px;background:#0b0a09;overflow:hidden;clip-path:polygon(0 0,100% 0,100% 82%,94% 92%,86% 80%,76% 95%,66% 83%,55% 96%,44% 82%,33% 94%,22% 81%,12% 93%,4% 84%,0 92%)}
+.tip-banner::before{content:'';position:absolute;inset:0;background:var(--tip-banner) 6% 4%/260% no-repeat;filter:grayscale(1) contrast(1.25)}
+.tip-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,#c3141c 0,rgba(195,20,28,.55) 45%,rgba(11,10,9,.7));mix-blend-mode:multiply}
+.tip-guy{position:absolute;right:62px;top:6px;z-index:3;width:84px;height:84px;background:var(--tip-guy) center/contain no-repeat;pointer-events:none;filter:drop-shadow(2px 3px 0 #0b0a09);animation:tipPeek 3.2s ease-in-out infinite}
+@keyframes tipPeek{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-6px) rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.tip-guy{animation:none}}
+/* editor: big visible tip button + art tip panel */
+.skin-chrome .btn.tip-big{background:linear-gradient(180deg,#e8434a 0%,#c3141c 45%,#8f0d13 55%,#d32a31 100%);color:#f4eee0;border:1px solid #4a0609;border-radius:999px;padding:0 14px;font-weight:700;letter-spacing:.1em;box-shadow:0 0 0 1px #0b0a09,0 0 16px rgba(195,20,28,.7);text-shadow:0 1px 0 #000;animation:tipCall 6s ease-in-out infinite}
+.skin-chrome .btn.tip-big:hover{filter:brightness(1.12);box-shadow:0 0 0 1px #0b0a09,0 0 26px rgba(255,60,60,.95)}
+@keyframes tipCall{0%,88%,100%{box-shadow:0 0 0 1px #0b0a09,0 0 16px rgba(195,20,28,.7)}93%{box-shadow:0 0 0 1px #0b0a09,0 0 34px rgba(255,60,60,1)}}
+.tip-modal{position:relative;background:#e9e3d1!important;color:#0b0a09;box-shadow:0 0 0 2px #0b0a09,0 0 0 5px #c3141c,0 0 50px rgba(195,20,28,.45)!important}
+.tip-modal .modal-h{background:#0b0a09!important}
+.tip-modal .modal-h b{color:#e9e3d1!important;font-size:18px;letter-spacing:.2em;text-shadow:2px 2px 0 #c3141c!important}
+.tip-modal .modal-c{background:#e9e3d1;position:relative}
+.tip-modal .tip-banner{margin:-16px -16px 14px}
+.tip-modal .modal-f{background:#0b0a09!important}.tip-modal .modal-f .note{color:#c3141c;font-size:12px}
+.tip-modal .tip-head p{color:#0b0a09;font:400 14px/1.4 'Special Elite',monospace}
+.tip-modal .tip-heart{display:none}
+.tip-modal .tip-guy{top:46px;right:20px}
+.tip-modal .drinks{grid-template-columns:repeat(2,1fr);gap:12px}
+.tip-modal .drink{position:relative;overflow:hidden;min-height:118px;justify-content:flex-end;border:0;background:#0b0a09;color:#e9e3d1;clip-path:polygon(0 4%,12% 0,40% 3%,70% 0,100% 3%,98% 50%,100% 97%,66% 100%,34% 96%,8% 100%,0 96%,2% 50%)}
+.tip-modal .drink::before{content:'';position:absolute;inset:0;background:var(--art) center 30%/cover no-repeat;filter:grayscale(1) contrast(1.2);opacity:.85;transition:transform .4s,opacity .3s}
+.tip-modal .drink::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(195,20,28,.35),rgba(11,10,9,.92) 72%)}
+.tip-modal .drink:nth-child(2n)::after{background:linear-gradient(180deg,rgba(11,10,9,.25),rgba(195,20,28,.88) 78%)}
+.tip-modal .drink>*{position:relative;z-index:1}
+.tip-modal .drink:hover{transform:none;background:#0b0a09}.tip-modal .drink:hover::before{transform:scale(1.08);opacity:1}
+.tip-modal .drink i{font-size:34px}
+.tip-modal .drink b{font:400 21px 'Bebas Neue',sans-serif;letter-spacing:.08em;text-shadow:2px 2px 0 #0b0a09}
+.tip-modal .drink span{padding:2px 10px;border-radius:999px;background:#e9e3d1;color:#c3141c;font-weight:700}
+.tip-modal .tip-row .btn.primary{min-height:48px;font-size:15px;border-radius:999px}
+.tip-modal .tip-scan{border-top:2px dashed rgba(11,10,9,.3)}.tip-modal .tip-scan .note{color:#3a3633}
+.tip-modal .tip-qr{border:2px solid #0b0a09}

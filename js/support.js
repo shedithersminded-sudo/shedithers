@@ -18,7 +18,13 @@ function openTip() {
     h('div', { class: 'drinks' }, (CFG.drinks || []).map(d => h('button', { class: 'drink', onclick: () => openExt(cashURL(d.amount)) }, h('i', null, d.emoji || '♥'), h('b', null, d.label), h('span', null, '$' + d.amount)))),
     h('div', { class: 'tip-row' }, h('button', { class: 'btn primary', onclick: () => openExt(cashURL()) }, `OPEN CASH APP · $${cashtag()}`), rbUser() ? h('button', { class: 'btn pink', onclick: () => openExt(shopURL()) }, 'STICKERS & PRINTS') : null),
     h('div', { class: 'tip-scan' }, qr, h('p', { class: 'note' }, 'ON A COMPUTER? SCAN WITH YOUR PHONE CAMERA TO TIP IN CASH APP.', h('br'), h('br'), 'Payments go straight to the artist through Cash App. SHEDITHERS never sees your payment details.')));
-  openModal({ title: 'BUY ME A DRINK', sub: '$' + cashtag().toUpperCase(), cls: 'sm', body, foot: h('span', { class: 'note' }, 'SHEDITHERS LOVES YOU ♥') }).el.style.width = 'min(560px,94vw)';
+  const art = id => { const w = typeof artById === 'function' && artById(id); return w ? `url('${new URL(w.src, location.href).href}')` : 'none'; };
+  $$('.drink', body).forEach((d, i) => d.style.setProperty('--art', art(['i-love-shedithers', 'not-in-my-nature', 'when-you-rain', 'mad-women-and-poets'][i % 4])));
+  body.prepend(h('div', { class: 'tip-banner', 'aria-hidden': 'true' }));
+  const md = openModal({ title: 'BUY ME A DRINK', sub: '$' + cashtag().toUpperCase(), cls: 'sm', body, foot: h('span', { class: 'note' }, 'SHEDITHERS LOVES YOU ♥') });
+  md.el.style.width = 'min(580px,94vw)'; md.el.classList.add('tip-modal');
+  md.el.style.setProperty('--tip-banner', art('no-identity')); md.el.style.setProperty('--tip-guy', `url('${new URL('assets/archive/little-guy.png', location.href).href}')`);
+  md.el.prepend(h('i', { class: 'tip-guy', 'aria-hidden': 'true' }));
   qrSVG(cashURL()).then(svg => { qr.innerHTML = svg || '<span class="note">QR UNAVAILABLE OFFLINE</span>'; });
 }
 function openShop() { if (!rbUser()) return toast('Shop is not set up yet', 'info'); openExt(shopURL()); }
