@@ -1,4 +1,4 @@
-# SHEDITHERS — handoff (2026-11-07, live version v2.7.5)
+# SHEDITHERS — handoff (2026-11-07, live version v2.8.0)
 
 Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 
@@ -9,7 +9,7 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - **Deploys:** pushing `main` to github.com/shedithersminded-sudo/shedithers auto-deploys to https://shedithers.netlify.app and https://shedithersminded-sudo.github.io/shedithers/. The user always wants both sites updated and verified.
 
 ## Release steps (every change)
-1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=275 and v2.7.5 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
+1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=280 and v2.8.0 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
 2. Commit, ending the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then push.
 3. Check that both live sites serve the new `sw.js` version.
 
@@ -72,3 +72,4 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - v2.7.2: intro music starts quieter (30%, was 75%) and fades in over ~3s; a visitor's saved volume still wins.
 - v2.7.3: no fade — intro music simply starts at 30%; visitors turn it up with the slider.
 - v2.7.4: drink doodles (assets/ui/drinks/*.svg — slushy w/ eye, fruit cup w/ eyeball strawberry, cocktail w/ eyeball olive, bottle w/ torn S label) replace emojis on both tip panels (config.drinks[].icon); new tipLine.
+- v2.8.0: editor effects library sorted into PICTURE LOOKS / MAKE IT MOVE (turns it into GIF/video) / ADD ON TOP (FX_SECTIONS in panels.js), plain-words help for every effect (FX_HELP), the selected effect is pinned on top of the layers as NOW EDITING while ALL LAYERS keeps process order, starry red/paper styling, star toggles. Fixed #main growing past the window (layers panel was off-screen at 1440px).

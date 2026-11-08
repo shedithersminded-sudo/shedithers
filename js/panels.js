@@ -3,6 +3,27 @@ let leftTab = 'import';
 const pad2 = n => String(n).padStart(2, '0');
 const CAT_NAME = Object.fromEntries(E.CATS);
 const ART = { collage: 'assets/archive/no-identity.png', reel: 'assets/archive/become-unmarketable.mp4' };
+/* plain-words help for every effect: what it does, no tech talk */
+const FX_HELP = {
+  fs: 'classic dot dither — soft and detailed', atkinson: 'crisp retro-computer dither, bright highlights', diffusion: 'dot dither with different spread styles', bayer: 'grid-pattern dither — pick the grid size',
+  bayer2: 'big chunky grid dots', bayer4: 'classic grid-pattern dither', bayer8: 'fine grid-pattern dither', random: 'grainy random-dot dither', bluenoise: 'smooth, even grain dither',
+  htdither: 'dither made of angled print lines', dotdither: 'clumped dots like old print', crosshatch: 'pen-drawn crosshatch lines',
+  pixelate: 'big chunky pixels', pixelsort: 'drags pixels into long streaks', displace: 'knocks blocks out of place', stretch: 'smears one line across the picture', blocks: 'random broken rectangles', subpixel: 'old screen RGB dots up close',
+  rgbsplit: 'pulls red, green and blue apart', chroma: 'rainbow edges like a cheap lens', distort: 'torn, sliced digital look', hdisp: 'wavy sideways shift', vdisp: 'wavy up-and-down shift', interference: 'bad TV signal bands', scanlines: 'old TV screen lines', datamosh: 'smeared broken-video blocks (best on video)', noise: 'static and grain', vhs: 'wobbly old VHS tape',
+  posterize: 'fewer colours, flat poster look', threshold: 'pure black + white', duotone: 'two-colour print', tritone: 'three-colour print', invert: 'negative colours', grayscale: 'black and white', contrast: 'more or less punch', brightness: 'lighter or darker', saturation: 'more or less colour', exposure: 'like a camera’s exposure', gamma: 'brighten or darken the mid-tones', sharpen: 'crisper edges', blur: 'soft and blurry', edges: 'turns it into an outline drawing', sobel: 'glowing edge lines', vignette: 'dark corners', hue: 'shifts every colour',
+  htcircle: 'round print dots', htsquare: 'square print dots', htline: 'print made of lines', newspaper: 'old newspaper print', cmyk: 'four-colour comic print',
+  glow: 'glow, light streaks and star rays', ghost: 'ghostly echoes that drift — makes it move', texture: 'paper, grain, metal or holo surface',
+  imglayer: 'put another picture on top', fill: 'colour or gradient over it', text: 'write words on it', bgremove: 'cut out the background',
+  boil: 'hand-drawn wobble', shake: 'shaky camera', pulse: 'heartbeat zoom', wave: 'liquid ripple', huecycle: 'colours loop like a rainbow', strobe: 'flashing', flicker: 'random glitch flashes', sparkle: 'twinkling stars', particles: 'falling hearts, stars, snow or rain', rollbars: 'rolling TV bars', dithercrawl: 'moving dither pattern', zoomloop: 'endless zoom tunnel',
+};
+const fxHelp = def => FX_HELP[def.id] || def.desc || '';
+const fxMoves = def => def.cat === 'gif' || def.id === 'ghost';
+/* the effects library, sorted by what they do to your work */
+const FX_SECTIONS = [
+  { key: 'picture', star: '★', title: 'PICTURE LOOKS', note: 'restyle it. stays a still picture.', groups: [['dither', 'Dithering'], ['halftone', 'Print + halftone'], ['pixel', 'Pixel'], ['glitch', 'Glitch'], ['image', 'Colour + tone'], ['texture', 'Texture']], skip: [] },
+  { key: 'motion', star: '▶', title: 'MAKE IT MOVE', note: 'turns your picture into a looping GIF / video. export it as GIF or MP4.', groups: [['gif', 'Loops'], ['light', 'Moving light']], only: id => E.MAP[id].cat === 'gif' || id === 'ghost' },
+  { key: 'layers', star: '✚', title: 'ADD ON TOP', note: 'text, pictures, colour, light and cut-outs.', groups: [['layer', 'Layers'], ['light', 'Light']], skip: ['ghost'] },
+];
 
 function renderAll() { renderLeft(); renderStack(); renderCanvasPane(); layoutStage(); $('#roFx').textContent = pad2(S.stack.filter(f => f.on).length); }
 
@@ -55,20 +76,25 @@ function leftLibrary(body) {
 async function openLibItem(it) { if (S.media && S.media.id === it.id) return; try { await setMedia(it); } catch (e) { toast(e.message, 'err'); } }
 function leftEffects(body) {
   $('#leftMeta').textContent = E.EFFECTS.length + ' MODULES';
-  const q = h('input', { class: 'search', placeholder: 'SEARCH EFFECTS…', spellcheck: false });
-  const list = h('div');
+  const q = h('input', { class: 'search', placeholder: 'SEARCH EFFECTS… (try “vhs”, “stars”, “dots”)', spellcheck: false });
+  const list = h('div', { class: 'fx-lib' });
   const draw = () => {
     list.innerHTML = ''; const s = q.value.trim().toLowerCase(); let n = 0;
-    for (const [cat, cname] of E.CATS) {
-      const items = E.EFFECTS.filter(e => e.cat === cat && (!s || (e.name + ' ' + e.desc + ' ' + cname).toLowerCase().includes(s)));
-      if (!items.length) continue;
-      list.append(h('div', { class: 'fx-cat cat-' + cat }, h('h4', null, cname.toUpperCase(), h('span', null, pad2(items.length))), items.map(e => {
-        const it = h('div', { class: 'fx-item', draggable: true, 'data-tip': 'Click to add · drag into stack', onclick: () => addFx(e.id) }, h('span', { class: 'ix' }, pad2(++n)), h('span', { class: 'nm' }, e.name, e.desc ? h('span', { class: 'ds' }, e.desc) : null), h('span', { class: 'add' }, '+ADD'));
-        it.addEventListener('dragstart', ev => { ev.dataTransfer.setData('shd/add', e.id); ev.dataTransfer.effectAllowed = 'copy'; });
-        return it;
-      })));
+    for (const sec of FX_SECTIONS) {
+      const groups = [];
+      for (const [cat, gname] of sec.groups) {
+        const items = E.EFFECTS.filter(e => e.cat === cat && (sec.only ? sec.only(e.id) : !(sec.skip || []).includes(e.id)) && (!s || (e.name + ' ' + fxHelp(e) + ' ' + e.desc + ' ' + gname + ' ' + sec.title).toLowerCase().includes(s)));
+        if (!items.length) continue;
+        groups.push(h('div', { class: 'fx-cat cat-' + cat }, h('h4', null, gname.toUpperCase(), h('span', null, pad2(items.length))), items.map(e => {
+          const it = h('div', { class: 'fx-item' + (fxMoves(e) ? ' moves' : ''), draggable: true, 'data-tip': fxMoves(e) ? 'Click to add — this makes your picture move (GIF / video)' : 'Click to add · or drag into your layers', onclick: () => addFx(e.id) },
+            h('span', { class: 'ix' }, pad2(++n)), h('span', { class: 'nm' }, e.name, h('span', { class: 'ds' }, fxHelp(e))), h('span', { class: 'add' }, fxMoves(e) ? '▶ ADD' : '+ ADD'));
+          it.addEventListener('dragstart', ev => { ev.dataTransfer.setData('shd/add', e.id); ev.dataTransfer.effectAllowed = 'copy'; });
+          return it;
+        })));
+      }
+      if (groups.length) list.append(h('section', { class: 'fx-sec sec-' + sec.key }, h('header', null, h('i', null, sec.star), h('div', null, h('b', null, sec.title), h('small', null, sec.note))), ...groups));
     }
-    if (!n) list.append(h('div', { class: 'empty-note' }, 'NO MATCHING EFFECTS'));
+    if (!n) list.append(h('div', { class: 'empty-note' }, 'nothing matches that ★ try another word'));
   };
   q.addEventListener('input', draw); body.append(q, list); draw(); setTimeout(() => q.focus(), 10);
 }
@@ -168,8 +194,8 @@ $('#stReset').onclick = () => { if (!S.stack.length) return; S.stack.forEach(f =
 $('#stClear').onclick = () => { if (!S.stack.length) return; confirmModal('CLEAR STACK', `Remove all ${S.stack.length} effects? (Undo with Ctrl+Z)`, () => { S.stack = []; S.sel = null; changed(true); }, 'CLEAR'); };
 const list = $('#stackList');
 let dropAt = -1;
-function dropIndex(y) { const cards = $$('.fx', list); for (let i = 0; i < cards.length; i++) { const r = cards[i].getBoundingClientRect(); if (y < r.top + r.height / 2) return i; } return cards.length; }
-function showInd(i) { $$('.drop-ind', list).forEach(x => x.remove()); if (i < 0) return; const cards = $$('.fx', list), ind = h('div', { class: 'drop-ind' }); if (i < cards.length) list.insertBefore(ind, cards[i]); else list.append(ind); }
+function dropIndex(y) { const cards = $$('.fx:not(.pinned)', list); for (let i = 0; i < cards.length; i++) { const r = cards[i].getBoundingClientRect(); if (y < r.top + r.height / 2) return i; } return cards.length; }
+function showInd(i) { $$('.drop-ind', list).forEach(x => x.remove()); if (i < 0) return; const cards = $$('.fx:not(.pinned)', list), ind = h('div', { class: 'drop-ind' }); if (i < cards.length) list.insertBefore(ind, cards[i]); else list.append(ind); }
 list.addEventListener('dragover', e => { const t = e.dataTransfer.types; if (!t.includes('shd/fx') && !t.includes('shd/add')) return; e.preventDefault(); const i = dropIndex(e.clientY); if (i !== dropAt) { dropAt = i; showInd(i); } });
 list.addEventListener('dragleave', e => { if (!list.contains(e.relatedTarget)) { dropAt = -1; showInd(-1); } });
 list.addEventListener('drop', e => { e.preventDefault(); const i = dropIndex(e.clientY); showInd(-1); dropAt = -1; const u = e.dataTransfer.getData('shd/fx'), a = e.dataTransfer.getData('shd/add'); if (u) moveFx(u, i); else if (a) addFx(a, i); });
@@ -177,29 +203,39 @@ list.addEventListener('drop', e => { e.preventDefault(); const i = dropIndex(e.c
 function renderStack() {
   SYNC = []; list.innerHTML = ''; $('#stackCount').textContent = pad2(S.stack.length);
   if (!S.stack.length) { list.append(h('div', { class: 'stack-empty' }, h('b', null, 'STACK EMPTY'), 'ADD EFFECTS FROM THE LIBRARY', h('br'), 'OR APPLY A PRESET', h('br'), h('br'), h('button', { class: 'btn sm', onclick: showAddMenu }, '+ ADD EFFECT'))); return; }
-  S.stack.forEach((f, i) => list.append(fxCard(f, i)));
+  // the effect you're working on sits on top; the full list below keeps the real process order
+  const sel = S.stack.find(f => f.uid === S.sel);
+  if (sel && sel.open === undefined) sel.open = true;
+  if (sel) {
+    const si = S.stack.indexOf(sel), def = E.MAP[sel.id];
+    list.append(h('div', { class: 'now-editing' }, h('i', null, '★'), h('b', null, 'NOW EDITING'), h('span', null, `layer ${pad2(si + 1)} of ${pad2(S.stack.length)}`)));
+    const pin = fxCard(sel, si, true); pin.classList.add('pinned'); list.append(pin);
+    list.append(h('div', { class: 'all-layers' }, h('b', null, 'ALL LAYERS'), h('span', null, 'top runs first · drag ⠿ to reorder')));
+  }
+  S.stack.forEach((f, i) => list.append(f === sel ? h('div', { class: 'fx fx-ph', 'data-uid': f.uid, onclick: () => { list.scrollTo({ top: 0, behavior: 'smooth' }); } }, h('span', { class: 'fx-idx' }, pad2(i + 1)), h('b', null, '★ ' + E.MAP[f.id].name), h('small', null, 'editing ↑')) : fxCard(f, i)));
 }
 const ico = (id, tip, fn) => h('button', { class: 'ib', 'data-tip': tip, html: `<svg><use href="#i-${id}"/></svg>`, onclick: e => { e.stopPropagation(); fn(e); } });
 function fxMenu(f, x, y) {
   const i = S.stack.indexOf(f);
   showCtx(x, y, [{ title: E.MAP[f.id].name.toUpperCase() }, { label: f.on ? 'Disable' : 'Enable', kbd: 'H', act: () => { f.on = !f.on; changed(true); } }, { label: 'Duplicate', kbd: 'Ctrl+D', act: () => dupFx(f.uid) }, { label: 'Copy settings', kbd: 'Ctrl+C', act: () => copyFx(f) }, { label: 'Paste settings', kbd: 'Ctrl+V', dis: !S.clip, act: () => pasteFx(f) }, { label: 'Randomize', kbd: 'R', act: () => { randomizeFx(f); changed(true); } }, { label: 'Reset to defaults', act: () => resetFx(f.uid) }, { label: 'Clear keyframes', dis: !Object.keys(f.keys || {}).length, act: () => { f.keys = {}; changed(true); } }, '-', { label: 'Move to top', dis: i === 0, act: () => moveFx(f.uid, 0) }, { label: 'Move up', kbd: 'Alt+↑', dis: i === 0, act: () => moveFx(f.uid, i - 1) }, { label: 'Move down', kbd: 'Alt+↓', dis: i === S.stack.length - 1, act: () => moveFx(f.uid, i + 2) }, { label: 'Move to bottom', dis: i === S.stack.length - 1, act: () => moveFx(f.uid, S.stack.length) }, '-', { label: 'Remove', kbd: 'Del', danger: true, act: () => removeFx(f.uid) }]);
 }
-function fxCard(f, i) {
+function fxCard(f, i, pinned) {
   const def = E.MAP[f.id], card = h('div', { class: 'fx' + (f.uid === S.sel ? ' sel' : '') + (f.on ? '' : ' off'), 'data-uid': f.uid });
   const grip = h('div', { class: 'grip', 'data-tip': 'Drag to reorder', html: '<svg><use href="#i-grip"/></svg>' });
   grip.addEventListener('mousedown', () => card.draggable = true);
   card.addEventListener('dragstart', e => { e.dataTransfer.setData('shd/fx', f.uid); e.dataTransfer.effectAllowed = 'move'; card.classList.add('dragging'); });
   card.addEventListener('dragend', () => { card.draggable = false; card.classList.remove('dragging'); showInd(-1); });
   const sw = h('div', { class: 'sw' + (f.on ? ' on' : ''), 'data-tip': 'Enable / disable · H', onclick: e => { e.stopPropagation(); f.on = !f.on; changed(true); } });
-  const head = h('div', { class: 'fx-h', onclick: () => { if (S.sel === f.uid) f.open = !f.open; S.sel = f.uid; renderStack(); if (typeof updBrushTarget === 'function') { updBrushTarget(); drawMaskOverlay(); tlLanes(); } } },
+  const head = h('div', { class: 'fx-h', onclick: () => { if (S.sel === f.uid) f.open = !f.open; else { f.open = true; list.scrollTo({ top: 0, behavior: 'smooth' }); } S.sel = f.uid; renderStack(); if (typeof updBrushTarget === 'function') { updBrushTarget(); drawMaskOverlay(); tlLanes(); } } },
     grip, h('span', { class: 'fx-idx' }, pad2(i + 1)), sw,
-    h('div', { class: 'fx-name' }, def.name, (f.mask || (f.blend && f.blend !== 'normal')) ? h('span', { class: 'fx-badges' }, f.blend && f.blend !== 'normal' ? h('i', { class: 'b' }, f.blend.toUpperCase()) : null, f.mask ? h('i', null, f.maskOn === false ? 'MASK OFF' : 'MASK') : null) : null, h('small', null, `${CAT_NAME[def.cat].toUpperCase()} · ${Math.round(valAt(f, 'mix'))}%`)),
+    h('div', { class: 'fx-name' }, def.name, (f.mask || (f.blend && f.blend !== 'normal')) ? h('span', { class: 'fx-badges' }, f.blend && f.blend !== 'normal' ? h('i', { class: 'b' }, f.blend.toUpperCase()) : null, f.mask ? h('i', null, f.maskOn === false ? 'MASK OFF' : 'MASK') : null) : null, h('small', null, fxMoves(def) ? h('i', { class: 'mv-badge' }, '▶ MOVES') : null, `${fxHelp(def)} · ${Math.round(valAt(f, 'mix'))}%`)),
     ico('up', 'Move up', () => moveFx(f.uid, i - 1)), ico('down', 'Move down', () => moveFx(f.uid, i + 2)),
     ico('dup', 'Duplicate', () => dupFx(f.uid)), ico('dots', 'More actions', e => { const r = e.currentTarget.getBoundingClientRect(); fxMenu(f, r.left - 150, r.bottom + 2); }), ico('x', 'Remove', () => removeFx(f.uid)));
   head.addEventListener('contextmenu', e => { e.preventDefault(); S.sel = f.uid; fxMenu(f, e.clientX, e.clientY); });
   card.append(head);
   if (f.open) {
     const b = h('div', { class: 'fx-b' });
+    b.append(h('p', { class: 'fx-help' }, h('b', null, 'what it does: '), fxHelp(def) + '.', fxMoves(def) ? h('span', null, ' this makes your picture move — export it as a GIF or video.') : null, h('span', { class: 'fx-help-2' }, ' intensity = how strong it is. blend = how it mixes with the layers under it.')));
     b.append(rangeCtl(f, { k: 'mix', l: 'Intensity', min: 0, max: 100, step: 1, def: 100, u: '%' }, true));
     b.append(layerRow(f));
     def.params.forEach(q => b.append(paramCtl(f, q)));
