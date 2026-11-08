@@ -236,3 +236,41 @@ body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url
 #center{min-width:0}
 #main{min-width:0;max-width:100vw}
 .skin-chrome .fx-f .tbtn{white-space:nowrap;font-size:13px;letter-spacing:.06em;padding:0 6px}
+
+/* ===== v2.9: effects library = the archive's collage vibe (art scraps, torn paper, tape, stamps) ===== */
+.fx-sec>header{position:relative;overflow:hidden;min-height:78px;align-items:flex-end;border-radius:0;padding:26px 12px 10px;background:#0b0a09;color:#e9e3d1;box-shadow:none;transform:rotate(-.8deg);clip-path:polygon(0 6%,8% 0,22% 5%,38% 1%,55% 6%,72% 0,88% 4%,100% 1%,99% 52%,100% 96%,82% 100%,62% 95%,40% 100%,20% 96%,0 100%,1% 50%)}
+.fx-sec>header::before{content:'';position:absolute;inset:0;background:var(--sec-art) center 30%/cover no-repeat;filter:grayscale(1) contrast(1.3);opacity:.55}
+.fx-sec>header::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,#c3141c,rgba(195,20,28,.25) 55%,rgba(11,10,9,.8));mix-blend-mode:multiply}
+.fx-sec>header>*{position:relative;z-index:1}
+.fx-sec>header i{width:30px;height:30px;border-radius:0;background:#e9e3d1;color:#c3141c;box-shadow:2px 2px 0 #0b0a09;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.fx-sec>header b{font-size:26px;color:#e9e3d1;text-shadow:3px 2px 0 #c3141c,0 0 10px rgba(0,0,0,.6)}
+.fx-sec>header small{display:inline-block;margin-top:5px;padding:2px 8px;background:#e9e3d1;color:#0b0a09!important;font-size:11px;transform:rotate(-1deg);box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+.fx-sec.sec-motion>header,.fx-sec.sec-layers>header{background:#0b0a09;box-shadow:none;transform:rotate(.7deg)}
+.fx-sec.sec-motion>header i,.fx-sec.sec-layers>header i{background:#e9e3d1}
+/* group labels: paper tape, marker title, click to open/close */
+.skin-chrome .fx-cat{margin:8px 0}
+.fx-cat-h{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;text-align:left;background:#e9e3d1;color:#0b0a09;border:0;box-shadow:3px 3px 0 #0b0a09;transform:rotate(-.5deg);clip-path:polygon(0 4%,3% 0,97% 3%,100% 0,99.5% 50%,100% 100%,96% 96%,4% 100%,0 96%,.5% 50%);transition:transform .15s}
+.fx-cat:nth-child(even) .fx-cat-h{transform:rotate(.5deg)}
+.fx-cat-h:hover{transform:rotate(0) scale(1.01)}
+.fx-cat-h .chev{font-style:normal;color:#c3141c;transition:transform .2s}
+.fx-cat.open .fx-cat-h .chev{transform:rotate(90deg)}
+.fx-cat-h .gt{flex:1;min-width:0}
+.fx-cat-h .gt b{display:block;font:400 19px/1 'Permanent Marker',cursive;color:#0b0a09}
+.fx-cat-h .gt small{display:block;margin-top:2px;font:400 11px 'Special Elite',monospace;color:#5a554c}
+.fx-cat-h .new{padding:1px 6px;background:#c3141c;color:#e9e3d1;font:400 12px 'Bebas Neue',sans-serif;letter-spacing:.08em;font-style:normal;transform:rotate(3deg)}
+.fx-cat-h .cnt{display:grid;place-items:center;width:30px;height:30px;border:2px solid #c3141c;border-radius:50%;color:#c3141c;font:400 15px 'Bebas Neue',sans-serif;transform:rotate(-8deg)}
+.fx-cat-b{display:none;padding:8px 2px 4px}
+.fx-cat.open .fx-cat-b{display:block}
+/* effect cards: torn paper + ink, alternating, slightly crooked */
+.skin-chrome .fx-item{position:relative;margin:0 0 7px;padding:10px 10px 10px 8px;border:0;border-radius:0;background:#171513;box-shadow:none;clip-path:polygon(0 3%,10% 0,45% 4%,80% 0,100% 3%,99% 50%,100% 97%,60% 100%,25% 96%,0 100%,1% 50%);transform:rotate(-.4deg)}
+.skin-chrome .fx-item:nth-child(even){background:#e9e3d1;transform:rotate(.4deg)}
+.skin-chrome .fx-item:nth-child(even) .nm{color:#0b0a09}.skin-chrome .fx-item:nth-child(even) .ds{color:#3a3633}.skin-chrome .fx-item:nth-child(even) .ix{color:#8a8478}
+.skin-chrome .fx-item:hover{background:#2a0d0e;box-shadow:none;transform:rotate(0)}
+.skin-chrome .fx-item:nth-child(even):hover{background:#f6efdc}
+.skin-chrome .fx-item:hover .nm{text-shadow:0 0 8px rgba(255,90,90,.8)}
+.skin-chrome .fx-item .add{border-radius:0;padding:3px 8px;background:transparent!important;border:2px solid #c3141c;color:#c3141c!important;font:400 13px 'Special Elite',monospace;letter-spacing:0;text-transform:lowercase;transform:rotate(-5deg)}
+.skin-chrome .fx-item:hover .add{background:#c3141c!important;color:#e9e3d1!important}
+.skin-chrome .fx-item.moves .add{border-style:dashed}
+.orig-tag{display:block;margin:1px 0 1px;font:400 12px 'Permanent Marker',cursive;color:#c3141c;font-style:normal;letter-spacing:0;text-transform:none}
+.skin-chrome .fx-item.orig::after{content:'';position:absolute;right:-6px;top:-6px;width:36px;height:12px;background:rgba(233,227,209,.75);transform:rotate(28deg)}
+.skin-chrome .fx-item:nth-child(even).orig::after{background:rgba(195,20,28,.55)}

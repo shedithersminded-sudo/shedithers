@@ -15,15 +15,25 @@ const FX_HELP = {
   glow: 'glow, light streaks and star rays', ghost: 'ghostly echoes that drift — makes it move', texture: 'paper, grain, metal or holo surface',
   imglayer: 'put another picture on top', fill: 'colour or gradient over it', text: 'write words on it', bgremove: 'cut out the background',
   boil: 'hand-drawn wobble', shake: 'shaky camera', pulse: 'heartbeat zoom', wave: 'liquid ripple', huecycle: 'colours loop like a rainbow', strobe: 'flashing', flicker: 'random glitch flashes', sparkle: 'twinkling stars', particles: 'falling hearts, stars, snow or rain', rollbars: 'rolling TV bars', dithercrawl: 'moving dither pattern', zoomloop: 'endless zoom tunnel',
+  // shedithers originals
+  bloodink: 'dither in black, blood red + paper', stardither: 'shading made of tiny stars', heartdither: 'shading made of tiny hearts', scrawl: 'shading made of scribbled pen lines',
+  tornpixels: 'chunky pixels with ripped paper edges', inkdrip: 'dark ink runs and drips down', starmosaic: 'your picture rebuilt out of stars',
+  tornpaper: 'printed on cream paper, ripped edges', tape: 'masking tape on the corners', xerox: 'cheap photocopy: toner, streaks, grit', crumple: 'balled up and flattened out',
+  redroom: 'darkroom red light: ink, blood, paper', lightleak: 'warm film light bleeding in', halo: 'a glowing saint ring',
+  searchlight: 'a spotlight sweeping around — makes it move', leakdrift: 'light leaks drifting across — makes it move', flarepass: 'a lens flare streaking past — makes it move',
+  eyes: 'little eyes that blink and look around', channelsurf: 'flips looks like changing TV channels', papertear: 'a ripped edge sweeps across', stopmotion: 'jumpy cut-paper animation', starrays: 'spinning rays bursting from behind',
 };
 const fxHelp = def => FX_HELP[def.id] || def.desc || '';
-const fxMoves = def => def.cat === 'gif' || def.id === 'ghost';
-/* the effects library, sorted by what they do to your work */
+const fxMoves = def => def.cat === 'gif' || def.id === 'ghost' || !!def.moves;
+const ORIGINALS = new Set(['bloodink', 'stardither', 'heartdither', 'scrawl', 'tornpixels', 'inkdrip', 'starmosaic', 'tornpaper', 'tape', 'xerox', 'crumple', 'redroom', 'lightleak', 'halo', 'searchlight', 'leakdrift', 'flarepass', 'eyes', 'channelsurf', 'papertear', 'stopmotion', 'starrays']);
+/* the effects library, sorted by what they do to your work. art = the artwork whose scrap sits behind that section's banner */
 const FX_SECTIONS = [
-  { key: 'picture', star: '★', title: 'PICTURE LOOKS', note: 'restyle it. stays a still picture.', groups: [['dither', 'Dithering'], ['halftone', 'Print + halftone'], ['pixel', 'Pixel'], ['glitch', 'Glitch'], ['image', 'Colour + tone'], ['texture', 'Texture']], skip: [] },
-  { key: 'motion', star: '▶', title: 'MAKE IT MOVE', note: 'turns your picture into a looping GIF / video. export it as GIF or MP4.', groups: [['gif', 'Loops'], ['light', 'Moving light']], only: id => E.MAP[id].cat === 'gif' || id === 'ghost' },
-  { key: 'layers', star: '✚', title: 'ADD ON TOP', note: 'text, pictures, colour, light and cut-outs.', groups: [['layer', 'Layers'], ['light', 'Light']], skip: ['ghost'] },
+  { key: 'picture', star: '★', art: 'no-identity', title: 'PICTURE LOOKS', note: 'restyle it. stays a still picture.', groups: [['dither', 'Dithering', 'dots, stars, hearts + patterns'], ['halftone', 'Print', 'halftone dots + newspaper lines'], ['pixel', 'Pixel', 'blocks, drips + mosaics'], ['glitch', 'Glitch', 'broken signal, VHS, static'], ['image', 'Colour + tone', 'fix it, push it, recolour it'], ['texture', 'Texture', 'paper, tape, photocopy + grit']], only: id => !fxMoves(E.MAP[id]) },
+  { key: 'motion', star: '▶', art: 'to-see-and-be-seen', title: 'MAKE IT MOVE', note: 'turns your picture into a looping GIF / video. export it as GIF or MP4.', groups: [['gif', 'Loops', 'eyes, sparkles, shakes + tears'], ['light', 'Moving light', 'spotlights, drifting leaks, flares']], only: id => fxMoves(E.MAP[id]) },
+  { key: 'layers', star: '✚', art: 'when-you-rain', title: 'ADD ON TOP', note: 'text, pictures, colour, light and cut-outs.', groups: [['layer', 'Layers', 'text, pictures, colour + cut-outs'], ['light', 'Light', 'glows, red rooms, leaks + halos']], only: id => !fxMoves(E.MAP[id]) },
 ];
+const GROUP_OPEN = (() => { try { return JSON.parse(localStorage.getItem('shd.fxOpen') || '{"picture:dither":true}'); } catch (_) { return { 'picture:dither': true }; } })();
+const saveGroupOpen = () => { try { localStorage.setItem('shd.fxOpen', JSON.stringify(GROUP_OPEN)); } catch (_) { } };
 
 function renderAll() { renderLeft(); renderStack(); renderCanvasPane(); layoutStage(); $('#roFx').textContent = pad2(S.stack.filter(f => f.on).length); }
 
@@ -82,17 +92,23 @@ function leftEffects(body) {
     list.innerHTML = ''; const s = q.value.trim().toLowerCase(); let n = 0;
     for (const sec of FX_SECTIONS) {
       const groups = [];
-      for (const [cat, gname] of sec.groups) {
-        const items = E.EFFECTS.filter(e => e.cat === cat && (sec.only ? sec.only(e.id) : !(sec.skip || []).includes(e.id)) && (!s || (e.name + ' ' + fxHelp(e) + ' ' + e.desc + ' ' + gname + ' ' + sec.title).toLowerCase().includes(s)));
+      for (const [cat, gname, gwhat] of sec.groups) {
+        const items = E.EFFECTS.filter(e => e.cat === cat && (sec.only ? sec.only(e.id) : true) && (!s || (e.name + ' ' + fxHelp(e) + ' ' + e.desc + ' ' + gname + ' ' + gwhat + ' ' + sec.title).toLowerCase().includes(s)));
         if (!items.length) continue;
-        groups.push(h('div', { class: 'fx-cat cat-' + cat }, h('h4', null, gname.toUpperCase(), h('span', null, pad2(items.length))), items.map(e => {
-          const it = h('div', { class: 'fx-item' + (fxMoves(e) ? ' moves' : ''), draggable: true, 'data-tip': fxMoves(e) ? 'Click to add — this makes your picture move (GIF / video)' : 'Click to add · or drag into your layers', onclick: () => addFx(e.id) },
-            h('span', { class: 'ix' }, pad2(++n)), h('span', { class: 'nm' }, e.name, h('span', { class: 'ds' }, fxHelp(e))), h('span', { class: 'add' }, fxMoves(e) ? '▶ ADD' : '+ ADD'));
+        const key = sec.key + ':' + cat, open = !!s || !!GROUP_OPEN[key], fresh = items.filter(e => ORIGINALS.has(e.id)).length;
+        const grp = h('div', { class: 'fx-cat cat-' + cat + (open ? ' open' : '') });
+        const head = h('button', { type: 'button', class: 'fx-cat-h', 'aria-expanded': String(open), onclick: () => { const o = !grp.classList.contains('open'); grp.classList.toggle('open', o); head.setAttribute('aria-expanded', o); if (!s) { GROUP_OPEN[key] = o; saveGroupOpen(); } } },
+          h('i', { class: 'chev' }, '▸'), h('span', { class: 'gt' }, h('b', null, gname), h('small', null, gwhat)), fresh ? h('em', { class: 'new' }, fresh + ' new') : null, h('span', { class: 'cnt' }, pad2(items.length)));
+        grp.append(head, h('div', { class: 'fx-cat-b' }, items.map(e => {
+          const it = h('div', { class: 'fx-item' + (fxMoves(e) ? ' moves' : '') + (ORIGINALS.has(e.id) ? ' orig' : ''), draggable: true, 'data-tip': fxMoves(e) ? 'Click to add — this makes your picture move (GIF / video)' : 'Click to add · or drag into your layers', onclick: () => addFx(e.id) },
+            h('span', { class: 'ix' }, pad2(++n)), h('span', { class: 'nm' }, e.name, ORIGINALS.has(e.id) ? h('i', { class: 'orig-tag' }, '★ shedithers original') : null, h('span', { class: 'ds' }, fxHelp(e))), h('span', { class: 'add' }, fxMoves(e) ? '▶ add' : '+ add'));
           it.addEventListener('dragstart', ev => { ev.dataTransfer.setData('shd/add', e.id); ev.dataTransfer.effectAllowed = 'copy'; });
           return it;
         })));
+        groups.push(grp);
       }
-      if (groups.length) list.append(h('section', { class: 'fx-sec sec-' + sec.key }, h('header', null, h('i', null, sec.star), h('div', null, h('b', null, sec.title), h('small', null, sec.note))), ...groups));
+      const artUrl = (() => { const a = typeof artById === 'function' && artById(sec.art); return a ? `url('${new URL(a.src, location.href).href}')` : 'none'; })();
+      if (groups.length) list.append(h('section', { class: 'fx-sec sec-' + sec.key }, h('header', { style: `--sec-art:${artUrl}` }, h('i', null, sec.star), h('div', null, h('b', null, sec.title), h('small', null, sec.note))), ...groups));
     }
     if (!n) list.append(h('div', { class: 'empty-note' }, 'nothing matches that ★ try another word'));
   };

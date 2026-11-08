@@ -187,7 +187,7 @@ function resolveStack(t, stack, w, hh) {
 }
 const hasMosh = st => st.some(f => f.id === 'datamosh' || (f.id === 'ghost' && (f.p.trail ?? 55) > 0));
 function selFx() { return S.stack.find(f => f.uid === S.sel) || null; }
-function gifAutoMotion(ids) { if (!S.media || isVideo() || S.motion || typeof setMotion !== 'function') return; if (!ids.some(i => E.MAP[i] && E.MAP[i].cat === 'gif')) return; setMotion(true); setTimeout(() => { if (!isPlaying()) startPlay(); }, 250); }
+function gifAutoMotion(ids) { if (!S.media || isVideo() || S.motion || typeof setMotion !== 'function') return; if (!ids.some(i => E.MAP[i] && (E.MAP[i].cat === 'gif' || E.MAP[i].moves))) return; setMotion(true); setTimeout(() => { if (!isPlaying()) startPlay(); }, 250); }
 function addFx(id, at, p) { const f = mkFx(id, p); if (!f) return; setTimeout(() => gifAutoMotion([id]), 0); if (at == null || at > S.stack.length) S.stack.push(f); else S.stack.splice(at, 0, f); S.sel = f.uid; changed(true); toast(`${E.MAP[id].name.toUpperCase()} added to stack`, 'info', 1600); return f; }
 function removeFx(u) { const i = S.stack.findIndex(f => f.uid === u); if (i < 0) return; const [f] = S.stack.splice(i, 1); if (S.sel === u) S.sel = (S.stack[i] || S.stack[i - 1] || {}).uid || null; changed(true); toast(`${E.MAP[f.id].name.toUpperCase()} removed`, 'info', 1500); }
 function dupFx(u) { const i = S.stack.findIndex(f => f.uid === u); if (i < 0) return; const c = clone(S.stack[i]); c.uid = uid('fx'); S.stack.splice(i + 1, 0, c); S.sel = c.uid; changed(true); }

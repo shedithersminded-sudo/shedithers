@@ -756,6 +756,124 @@ EFFECTS.push(
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4; let acc = [0, 0, 0], wsum = 0; for (let l = 0; l < 2; l++) { const z = Math.pow(Z, ph - l), an = (ph - l) * p.spin * Math.PI / 180, ca = Math.cos(an), sa = Math.sin(an), u = (x - cx) / z, v = (y - cy) / z, sx = Math.round(cx + u * ca - v * sa), sy = Math.round(cy + u * sa + v * ca); if (sx < 0 || sy < 0 || sx >= w || sy >= h) continue; const j = (sy * w + sx) * 4, wt = l === 0 ? 1 - ph : ph; acc[0] += s[j] * wt; acc[1] += s[j + 1] * wt; acc[2] += s[j + 2] * wt; wsum += wt; } if (wsum) { d[k] = acc[0] / wsum; d[k + 1] = acc[1] / wsum; d[k + 2] = acc[2] / wsum; } } } },
 );
 
+/* ---------- SHEDITHERS originals: effects made from the artist's world (blood red, ink, paper, eyes, stars) ---------- */
+const INK = [11, 10, 9], BLOOD = [195, 20, 28], PAPER = [233, 227, 209];
+const lerp3 = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+const ramp3 = t => t < 0.5 ? lerp3(INK, BLOOD, t * 2) : lerp3(BLOOD, PAPER, (t - 0.5) * 2);
+const starIn = (u, v, s) => { const a = Math.atan2(v, u), r = Math.hypot(u, v), k = 0.5 + 0.5 * Math.cos(5 * a - Math.PI / 2); return r <= s * (0.2 + 0.3 * Math.pow(k, 1.8)); };
+const heartIn = (u, v, s) => { const x = u / s * 2.5, y = -v / s * 2.5 + 0.35, a = x * x + y * y - 1; return a * a * a - x * x * y * y * y <= 0; };
+function shapeMatrix(n, inside) { const M = []; for (let j = 0; j < n; j++) { const row = []; for (let i = 0; i < n; i++) { const u = (i + 0.5) / n - 0.5, v = (j + 0.5) / n - 0.5; let s = 1; for (let k = 1; k <= 24; k++) { if (inside(u, v, k / 24)) { s = k / 24; break; } } row.push(s); } M.push(row); } return M; }
+const SHP = { star: n => shapeMatrix(n, starIn), heart: n => shapeMatrix(n, heartIn) };
+const inkDither = (p, pal, colors) => Object.assign({}, p, { pal: 'custom', _pal: pal, colors, thr: 50, noise: p.noise || 0, size: p.size || 1 });
+const SHED_PAL = ['#0b0a09', '#c3141c', '#e9e3d1'];
+function addGlow(d, k, col, a) { for (let q = 0; q < 3; q++) d[k + q] = d[k + q] + (255 - d[k + q]) * (col[q] / 255) * a; }
+function eyeAt(d, w, h, cx, cy, R, open, look, iris) { // almond eye with lashes, open 0..1
+  const x0 = Math.max(0, Math.floor(cx - R * 1.2)), x1 = Math.min(w, Math.ceil(cx + R * 1.2)), y0 = Math.max(0, Math.floor(cy - R)), y1 = Math.min(h, Math.ceil(cy + R));
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+    const u = (x - cx) / R, v = (y - cy) / R, k = (y * w + x) * 4, lid = Math.max(0.02, open) * 0.55 * (1 - u * u);
+    if (Math.abs(u) > 1) continue;
+    const edge = Math.abs(Math.abs(v) - lid);
+    if (Math.abs(v) < lid) { // inside the eye
+      const iu = u - look[0] * 0.35, iv = v - look[1] * 0.2, ir = Math.hypot(iu, iv);
+      const col = ir < 0.14 ? INK : ir < 0.32 ? iris : PAPER; d[k] = col[0]; d[k + 1] = col[1]; d[k + 2] = col[2];
+      if (ir > 0.05 && ir < 0.09 && iu < 0 && iv < 0) { d[k] = d[k + 1] = d[k + 2] = 255; }
+    } else if (edge < 0.09) { d[k] = INK[0]; d[k + 1] = INK[1]; d[k + 2] = INK[2]; }
+    else if (v < -lid && v > -lid - 0.35 && open > 0.3 && Math.abs((u * 5) - Math.round(u * 5)) < 0.12 && Math.abs(u) < 0.8) { d[k] = INK[0]; d[k + 1] = INK[1]; d[k + 2] = INK[2]; } // lashes
+  }
+}
+EFFECTS.push(
+  // ---- DITHER ----
+  { id: 'bloodink', cat: 'dither', name: 'Blood Ink', desc: 'Dither in black, blood red and paper', params: [R('size', 'Dot size', 1, 16, 2, 1, 'px'), SEL('m', 'Pattern', [['8', 'FINE'], ['4', 'CLASSIC'], ['2', 'CHUNKY']], '8'), R('con', 'Contrast', 0, 200, 120, 1, '%'), R('bri', 'Brightness', -100, 100, 0), R('spread', 'Grain', 0, 200, 100, 1, '%')],
+    fn: (s, d, w, h, p, c) => { const M = BAYER[p.m] || BAYER[8], n = M.length; ordered(s, d, w, h, inkDither(p, SHED_PAL, 3), c, (x, y) => M[y % n][x % n]); } },
+  { id: 'stardither', cat: 'dither', name: 'Star Screen', desc: 'Dither made of little stars', params: [PAL('pal', 'Palette', 'mono'), R('colors', 'Colors', 2, 16, 2), R('cell', 'Star size', 4, 40, 10, 1, 'px'), R('con', 'Contrast', 0, 200, 110, 1, '%'), R('bri', 'Brightness', -100, 100, 0), R('spread', 'Spread', 0, 200, 100, 1, '%')],
+    fn: (s, d, w, h, p, c) => { const n = Math.max(4, Math.round(p.cell * c.S)), M = SHP.star(n); ordered(s, d, w, h, Object.assign({}, p, { size: 1, thr: 50, noise: 0 }), c, (x, y) => M[y % n][x % n]); } },
+  { id: 'heartdither', cat: 'dither', name: 'Love Letter', desc: 'Dither made of tiny hearts', params: [PAL('pal', 'Palette', 'mono'), R('colors', 'Colors', 2, 16, 2), R('cell', 'Heart size', 4, 40, 10, 1, 'px'), R('con', 'Contrast', 0, 200, 110, 1, '%'), R('bri', 'Brightness', -100, 100, 0), R('spread', 'Spread', 0, 200, 100, 1, '%')],
+    fn: (s, d, w, h, p, c) => { const n = Math.max(4, Math.round(p.cell * c.S)), M = SHP.heart(n); ordered(s, d, w, h, Object.assign({}, p, { size: 1, thr: 50, noise: 0 }), c, (x, y) => M[y % n][x % n]); } },
+  { id: 'scrawl', cat: 'dither', name: 'Scrawl', desc: 'Shading made of scribbled pen lines', params: [R('line', 'Line spacing', 2, 24, 5, 1, 'px'), R('wild', 'Messiness', 0, 100, 55, 1, '%'), C('ink', 'Ink', '#0b0a09'), C('paper', 'Paper', '#e9e3d1'), R('con', 'Contrast', 0, 200, 115, 1, '%'), SEED()],
+    fn: (s, d, w, h, p, c) => { const L = Math.max(2, p.line * c.S), ik = hex(p.ink), pp = hex(p.paper), wl = p.wild / 100, cn = p.con / 100, sc = 60 * c.S;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, l = clamp(((lum(s[k], s[k + 1], s[k + 2]) / 255) - 0.5) * cn + 0.5, 0, 1), th = vnoise2(x / sc, y / sc, c.seed) * Math.PI, wob = (vnoise2(x / (9 * c.S), y / (9 * c.S), c.seed + 3) - 0.5) * wl * 1.6, t = frac((x * Math.cos(th) + y * Math.sin(th)) / L + wob), tri = 1 - Math.abs(2 * t - 1);
+        let on = tri > l * 1.05; if (l < 0.45) { const t2 = frac((x * Math.cos(th + 1.3) + y * Math.sin(th + 1.3)) / L + wob), tri2 = 1 - Math.abs(2 * t2 - 1); on = on || tri2 > l * 2.2; }
+        const col = on ? ik : pp; d[k] = col[0]; d[k + 1] = col[1]; d[k + 2] = col[2]; } } },
+  // ---- PIXEL ----
+  { id: 'tornpixels', cat: 'pixel', name: 'Torn Pixels', desc: 'Chunky pixels with ripped paper edges', params: [R('size', 'Pixel size', 4, 80, 16, 1, 'px'), R('rough', 'Rip', 0, 50, 22, 1, '%'), C('gap', 'Gap colour', '#e9e3d1'), SEED()],
+    fn: (s, d, w, h, p, c) => { const b = Math.max(2, Math.round(p.size * c.S)), bw = Math.ceil(w / b), bh = Math.ceil(h / b), avg = new Float32Array(bw * bh * 3), cnt = new Uint32Array(bw * bh), g = hex(p.gap), rr = p.rough / 100;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const bi = ((y / b) | 0) * bw + ((x / b) | 0), k = (y * w + x) * 4; avg[bi * 3] += s[k]; avg[bi * 3 + 1] += s[k + 1]; avg[bi * 3 + 2] += s[k + 2]; cnt[bi]++; }
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const bx = (x / b) | 0, by = (y / b) | 0, bi = by * bw + bx, lx = x - bx * b, ly = y - by * b, k = (y * w + x) * 4, jx = hash2(bx * 31 + ly, by, c.seed) * rr * b, jy = hash2(bx, by * 31 + lx, c.seed + 1) * rr * b;
+        if (lx < jx || ly < jy) { d[k] = g[0]; d[k + 1] = g[1]; d[k + 2] = g[2]; } else { const n = cnt[bi] || 1; d[k] = avg[bi * 3] / n; d[k + 1] = avg[bi * 3 + 1] / n; d[k + 2] = avg[bi * 3 + 2] / n; } } } },
+  { id: 'inkdrip', cat: 'pixel', name: 'Ink Drip', desc: 'Dark ink runs and drips down', params: [R('len', 'Drip length', 2, 300, 60, 1, 'px'), R('thr', 'What drips (darkness)', 5, 95, 35, 1, '%'), SEL('col', 'Drip colour', [['source', 'ITS OWN INK'], ['blood', 'BLOOD RED'], ['black', 'BLACK']], 'blood'), R('var', 'Uneven', 0, 100, 70, 1, '%'), SEED()],
+    fn: (s, d, w, h, p, c) => { const th = p.thr / 100 * 255, vr = p.var / 100;
+      for (let x = 0; x < w; x++) { const L = Math.max(1, p.len * c.S * (1 - vr + vr * Math.pow(vnoise(x / (6 * c.S), c.seed), 2) * 2)); let run = 0, col = INK;
+        for (let y = 0; y < h; y++) { const k = (y * w + x) * 4, l = lum(s[k], s[k + 1], s[k + 2]);
+          if (l < th) { run = L; col = p.col === 'source' ? [s[k], s[k + 1], s[k + 2]] : p.col === 'black' ? INK : BLOOD; if (p.col !== 'source') { d[k] = col[0]; d[k + 1] = col[1]; d[k + 2] = col[2]; } }
+          else if (run > 0) { const a = Math.min(1, run / L * 1.4); d[k] = s[k] + (col[0] - s[k]) * a; d[k + 1] = s[k + 1] + (col[1] - s[k + 1]) * a; d[k + 2] = s[k + 2] + (col[2] - s[k + 2]) * a; run--; } } } } },
+  { id: 'starmosaic', cat: 'pixel', name: 'Star Mosaic', desc: 'Your picture rebuilt out of stars', params: [R('size', 'Star size', 6, 80, 18, 1, 'px'), R('fill', 'Star fullness', 40, 140, 100, 1, '%'), C('bg', 'Background', '#0b0a09')],
+    fn: (s, d, w, h, p, c) => { const b = Math.max(4, Math.round(p.size * c.S)), bw = Math.ceil(w / b), bh = Math.ceil(h / b), avg = new Float32Array(bw * bh * 3), cnt = new Uint32Array(bw * bh), bg = hex(p.bg), f = p.fill / 100;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const bi = ((y / b) | 0) * bw + ((x / b) | 0), k = (y * w + x) * 4; avg[bi * 3] += s[k]; avg[bi * 3 + 1] += s[k + 1]; avg[bi * 3 + 2] += s[k + 2]; cnt[bi]++; }
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const bx = (x / b) | 0, by = (y / b) | 0, bi = by * bw + bx, k = (y * w + x) * 4, u = (x - bx * b) / b - 0.5, v = (y - by * b) / b - 0.5, n = cnt[bi] || 1;
+        if (starIn(u, v, f)) { d[k] = avg[bi * 3] / n; d[k + 1] = avg[bi * 3 + 1] / n; d[k + 2] = avg[bi * 3 + 2] / n; } else { d[k] = bg[0]; d[k + 1] = bg[1]; d[k + 2] = bg[2]; } } } },
+  // ---- TEXTURE ----
+  { id: 'tornpaper', cat: 'texture', name: 'Torn Paper', desc: 'Printed on cream paper with ripped edges', params: [R('tint', 'Paper tint', 0, 100, 45, 1, '%'), R('fiber', 'Fibers', 0, 100, 40, 1, '%'), R('edge', 'Rip depth', 0, 12, 4, 0.5, '%'), C('bg', 'Behind the paper', '#0b0a09'), SEED()],
+    fn: (s, d, w, h, p, c) => { const tn = p.tint / 100, fb = p.fiber / 100, ed = p.edge / 100 * Math.min(w, h), sc = 3 * c.S;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, rip = ed * (0.4 + 0.6 * vnoise((x + y) / (14 * c.S), c.seed)), dEdge = Math.min(x, y, w - 1 - x, h - 1 - y);
+        if (dEdge < rip) { const bg = hex(p.bg); d[k] = bg[0]; d[k + 1] = bg[1]; d[k + 2] = bg[2]; continue; }
+        const fib = (vnoise2(x / sc, y / (sc * 6), c.seed) - 0.5) * fb * 60 + (hash2(x, y, c.seed) - 0.5) * fb * 18, sh = dEdge < rip + 6 * c.S ? 0.85 : 1;
+        for (let q = 0; q < 3; q++) d[k + q] = clamp((s[k + q] * (1 - tn) + s[k + q] * PAPER[q] / 255 * tn + fib) * sh, 0, 255); } } },
+  { id: 'tape', cat: 'texture', name: 'Tape Strips', desc: 'Masking tape stuck on the corners', params: [R('n', 'Strips', 1, 4, 2), R('wid', 'Tape width', 4, 30, 12, 1, '%'), R('alpha', 'See-through', 0, 90, 30, 1, '%'), C('col', 'Tape colour', '#e9e3d1'), SEED()],
+    fn: (s, d, w, h, p, c) => { const r = rng(c.seed), col = hex(p.col), a = 1 - p.alpha / 100, tw = p.wid / 100 * Math.min(w, h), corners = [[0.08, 0.06], [0.92, 0.06], [0.08, 0.94], [0.92, 0.94]];
+      for (let i = 0; i < p.n; i++) { const [fx, fy] = corners[i], cx = fx * w, cy = fy * h, an = (i % 2 ? -1 : 1) * (0.6 + r() * 0.4), ca = Math.cos(an), sa = Math.sin(an), len = tw * 3.2;
+        for (let y = Math.max(0, (cy - len) | 0); y < Math.min(h, cy + len); y++) for (let x = Math.max(0, (cx - len) | 0); x < Math.min(w, cx + len); x++) { const u = (x - cx) * ca + (y - cy) * sa, v = -(x - cx) * sa + (y - cy) * ca, jag = (hash2(Math.round(v), i, 5) - 0.5) * tw * 0.12;
+          if (Math.abs(u) < len / 2 + jag && Math.abs(v) < tw / 2) { const k = (y * w + x) * 4, n = 0.92 + hash2(x, y, i) * 0.08; for (let q = 0; q < 3; q++) d[k + q] = d[k + q] * (1 - a) + col[q] * n * a; } } } } },
+  { id: 'xerox', cat: 'texture', name: 'Photocopy', desc: 'Cheap copy machine: toner, streaks, grit', params: [R('con', 'Contrast', 50, 400, 220, 1, '%'), R('toner', 'Toner specks', 0, 100, 35, 1, '%'), R('streak', 'Streaks', 0, 100, 30, 1, '%'), R('shift', 'Misprint', 0, 20, 3, 1, 'px'), B('paper', 'Paper tint', true), SEED(), ANIM()],
+    fn: (s, d, w, h, p, c) => { const cn = p.con / 100, sh = Math.round(p.shift * c.S), r = rng(c.seed), streaks = []; for (let i = 0; i < 6; i++) streaks.push([r() * w, r() * 3 + 1]);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, sx = clamp(x - sh, 0, w - 1), j = (y * w + sx) * 4; let l = (lum(s[j], s[j + 1], s[j + 2]) - 128) * cn + 128;
+        if (hash2(x, y, c.seed) < p.toner / 100 * 0.03) l = 20; for (const [sx2, sw] of streaks) if (Math.abs(x - sx2) < sw * c.S) l -= p.streak * 0.9 * (0.5 + 0.5 * vnoise(y / 30, c.seed));
+        l = clamp(l, 0, 255); const t = p.paper ? PAPER : [255, 255, 255]; d[k] = l / 255 * t[0]; d[k + 1] = l / 255 * t[1]; d[k + 2] = l / 255 * t[2]; } } },
+  { id: 'crumple', cat: 'texture', name: 'Crumpled', desc: 'Like it was balled up and flattened', params: [R('amt', 'Creases', 0, 100, 55, 1, '%'), R('scale', 'Crease size', 20, 400, 120, 1, 'px'), R('light', 'Light angle', 0, 360, 135, 1, '°'), SEED()],
+    fn: (s, d, w, h, p, c) => { const sc = p.scale * c.S, a = p.amt / 100, la = p.light * Math.PI / 180, lx = Math.cos(la), ly = Math.sin(la), H = (x, y) => Math.abs(vnoise2(x / sc, y / sc, c.seed) - 0.5) + 0.5 * Math.abs(vnoise2(x / sc * 2.3, y / sc * 2.3, c.seed + 9) - 0.5);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, nx = H(x + 1, y) - H(x - 1, y), ny = H(x, y + 1) - H(x, y - 1), sh = 1 + (nx * lx + ny * ly) * a * sc * 0.9; for (let q = 0; q < 3; q++) d[k + q] = clamp(s[k + q] * sh, 0, 255); } } },
+  // ---- LIGHT (stays still) ----
+  { id: 'redroom', cat: 'light', name: 'Red Room', desc: 'Darkroom red light: ink, blood, paper', params: [R('amt', 'Strength', 0, 100, 85, 1, '%'), R('con', 'Contrast', 50, 250, 130, 1, '%'), R('vig', 'Dark corners', 0, 100, 45, 1, '%')],
+    fn: (s, d, w, h, p, c) => { const a = p.amt / 100, cn = p.con / 100, vg = p.vig / 100, cx = w / 2, cy = h / 2, md = Math.hypot(cx, cy);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, t = clamp((lum(s[k], s[k + 1], s[k + 2]) / 255 - 0.5) * cn + 0.5, 0, 1), col = ramp3(t), v = 1 - vg * Math.pow(Math.hypot(x - cx, y - cy) / md, 2); for (let q = 0; q < 3; q++) d[k + q] = (s[k + q] + (col[q] - s[k + q]) * a) * v; } } },
+  { id: 'lightleak', cat: 'light', name: 'Light Leak', desc: 'Warm film light bleeding in from the edge', params: [R('amt', 'Strength', 0, 100, 60, 1, '%'), SEL('side', 'From', [['left', 'LEFT'], ['right', 'RIGHT'], ['top', 'TOP'], ['corner', 'CORNER']], 'right'), C('col', 'Colour', '#ff3b1f'), C('col2', 'Hot centre', '#ffd27a'), SEED()],
+    fn: (s, d, w, h, p, c) => { const a = p.amt / 100, c1 = hex(p.col), c2 = hex(p.col2);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, u = x / w, v = y / h; let e = p.side === 'left' ? 1 - u : p.side === 'top' ? 1 - v : p.side === 'corner' ? Math.max(0, 1 - Math.hypot(1 - u, v) * 0.9) : u; e = Math.pow(clamp(e + (vnoise2(u * 3, v * 3, c.seed) - 0.5) * 0.35, 0, 1), 2.2) * a; const hot = Math.pow(e, 2); addGlow(d, k, [c1[0] + (c2[0] - c1[0]) * hot, c1[1] + (c2[1] - c1[1]) * hot, c1[2] + (c2[2] - c1[2]) * hot], e); } } },
+  { id: 'halo', cat: 'light', name: 'Halo', desc: 'A glowing saint ring', params: [R('x', 'Across', 0, 100, 50, 1, '%'), R('y', 'Down', 0, 100, 22, 1, '%'), R('rad', 'Size', 2, 60, 14, 1, '%'), R('thick', 'Ring width', 1, 40, 10, 1, '%'), R('glow', 'Glow', 0, 100, 70, 1, '%'), C('col', 'Colour', '#ffe7a8')],
+    fn: (s, d, w, h, p, c) => { const cx = p.x / 100 * w, cy = p.y / 100 * h, R0 = p.rad / 100 * Math.min(w, h), th = Math.max(1, R0 * p.thick / 100), col = hex(p.col), gl = p.glow / 100;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const dx = (x - cx) / R0, dy = (y - cy) / (R0 * 0.38), r = Math.hypot(dx, dy) * R0, e = Math.abs(r - R0); let a = e < th ? 1 - e / th * 0.3 : gl * Math.exp(-(((e - th) / (th * 2.5)) ** 2)) * 0.8; if (a > 0.01) addGlow(d, (y * w + x) * 4, col, clamp(a, 0, 1)); } } },
+  // ---- MOVING LIGHT (makes it move) ----
+  { id: 'searchlight', cat: 'light', moves: true, name: 'Searchlight', desc: 'A spotlight sweeping over your picture', params: [R('size', 'Light size', 5, 80, 28, 1, '%'), R('dark', 'Darkness around', 0, 100, 70, 1, '%'), R('soft', 'Soft edge', 1, 100, 40, 1, '%'), SEL('path', 'Path', [['eight', 'FIGURE 8'], ['sweep', 'SWEEP'], ['circle', 'CIRCLE']], 'eight'), C('col', 'Light colour', '#fff1d6'), CYC()],
+    fn: (s, d, w, h, p, c) => { const t = LOOP(p, c) * TAU, cx = w / 2 + w * 0.32 * (p.path === 'sweep' ? Math.sin(t) : Math.cos(t)), cy = h / 2 + h * 0.28 * (p.path === 'eight' ? Math.sin(2 * t) : p.path === 'circle' ? Math.sin(t) : 0), R0 = p.size / 100 * Math.min(w, h), sf = Math.max(0.01, p.soft / 100), dk = p.dark / 100, col = hex(p.col);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, r = Math.hypot(x - cx, y - cy) / R0, lit = clamp((1 + sf - r) / sf, 0, 1), m = 1 - dk * (1 - lit); for (let q = 0; q < 3; q++) d[k + q] = s[k + q] * m * (1 + lit * 0.25 * col[q] / 255); } } },
+  { id: 'leakdrift', cat: 'light', moves: true, name: 'Leak Drift', desc: 'Light leaks that drift across', params: [R('amt', 'Strength', 0, 100, 55, 1, '%'), C('col', 'Colour', '#ff2a1f'), C('col2', 'Second colour', '#ffb36b'), CYC(), SEED()],
+    fn: (s, d, w, h, p, c) => { const t = LOOP(p, c), a = p.amt / 100, c1 = hex(p.col), c2 = hex(p.col2), bx = [frac(t + 0.1), frac(t * 1 + 0.6)], by = [0.3 + 0.2 * Math.sin(t * TAU), 0.7 - 0.2 * Math.cos(t * TAU)];
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, u = x / w, v = y / h; for (let i = 0; i < 2; i++) { let du = Math.abs(u - (bx[i] * 1.6 - 0.3)); const e = Math.exp(-(du * du) / 0.02 - ((v - by[i]) ** 2) / 0.12) * a; if (e > 0.01) addGlow(d, k, i ? c2 : c1, e); } } } },
+  { id: 'flarepass', cat: 'light', moves: true, name: 'Flare Pass', desc: 'A lens flare streaking across', params: [R('amt', 'Brightness', 0, 100, 70, 1, '%'), R('y', 'Height', 0, 100, 40, 1, '%'), R('len', 'Streak length', 10, 100, 60, 1, '%'), C('col', 'Colour', '#ff4b3a'), CYC()],
+    fn: (s, d, w, h, p, c) => { const t = LOOP(p, c), a = p.amt / 100, cx = (t * 1.4 - 0.2) * w, cy = p.y / 100 * h, col = hex(p.col), L = p.len / 100 * w, core = Math.min(w, h) * 0.05;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, dx = x - cx, dy = y - cy, streak = Math.exp(-(dy * dy) / (core * core * 0.04)) * Math.exp(-(dx * dx) / (L * L)), glow = Math.exp(-(dx * dx + dy * dy) / (core * core * 2)), ring = Math.exp(-((Math.hypot(x - (w - cx), y - (h - cy)) - core * 1.6) ** 2) / (core * core * 0.08)) * 0.35;
+        const e = (streak + glow + ring) * a; if (e > 0.01) addGlow(d, k, glow > streak ? [255, 240, 220] : col, clamp(e, 0, 1)); } } },
+  // ---- LOOPS ----
+  { id: 'eyes', cat: 'gif', name: 'Watching Eyes', desc: 'Little eyes that open, blink and look around', params: [R('n', 'How many eyes', 1, 30, 7), R('size', 'Eye size', 10, 160, 46, 1, 'px'), C('iris', 'Iris colour', '#c3141c'), R('blink', 'Blinks per loop', 0, 6, 2), CYC(), SEED()],
+    fn: (s, d, w, h, p, c) => { const t = LOOP(p, c), r = rng(c.seed), iris = hex(p.iris);
+      for (let i = 0; i < p.n; i++) { const cx = r() * w, cy = r() * h, R0 = p.size * c.S * (0.6 + r() * 0.8), off = r(), bl = frac(t * Math.max(0, p.blink) + off), open = p.blink > 0 && bl < 0.08 ? Math.abs(bl / 0.04 - 1) : 1, la = (t + off) * TAU; eyeAt(d, w, h, cx, cy, R0, open, [Math.cos(la), Math.sin(la * 2) * 0.6], iris); } } },
+  { id: 'channelsurf', cat: 'gif', name: 'Channel Surf', desc: 'Flips through looks like changing TV channels', params: [R('steps', 'Channels per loop', 2, 24, 6), R('static', 'Static between', 0, 100, 40, 1, '%'), SEED()],
+    fn: (s, d, w, h, p, c) => { const st = STEP(p, c), sub = frac((c.prog || 0) * Math.max(1, p.steps)), mode = Math.floor(hash2(st, 1, c.seed) * 4), stat = sub < p.static / 100 * 0.35;
+      for (let i = 0; i < s.length; i += 4) { const l = lum(s[i], s[i + 1], s[i + 2]) / 255; if (stat) { const n = hash2(i, st, 9) * 255; d[i] = d[i + 1] = d[i + 2] = n; continue; }
+        const col = mode === 0 ? [s[i], s[i + 1], s[i + 2]] : mode === 1 ? ramp3(l) : mode === 2 ? [255 - s[i], 255 - s[i + 1], 255 - s[i + 2]] : (l > 0.5 ? PAPER : INK); d[i] = col[0]; d[i + 1] = col[1]; d[i + 2] = col[2]; } } },
+  { id: 'papertear', cat: 'gif', name: 'Paper Tear', desc: 'A ripped edge sweeps across, revealing red', params: [R('rip', 'Rip roughness', 0, 100, 50, 1, '%'), SEL('under', 'Underneath', [['red', 'BLOOD RED'], ['ink', 'INK'], ['invert', 'NEGATIVE']], 'red'), CYC(), SEED()],
+    fn: (s, d, w, h, p, c) => { const t = LOOP(p, c), pos = (t * 1.3 - 0.15) * (w + h), rr = p.rip / 100 * Math.min(w, h) * 0.08;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, e = x + y * 0.6 + (vnoise(y / (8 * c.S), c.seed) - 0.5) * rr * 2 + (hash2(y, 3, c.seed) - 0.5) * rr * 0.4 - pos, l = lum(s[k], s[k + 1], s[k + 2]) / 255;
+        if (e < 0) { const col = p.under === 'invert' ? [255 - s[k], 255 - s[k + 1], 255 - s[k + 2]] : p.under === 'ink' ? lerp3(INK, PAPER, l) : ramp3(l * 0.6); d[k] = col[0]; d[k + 1] = col[1]; d[k + 2] = col[2]; }
+        else if (e < 7 * c.S) { d[k] = PAPER[0]; d[k + 1] = PAPER[1]; d[k + 2] = PAPER[2]; } } } },
+  { id: 'stopmotion', cat: 'gif', name: 'Stop Motion', desc: 'Jumpy cut-paper animation feel', params: [R('steps', 'Frames per loop', 2, 24, 8), R('jump', 'Jump', 0, 30, 6, 1, 'px'), R('twist', 'Twist', 0, 6, 1.2, 0.1, '°'), R('grain', 'Paper grain', 0, 100, 30, 1, '%')],
+    fn: (s, d, w, h, p, c) => { const st = STEP(p, c), dx = (hash2(st, 1, 4) - 0.5) * 2 * p.jump * c.S, dy = (hash2(st, 2, 4) - 0.5) * 2 * p.jump * c.S, an = (hash2(st, 3, 4) - 0.5) * 2 * p.twist * Math.PI / 180, ca = Math.cos(an), sa = Math.sin(an), cx = w / 2, cy = h / 2, g = p.grain / 100 * 30;
+      remapSample(s, d, w, h, (x, y) => { const u = x - cx - dx, v = y - cy - dy; return [cx + u * ca + v * sa, cy - u * sa + v * ca]; });
+      if (g) for (let i = 0; i < d.length; i += 4) { const n = (hash2(i, st, 2) - 0.5) * g; d[i] = clamp(d[i] + n, 0, 255); d[i + 1] = clamp(d[i + 1] + n, 0, 255); d[i + 2] = clamp(d[i + 2] + n, 0, 255); } } },
+  { id: 'starrays', cat: 'gif', name: 'Star Rays', desc: 'Spinning rays bursting from behind', params: [R('n', 'Rays', 3, 32, 12), R('amt', 'Strength', 0, 100, 45, 1, '%'), R('x', 'Centre across', 0, 100, 50, 1, '%'), R('y', 'Centre down', 0, 100, 45, 1, '%'), C('col', 'Colour', '#c3141c'), CYC()],
+    fn: (s, d, w, h, p, c) => { const t = LOOP(p, c), cx = p.x / 100 * w, cy = p.y / 100 * h, col = hex(p.col), a = p.amt / 100, md = Math.hypot(w, h);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, an = Math.atan2(y - cy, x - cx) + t * TAU / p.n, ray = Math.pow(Math.max(0, Math.cos(an * p.n / 2)), 8), fall = 1 - Math.hypot(x - cx, y - cy) / md; const e = ray * fall * a; if (e > 0.01) for (let q = 0; q < 3; q++) d[k + q] = d[k + q] + (col[q] - d[k + q]) * e; } } },
+);
+
 const CATS = [['layer', 'Layers'], ['gif', 'GIF FX'], ['light', 'Light'], ['texture', 'Textures'], ['dither', 'Dithering'], ['pixel', 'Pixel'], ['glitch', 'Glitch'], ['image', 'Image'], ['halftone', 'Halftone']];
 const MAP = {}; EFFECTS.forEach(e => MAP[e.id] = e);
 function defaults(def) { const o = {}; def.params.forEach(q => o[q.k] = q.def); return o; }
