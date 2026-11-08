@@ -389,7 +389,7 @@ nav a.drink-nav{background:#c3141c;color:#e9e3d1}
 
 /* ===== star runner cursor (from the artist) ===== */
 html,body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url("../assets/ui/cursor-star.png") 1x, url("../assets/ui/cursor-star@2x.png") 2x) 16 16, auto}
-a,button,[role=button],label,summary,select,.w,.obj,.scrap,[data-drag],.drink-tab,.tv-screen,.pp-cd{cursor:url("../assets/ui/cursor-star-hot.png") 16 16, pointer!important;cursor:image-set(url("../assets/ui/cursor-star-hot.png") 1x, url("../assets/ui/cursor-star-hot@2x.png") 2x) 16 16, pointer!important}
+a,button,[role=button],label,summary,select,.w,.obj,.scrap,[data-drag],.drink-tab,.tv-screen,.pp-spk{cursor:url("../assets/ui/cursor-star-hot.png") 16 16, pointer!important;cursor:image-set(url("../assets/ui/cursor-star-hot.png") 1x, url("../assets/ui/cursor-star-hot@2x.png") 2x) 16 16, pointer!important}
 input[type=text],input[type=email],textarea{cursor:text}
 
 /* ===== tip panel made from the art (shared look: archive .dk-card + editor .tip-modal) ===== */
@@ -580,3 +580,27 @@ nav a.drink-nav{box-shadow:2px 2px 0 #0b0a09}
 .art-player .p-mini{background:linear-gradient(90deg,rgba(11,10,9,.82),rgba(11,10,9,.25) 50%,rgba(11,10,9,.82)),var(--p-strip,var(--p-art)) center/cover no-repeat,#0b0a09;image-rendering:pixelated}
 .art-player .p-full{background:linear-gradient(180deg,rgba(11,10,9,.15),rgba(11,10,9,.78) 46%,rgba(11,10,9,.94)),var(--p-art2) center top/cover no-repeat,#0b0a09;image-rendering:pixelated}
 .rl-disc{background:var(--p-art) center/cover no-repeat,#0b0a09;image-rendering:pixelated}
+
+/* ===== v3.0.2: NOW PLAYING = a warehouse speaker stack (no more spinning CD) ===== */
+.pp-spk{position:relative;flex:none;width:210px;height:280px;padding:14px 14px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;border:0;border-radius:12px 12px 8px 8px;background:radial-gradient(circle,rgba(233,227,209,.07) 1px,transparent 1.5px) 0 0/6px 6px,linear-gradient(180deg,#1d1a18,#0e0d0c);box-shadow:0 0 0 3px #0b0a09,inset 0 0 0 2px #2c2826,inset 0 0 30px rgba(0,0,0,.8),8px 8px 0 #c3141c;transform:rotate(-2deg);transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
+.pp-spk:hover,.pp-spk:focus-visible{transform:rotate(0) translateY(-4px);outline:none}
+.pp-spk::before,.pp-spk::after{content:'';position:absolute;top:8px;width:7px;height:7px;border-radius:50%;background:#5a5550;box-shadow:0 258px 0 #5a5550}
+.pp-spk::before{left:8px}.pp-spk::after{right:8px}
+.spk-top{display:flex;align-items:center;gap:10px;width:100%}
+.spk-tw{flex:none;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle,#e9e3d1 0 12%,#3a3633 14% 40%,#121110 42% 62%,#2c2826 64%);box-shadow:0 0 0 3px #0b0a09,0 0 0 5px #e2682a}
+.spk-tag{flex:1;min-width:0;text-align:left;font:400 24px/.9 'Rubik Wet Paint','Bebas Neue',sans-serif;color:#f2b234;text-shadow:2px 2px 0 #c3141c}
+.spk-tag small{display:block;margin-top:3px;font:400 11px 'Michroma',sans-serif;letter-spacing:.2em;color:#e9e3d1;text-shadow:none;text-transform:uppercase}
+.spk-cone{position:relative;flex:none;width:168px;height:168px;border-radius:50%;background:radial-gradient(circle,transparent 0 30%,rgba(0,0,0,.35) 31% 33%,transparent 34% 52%,rgba(0,0,0,.45) 53% 55%,transparent 56%),var(--cd-art) center/cover no-repeat,#1a1817;filter:grayscale(1) contrast(1.35) sepia(.55) hue-rotate(-28deg) saturate(2.3);box-shadow:0 0 0 7px #0b0a09,0 0 0 11px #3a3633,0 0 0 13px #0b0a09,inset 0 0 26px rgba(0,0,0,.85);animation:spkBreathe 3.2s ease-in-out infinite}
+.spk-cap{position:absolute;left:50%;top:50%;width:30%;height:30%;margin:-15% 0 0 -15%;border-radius:50%;background:radial-gradient(circle at 38% 34%,#5a5550,#121110 70%);box-shadow:0 0 0 3px #0b0a09,0 0 0 5px #c3141c}
+@keyframes spkBreathe{50%{transform:scale(1.025)}}
+.pp-spk.playing .spk-cone{animation:spkThump .4615s cubic-bezier(.2,1.5,.4,1) infinite}
+.pp-spk.playing .spk-tw{animation:spkThump .23075s ease-out infinite}
+@keyframes spkThump{0%{transform:scale(1)}12%{transform:scale(1.075)}40%{transform:scale(.99)}100%{transform:scale(1)}}
+.pp-spk.playing{box-shadow:0 0 0 3px #0b0a09,inset 0 0 0 2px #2c2826,inset 0 0 30px rgba(0,0,0,.8),8px 8px 0 #c3141c,0 0 46px rgba(226,104,38,.35)}
+.spk-eq{display:flex;align-items:flex-end;gap:4px;height:18px;margin-top:auto}
+.spk-eq i{width:9px;height:30%;background:#e2682a;box-shadow:0 0 0 1.5px #0b0a09;transition:height .3s}
+.spk-eq i:nth-child(odd){background:#f2b234}.spk-eq i:nth-child(3n){background:#c3141c}
+.pp-spk.playing .spk-eq i{animation:spkEq .4615s ease-in-out infinite alternate;animation-delay:calc(var(--n) * -73ms)}
+@keyframes spkEq{from{height:15%}to{height:100%}}
+@media (max-width:760px){.pp-spk{width:180px;height:248px}.spk-cone{width:140px;height:140px}.pp-spk::before,.pp-spk::after{box-shadow:0 226px 0 #5a5550}}
+@media (prefers-reduced-motion:reduce){.spk-cone,.spk-tw,.spk-eq i{animation:none!important}}

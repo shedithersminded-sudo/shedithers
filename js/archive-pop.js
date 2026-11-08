@@ -21,19 +21,26 @@ if (gate) {
 
 /* ---- home page: CD + seal + NEW ART folder row ---- */
 const SEAL = `<svg viewBox="0 0 200 200"><defs><path id="sealP2" d="M100 100 m-78 0 a78 78 0 1 1 156 0 a78 78 0 1 1 -156 0"/></defs><circle cx="100" cy="100" r="96" fill="#f4f1ea" stroke="#111" stroke-width="3"/><circle cx="100" cy="100" r="64" fill="none" stroke="#111" stroke-width="2"/><text font-family="Georgia,serif" font-size="17" font-weight="700" letter-spacing="3" fill="#111"><textPath href="#sealP2">SHEDITHERS ★ NOT ORDINARY ★ VIEW ONLY ★ </textPath></text></svg>`;
+let spk = null, hooked = false;
 function addPop() {
   const P = $('.portal'); if (!P || $('.p-pop', P)) return;
   const A = window.SHD_ARCHIVE, label = pick(), label2 = pick();
   const newest = IM.slice().sort((x, y) => y.date.localeCompare(x.date)).slice(0, 3);
-  const cd = h('button', { class: 'pp-cd', style: `--cd-art:url('${absU(label.src)}');--cd-art2:url('${absU(label2.src)}')`, 'aria-label': 'Open the music player' }, h('i', { class: 'pp-shine' }), h('span', { class: 'pp-vert' }, 'NOW', h('br'), 'SPINNING'), h('i', { class: 'pp-hub' }), h('i', { class: 'pp-hole' }));
+  // a warehouse speaker stack: the woofer cone is cut from the art and thumps at 130 BPM while music plays
+  const cd = h('button', { class: 'pp-spk', style: `--cd-art:url('${absU(label.src)}');--cd-art2:url('${absU(label2.src)}')`, 'aria-label': 'Open the music player' },
+    h('span', { class: 'spk-top' }, h('i', { class: 'spk-tw' }), h('span', { class: 'spk-tag' }, 'shedithers', h('small', null, 'sound system'))),
+    h('i', { class: 'spk-cone' }, h('i', { class: 'spk-cap' })),
+    h('span', { class: 'spk-eq', 'aria-hidden': 'true' }, ...[0, 1, 2, 3, 4, 5, 6].map(n => h('i', { style: `--n:${n}` }))));
   cd.onclick = () => { if (!A) return; A.player.expand(); if (A.player.list.length && A.player.audio.paused) A.player.audio.play().catch(() => { }); };
-  if (A) { A.player.audio.addEventListener('play', () => cd.classList.add('spin-fast')); A.player.audio.addEventListener('pause', () => cd.classList.remove('spin-fast')); if (!A.player.audio.paused) cd.classList.add('spin-fast'); }
+  spk = cd; // one set of audio listeners for the whole visit; they drive whichever speaker is on the page
+  if (A && !hooked) { hooked = true; const au = A.player.audio; au.addEventListener('play', () => spk && spk.classList.add('playing')); au.addEventListener('pause', () => spk && spk.classList.remove('playing')); }
+  if (A && !A.player.audio.paused) cd.classList.add('playing');
   const seal = h('div', { class: 'pp-seal', 'aria-hidden': 'true' }, h('span', { class: 'pp-seal-ring', html: SEAL }), h('span', { class: 'pp-pix', html: '<svg viewBox="0 0 40 40"><use href="#mk"/></svg>' }), h('span', { class: 'pp-stars' }, '★★★★★★★'));
   const folder = h('div', { class: 'pp-folder' }, h('span', { class: 'pg-bubble' }, 'NEW ART!'),
     h('div', { class: 'ppf-body' }, h('div', { class: 'ppf-row' }, newest.map(a => h('button', { class: 'ppf-thumb', style: `background-image:url('${absU(a.src)}')`, title: a.title, 'aria-label': `View ${a.title}`, onclick: () => location.hash = `#/work/${a.id}` }))),
       h('div', { class: 'ppf-name' }, 'shedithers', h('small', null, 'fresh files · ' + newest[0].date))),
     h('span', { class: 'pg-cable', 'aria-hidden': 'true' }, h('i')));
-  P.insertBefore(h('section', { class: 'p-mod p-pop' }, h('div', { class: 'p-head' }, h('small', null, 'ナウ・スピニング'), h('b', null, 'NOW SPINNING'), h('span', null, 'TAP THE DISC FOR MUSIC')), h('div', { class: 'pp-row' }, cd, seal, folder)), $('.p-foot', P));
+  P.insertBefore(h('section', { class: 'p-mod p-pop' }, h('div', { class: 'p-head' }, h('small', null, 'ナウ・プレイング'), h('b', null, 'NOW PLAYING'), h('span', null, 'TAP THE SPEAKER FOR MUSIC')), h('div', { class: 'pp-row' }, cd, seal, folder)), $('.p-foot', P));
 }
 const view = $('#view');
 if (view) { new MutationObserver(() => addPop()).observe(view, { childList: true }); addPop(); }

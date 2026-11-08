@@ -11,7 +11,13 @@
 .vc-b.in{animation:vcIn .55s cubic-bezier(.2,1.4,.4,1)}
 @keyframes vcIn{0%{opacity:0;transform:translateY(-14px) skewX(-12deg);filter:blur(3px) contrast(3)}40%{opacity:1;transform:translateX(6px) skewX(6deg)}60%{transform:translateX(-3px)}100%{opacity:1}}
 .vc-b.fan{outline:2px dashed currentColor;outline-offset:-6px}
-.vc-av{flex:none;width:46px;height:46px;border-radius:50%;background:center/cover;filter:grayscale(1) contrast(1.4) sepia(.5) hue-rotate(-25deg) saturate(2);box-shadow:0 0 0 2px #0b0a09,0 0 0 4px #e2682a}
+.vc-av{flex:none;width:54px;height:54px;display:block;transform:rotate(var(--tw,0deg));filter:drop-shadow(2px 3px 0 rgba(11,10,9,.85));transition:transform .45s cubic-bezier(.3,1.7,.5,1)}
+.vc-av svg{width:100%;height:100%;overflow:visible}
+.vc-av text{font:400 19px 'Bebas Neue',sans-serif;letter-spacing:0}
+.vc-b:hover .vc-av,.vc-b:focus-visible .vc-av{transform:rotate(calc(var(--tw,0deg) + 72deg)) scale(1.18)}
+.vc-b.in .vc-av{animation:vcTw .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes vcTw{0%{transform:scale(0) rotate(-120deg)}70%{transform:scale(1.25) rotate(calc(var(--tw,0deg) + 10deg))}}
+@media (prefers-reduced-motion:reduce){.vc-b.in .vc-av{animation:none}}
 .vc-tx{flex:1;min-width:0}
 .vc-tx small{display:block;font:400 13px 'Patrick Hand',cursive;opacity:.8}.vc-tx small b{font-weight:400;font-family:'Bebas Neue',sans-serif;letter-spacing:.08em;font-size:15px}
 .vc-tx p{margin:2px 0 0;line-height:1.2;overflow-wrap:anywhere}
@@ -42,3 +48,6 @@
 .portal .p-mod:nth-of-type(3n+1) .p-head b{color:#ff5a3c;background:linear-gradient(transparent 52%,rgba(226,104,38,.8) 52%,rgba(226,104,38,.8) 86%,transparent 86%)}
 .portal .p-head small{color:#f2b234;font-size:12px;letter-spacing:.3em;text-shadow:1px 1px 0 #0b0a09}
 .portal .p-head span{color:#e9e3d1;text-shadow:1px 1px 0 #0b0a09}
+/* stars stay readable on the red / black bubbles */
+.vc-b:nth-child(3) .vc-av polygon,.vc-b:nth-child(4) .vc-av polygon{stroke:#e9e3d1}
+.vc-b:nth-child(3) .vc-av{filter:drop-shadow(2px 3px 0 #0b0a09)}.vc-b:nth-child(4) .vc-av{filter:drop-shadow(2px 3px 0 #e2682a)}
