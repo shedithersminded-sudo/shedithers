@@ -12,7 +12,7 @@ function h(tag, props, ...kids) { const e = document.createElement(tag); if (pro
 const PICK = ARTWORKS.filter(a => a.type !== 'video' && a.w && a.h).sort((x, y) => String(y.date).localeCompare(String(x.date))).slice(0, 12);
 const N = PICK.length; if (N < 3) return;
 const STEP = 360 / N;
-const INKS = ['red', 'black', 'paper'];
+const INKS = ['red', 'black', 'paper', 'teal', 'mustard', 'plum'];
 
 function build() {
   let angle = 0, vel = 0, drag = null, flipped = null, auto = !reduce, visible = false, raf = 0, last = 0;
@@ -32,7 +32,7 @@ function build() {
       h('small', null, `${a.medium || 'mixed media'} · ${a.date || ''}`),
       h('span', { class: 'd3-look', role: 'button', tabindex: '0' }, 'look closer ▸'),
       h('span', { class: 'd3-err', 'aria-hidden': 'true' }, 'ERROR: NO IDENTITY'));
-    const card = h('button', { type: 'button', class: `d3-card ink-${INKS[i % 3]}`, style: `--i:${i}`, 'aria-label': `${a.title} — tap to flip` }, h('div', { class: 'd3-inner' }, front, back));
+    const card = h('button', { type: 'button', class: `d3-card ink-${INKS[i % INKS.length]}`, style: `--i:${i}`, 'aria-label': `${a.title} — tap to flip` }, h('div', { class: 'd3-inner' }, front, back));
     card.dataset.id = a.id;
     card.addEventListener('click', e => {
       if (moved) return;

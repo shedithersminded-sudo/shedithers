@@ -1,4 +1,4 @@
-# SHEDITHERS — handoff (2026-11-07, live version v2.9.1)
+# SHEDITHERS — handoff (2026-11-07, live version v2.9.2)
 
 Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 
@@ -9,7 +9,7 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - **Deploys:** pushing `main` to github.com/shedithersminded-sudo/shedithers auto-deploys to https://shedithers.netlify.app and https://shedithersminded-sudo.github.io/shedithers/. The user always wants both sites updated and verified.
 
 ## Release steps (every change)
-1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=291 and v2.9.1 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
+1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=292 and v2.9.2 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
 2. Commit, ending the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then push.
 3. Check that both live sites serve the new `sw.js` version.
 
@@ -76,3 +76,4 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - v2.8.1: THE DECK on the archive home (js/archive-deck.js + css/archive-deck.css): 12 newest artworks as 3D trading cards on a spinning ring; drag/swipe/arrows to spin, hover tilt + glare, tap front card to flip (title, words, medium, date, "look closer"), shuffle/pause/flip buttons; only spins while on screen.
 - v2.9.0: 22 SHEDITHERS-original effects in engine.js (block before CATS): bloodink, stardither, heartdither, scrawl, tornpixels, inkdrip, starmosaic, tornpaper, tape, xerox, crumple, redroom, lightleak, halo, searchlight/leakdrift/flarepass (`moves: true` → auto motion), eyes, channelsurf, papertear, stopmotion, starrays — 91 effects total. Library groups collapsible (state in localStorage shd.fxOpen), search opens matching groups, collage styling with art-scrap section banners. NOTE: no `-x ** 2` (unary before **) — it breaks the whole engine.
 - v2.9.1: bug sweep (all 91 effects × default/min/max run clean; every editor panel/modal + archive route opened clean). Fixed: editor unusable on phones (now one column: picture, layers, library), keyboard handlers crashing on document-level key events, pink THE LAB nav tag. Slop check: removed "neon glow on everything" — hard offset ink/red shadows + tags instead of glowing pills. Editor frame now matches the archive (kraft torn top bar, paper panel headers, ink tags).
+- v2.9.2: reading font is now Patrick Hand (+3px) on both pages (was Special Elite); muted palette vars (--rust --mustard --moss --teal --dblue --plum --violet --rose) beside red/ink/paper; each effect group has its own colour; stronger hover glow in a random muted colour per word (js/glow.js); hand-drawn "sketch" border-radius shapes, star-burst counts, flag NOW EDITING. Style rule update: colours are welcome if muted (not neon).

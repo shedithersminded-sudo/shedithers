@@ -200,7 +200,7 @@ function viewAbout() {
     'dreams aren’t dreams', 'dream without action is hallucination', 'when you rain you pour',
     'i’m sorry i’m sorry again', 'shedithers loves you'];
   let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
-  const FONTS = ['f-bebas', 'f-type', 'f-marker', 'f-hand', 'f-mono', 'f-serif'], INKS = ['k-paper', 'k-black', 'k-red', 'k-news', 'k-paper', 'k-black'];
+  const FONTS = ['f-bebas', 'f-type', 'f-marker', 'f-hand', 'f-mono', 'f-serif'], INKS = ['k-paper', 'k-black', 'k-red', 'k-news', 'k-teal', 'k-black', 'k-mustard', 'k-paper', 'k-plum', 'k-blue', 'k-moss'];
   const poem = h('div', { class: 'cutup', 'aria-label': POEM.join(' / ') }, POEM.map((line, li) => h('div', { class: 'cu-line', 'aria-hidden': 'true', style: `margin-left:${Math.round(rnd() * 14)}%` },
     line.split(' ').map(w => h('span', { class: `cu ${FONTS[Math.floor(rnd() * FONTS.length)]} ${INKS[Math.floor(rnd() * INKS.length)]}${w === 'sorry' && li === 14 && rnd() > .2 ? ' strike' : ''}`, style: `--r:${(rnd() * 8 - 4).toFixed(1)}deg;--s:${(0.85 + rnd() * 0.6).toFixed(2)}` }, w)))));
   const KINDS = [['digital collage', true], ['mixed media drawing', true], ['moving image', true], ['dithered video + static', true], ['handwriting', true], ['little object studies', true], ['ordinary', false]];

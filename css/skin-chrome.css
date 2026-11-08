@@ -100,7 +100,7 @@ body.skin-chrome{
 .boot-title{color:#e9e3d1!important;text-shadow:5px 4px 0 #c3141c!important}
 .boot-mark svg{color:#c3141c;filter:drop-shadow(0 0 8px rgba(195,20,28,.7))}
 .boot-sub{color:#bdb5a0}
-.boot-quote{color:#e9e3d1;font-family:'Special Elite',monospace}
+.boot-quote{color:#e9e3d1;font-family:'Patrick Hand',cursive}
 .boot-enter{color:#e9e3d1;background:#c3141c;border-radius:999px;padding:6px 16px;box-shadow:0 0 22px rgba(195,20,28,.6)}
 .boot-bar{background:rgba(233,227,209,.15)}.boot-bar i{background:#c3141c;box-shadow:0 0 10px rgba(195,20,28,.8)}
 .boot-print{background:#e9e3d1!important;box-shadow:0 0 0 2px #0b0a09,6px 6px 0 #c3141c,0 20px 40px rgba(0,0,0,.6)!important}
@@ -135,7 +135,7 @@ body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url
 .tip-modal .modal-c{background:#e9e3d1;position:relative}
 .tip-modal .tip-banner{margin:-16px -16px 14px}
 .tip-modal .modal-f{background:#0b0a09!important}.tip-modal .modal-f .note{color:#c3141c;font-size:12px}
-.tip-modal .tip-head p{color:#0b0a09;font:400 14px/1.4 'Special Elite',monospace}
+.tip-modal .tip-head p{color:#0b0a09;font:400 17px/1.4 'Patrick Hand',cursive}
 .tip-modal .tip-heart{display:none}
 .tip-modal .tip-guy{top:46px;right:20px}
 .tip-modal .drinks{grid-template-columns:repeat(2,1fr);gap:12px}
@@ -163,11 +163,11 @@ body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url
 .ty .ty-quote{font-size:14px}
 .ty .ty-tape{background:rgba(233,227,209,.8)}
 .ty .ty-badge{z-index:4}
-.ty-pp{margin:12px 2px 2px;font:400 15px 'Special Elite',monospace;color:#0b0a09;text-align:center}
+.ty-pp{margin:12px 2px 2px;font:400 18px 'Patrick Hand',cursive;color:#0b0a09;text-align:center}
 .ty .ty-links .btn.pink{background:linear-gradient(180deg,#e8434a 0%,#c3141c 45%,#8f0d13 55%,#d32a31 100%);color:#f4eee0;border-color:#4a0609}
 
 /* export windows: "post it + tag me" reminder */
-.tag-note{margin-right:auto;max-width:300px;font:400 12px/1.35 'Special Elite',monospace;color:#e9e3d1}
+.tag-note{margin-right:auto;max-width:300px;font:400 15px/1.35 'Patrick Hand',cursive;color:#e9e3d1}
 .tag-note b{display:block;font:400 17px/1 'Permanent Marker',cursive;color:#e8434a;transform:rotate(-2deg)}
 .empty-card .row+.tag-note{display:block;margin:10px auto 0;text-align:center;max-width:none}
 
@@ -176,14 +176,14 @@ body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url
 
 /* ===== v2.8: effects library + layers — starry, clear, in the artist's style ===== */
 .skin-chrome #left,.skin-chrome #right{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cg fill='%23c3141c' fill-opacity='.10'%3E%3Cpath d='M20 8l2 5 5 .5-4 3.4 1.2 5.1L20 19.3 15.8 22l1.2-5.1-4-3.4 5-.5z'/%3E%3Cpath d='M86 70l1.4 3.4 3.6.3-2.8 2.4.9 3.6-3.1-1.9-3.1 1.9.9-3.6-2.8-2.4 3.6-.3z'/%3E%3C/g%3E%3Cg fill='%23e9e3d1' fill-opacity='.06'%3E%3Ccircle cx='60' cy='30' r='1.2'/%3E%3Ccircle cx='100' cy='110' r='1'/%3E%3Ccircle cx='30' cy='90' r='1'/%3E%3C/g%3E%3C/svg%3E") 0 0/120px 120px,#0d0b0a}
-.skin-chrome .search{height:38px;border-radius:999px;border:1px solid #3a3633;background:#0b0a09;padding:0 16px;font:400 12px 'Special Elite',monospace;color:#e9e3d1}
+.skin-chrome .search{height:38px;border-radius:999px;border:1px solid #3a3633;background:#0b0a09;padding:0 16px;font:400 15px 'Patrick Hand',cursive;color:#e9e3d1}
 .skin-chrome .search:focus{outline:2px solid #c3141c;outline-offset:1px}
 /* sections */
 .fx-sec{margin:0 0 18px}
 .fx-sec>header{display:flex;gap:10px;align-items:center;margin:4px 0 10px;padding:10px 12px;border-radius:12px;background:#e9e3d1;color:#0b0a09;box-shadow:0 0 0 2px #0b0a09,3px 3px 0 #c3141c;transform:rotate(-.6deg)}
 .fx-sec>header i{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:50%;background:#c3141c;color:#e9e3d1;font:400 18px/1 'Bebas Neue',sans-serif;font-style:normal;box-shadow:0 0 0 2px #0b0a09}
 .fx-sec>header b{display:block;font:400 22px/1 'Bebas Neue',sans-serif;letter-spacing:.12em}
-.fx-sec>header small{display:block;margin-top:2px;font:400 11.5px/1.3 'Special Elite',monospace;color:#3a3633;text-transform:none;letter-spacing:0}
+.fx-sec>header small{display:block;margin-top:2px;font:400 14.5px/1.3 'Patrick Hand',cursive;color:#3a3633;text-transform:none;letter-spacing:0}
 .fx-sec.sec-motion>header{background:#c3141c;color:#e9e3d1;box-shadow:0 0 0 2px #0b0a09,3px 3px 0 #e9e3d1;transform:rotate(.6deg)}
 .fx-sec.sec-motion>header i{background:#0b0a09}
 .fx-sec.sec-motion>header small{color:#f4e6e0}
@@ -197,7 +197,7 @@ body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url
 .skin-chrome .fx-item:hover{border-color:#c3141c;background:linear-gradient(180deg,#24100f,#120c0b);box-shadow:0 0 14px rgba(195,20,28,.35)}
 .skin-chrome .fx-item .ix{width:20px;font:400 10px var(--mono);color:#6b655a}
 .skin-chrome .fx-item .nm{font:400 17px/1.05 'Bebas Neue',sans-serif;letter-spacing:.08em;color:#e9e3d1}
-.skin-chrome .fx-item .ds{margin-top:2px;font:400 11.5px/1.3 'Special Elite',monospace;color:#bdb5a0;letter-spacing:0}
+.skin-chrome .fx-item .ds{margin-top:2px;font:400 14.5px/1.3 'Patrick Hand',cursive;color:#bdb5a0;letter-spacing:0}
 .skin-chrome .fx-item .add{opacity:1;flex:none;padding:4px 10px;border-radius:999px;background:#2a2624;color:#e9e3d1;font:400 13px 'Bebas Neue',sans-serif;letter-spacing:.1em;transition:background .15s}
 .skin-chrome .fx-item:hover .add{background:#c3141c}
 .skin-chrome .fx-item.moves{border-color:#4a1214}
@@ -207,18 +207,18 @@ body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url
 .now-editing{display:flex;align-items:center;gap:8px;margin:2px 2px 6px;padding:7px 12px;border-radius:999px;background:#c3141c;color:#e9e3d1;box-shadow:0 0 0 2px #0b0a09,0 0 18px rgba(195,20,28,.45)}
 .now-editing i{font-style:normal;font-size:15px}
 .now-editing b{font:400 17px/1 'Bebas Neue',sans-serif;letter-spacing:.16em}
-.now-editing span{margin-left:auto;font:400 11px 'Special Elite',monospace}
+.now-editing span{margin-left:auto;font:400 14px 'Patrick Hand',cursive}
 .skin-chrome .fx.pinned{border-color:#c3141c!important;box-shadow:0 0 0 1px #c3141c,0 0 22px rgba(195,20,28,.35)!important}
 .all-layers{display:flex;align-items:baseline;gap:10px;margin:16px 4px 6px;padding-top:12px;border-top:2px dashed #3a3633}
 .all-layers b{font:400 16px 'Bebas Neue',sans-serif;letter-spacing:.16em;color:#e9e3d1}
-.all-layers span{font:400 11px 'Special Elite',monospace;color:#8a8478}
+.all-layers span{font:400 14px 'Patrick Hand',cursive;color:#8a8478}
 .fx.fx-ph{display:flex;align-items:center;gap:10px;padding:9px 12px;margin-bottom:6px;border:1px dashed #c3141c!important;border-radius:12px;background:rgba(195,20,28,.08)!important;cursor:pointer}
 .fx.fx-ph b{font:400 16px 'Bebas Neue',sans-serif;letter-spacing:.1em;color:#e9e3d1}
-.fx.fx-ph small{margin-left:auto;font:400 11px 'Special Elite',monospace;color:#ff6b6b}
+.fx.fx-ph small{margin-left:auto;font:400 14px 'Patrick Hand',cursive;color:#ff6b6b}
 .skin-chrome .fx-name{font:400 17px/1.05 'Bebas Neue',sans-serif!important;letter-spacing:.1em}
-.skin-chrome .fx-name small{display:block;margin-top:2px;font:400 11px/1.3 'Special Elite',monospace!important;color:#bdb5a0!important;letter-spacing:0!important;text-transform:none}
+.skin-chrome .fx-name small{display:block;margin-top:2px;font:400 14px/1.3 'Patrick Hand',cursive!important;color:#bdb5a0!important;letter-spacing:0!important;text-transform:none}
 .mv-badge{display:inline-block;margin-right:6px;padding:0 6px;border-radius:999px;background:#c3141c;color:#e9e3d1;font:400 11px 'Bebas Neue',sans-serif;letter-spacing:.1em;font-style:normal}
-.fx-help{margin:8px 0 10px;padding:9px 12px;border-radius:4px 12px 6px 10px;background:#e9e3d1;color:#0b0a09;font:400 12.5px/1.45 'Special Elite',monospace;transform:rotate(-.4deg);box-shadow:3px 3px 0 #c3141c}
+.fx-help{margin:8px 0 10px;padding:9px 12px;border-radius:4px 12px 6px 10px;background:#e9e3d1;color:#0b0a09;font:400 15.5px/1.45 'Patrick Hand',cursive;transform:rotate(-.4deg);box-shadow:3px 3px 0 #c3141c}
 .fx-help b{font:400 15px 'Permanent Marker',cursive;color:#c3141c}
 .fx-help-2{display:block;margin-top:4px;color:#5a554c;font-size:11.5px}
 /* toggles: red with a star knob */
@@ -256,7 +256,7 @@ body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url
 .fx-cat.open .fx-cat-h .chev{transform:rotate(90deg)}
 .fx-cat-h .gt{flex:1;min-width:0}
 .fx-cat-h .gt b{display:block;font:400 19px/1 'Permanent Marker',cursive;color:#0b0a09}
-.fx-cat-h .gt small{display:block;margin-top:2px;font:400 11px 'Special Elite',monospace;color:#5a554c}
+.fx-cat-h .gt small{display:block;margin-top:2px;font:400 14px 'Patrick Hand',cursive;color:#5a554c}
 .fx-cat-h .new{padding:1px 6px;background:#c3141c;color:#e9e3d1;font:400 12px 'Bebas Neue',sans-serif;letter-spacing:.08em;font-style:normal;transform:rotate(3deg)}
 .fx-cat-h .cnt{display:grid;place-items:center;width:30px;height:30px;border:2px solid #c3141c;border-radius:50%;color:#c3141c;font:400 15px 'Bebas Neue',sans-serif;transform:rotate(-8deg)}
 .fx-cat-b{display:none;padding:8px 2px 4px}
@@ -268,7 +268,7 @@ body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url
 .skin-chrome .fx-item:hover{background:#2a0d0e;box-shadow:none;transform:rotate(0)}
 .skin-chrome .fx-item:nth-child(even):hover{background:#f6efdc}
 .skin-chrome .fx-item:hover .nm{text-shadow:0 0 8px rgba(255,90,90,.8)}
-.skin-chrome .fx-item .add{border-radius:0;padding:3px 8px;background:transparent!important;border:2px solid #c3141c;color:#c3141c!important;font:400 13px 'Special Elite',monospace;letter-spacing:0;text-transform:lowercase;transform:rotate(-5deg)}
+.skin-chrome .fx-item .add{border-radius:0;padding:3px 8px;background:transparent!important;border:2px solid #c3141c;color:#c3141c!important;font:400 16px 'Patrick Hand',cursive;letter-spacing:0;text-transform:lowercase;transform:rotate(-5deg)}
 .skin-chrome .fx-item:hover .add{background:#c3141c!important;color:#e9e3d1!important}
 .skin-chrome .fx-item.moves .add{border-style:dashed}
 .orig-tag{display:block;margin:1px 0 1px;font:400 12px 'Permanent Marker',cursive;color:#c3141c;font-style:normal;letter-spacing:0;text-transform:none}
@@ -307,7 +307,7 @@ body.skin-chrome{--kraft:#c4ab7c}
 .skin-chrome .wordmark span,.skin-chrome .proj label{color:#3a2f22}
 .skin-chrome .logo{border-right:2px dashed rgba(11,10,9,.35);box-shadow:none}
 .skin-chrome .logo .mark{color:#c3141c;filter:none}
-.skin-chrome #projName{background:#e9e3d1;color:#0b0a09;border:0;border-radius:0;box-shadow:2px 2px 0 #0b0a09;font-family:'Special Elite',monospace;transform:rotate(-.5deg)}
+.skin-chrome #projName{background:#e9e3d1;color:#0b0a09;border:0;border-radius:0;box-shadow:2px 2px 0 #0b0a09;font-family:'Patrick Hand',cursive;transform:rotate(-.5deg)}
 /* every button in the frame = an ink tag */
 .skin-chrome #top .btn,.skin-chrome #top .ib,.skin-chrome #viewTools .tbtn,.skin-chrome #viewTools .ib,.skin-chrome .transport .ib,.skin-chrome .transport .tbtn{background:#0b0a09;color:#e9e3d1;border:0;border-radius:2px;box-shadow:2px 2px 0 #c3141c;text-shadow:none;filter:none}
 .skin-chrome #top .btn{font:400 15px 'Bebas Neue',sans-serif;letter-spacing:.1em;transform:rotate(-1deg)}
@@ -351,3 +351,39 @@ body.skin-chrome{--kraft:#c4ab7c}
 .skin-chrome .modal-h b{color:#0b0a09;text-shadow:2px 2px 0 #c3141c}
 .skin-chrome .modal-h::after{display:none}
 .skin-chrome .cv-wrap canvas{box-shadow:0 0 0 2px #0b0a09,8px 8px 0 #c3141c,0 24px 60px rgba(0,0,0,.7)}
+
+/* ===== v2.9.2: more colour (muted, pulled from the art), stronger colourful glow, hand-drawn shapes ===== */
+:root{--rust:#b5532a;--mustard:#c9a227;--moss:#6b7f3a;--teal:#3f7f7a;--dblue:#3d5a8a;--plum:#7a3a6b;--violet:#5b4a8a;--rose:#a8496b;--sketch:255px 14px 225px 16px/16px 225px 14px 255px}
+:is(a,button,[role=button],label,summary,.pt-bar,.tt-tag,.p-mini-info,.nm,.fx-name,.tkt,.cu,.d3-title,.d3-look,.ab-h,.fx-cat-h):hover{text-shadow:0 0 2px #fff4e0,0 0 8px var(--glow,#e0473c),0 0 18px var(--glow,#e0473c),0 0 34px var(--glow,#e0473c)!important}
+:is(h1,h2,h3,h4,b):hover{text-shadow:0 0 3px #fff4e0,0 0 10px var(--glow,#e0473c),0 0 24px var(--glow,#e0473c),0 0 42px var(--glow,#e0473c)}
+/* each group of effects has its own muted colour */
+.fx-cat.cat-dither{--gc:var(--teal)}.fx-cat.cat-halftone{--gc:var(--dblue)}.fx-cat.cat-pixel{--gc:var(--mustard)}.fx-cat.cat-glitch{--gc:var(--plum)}.fx-cat.cat-image{--gc:var(--rust)}.fx-cat.cat-texture{--gc:var(--moss)}
+.fx-cat.cat-gif{--gc:#c3141c}.sec-motion .fx-cat.cat-light{--gc:var(--rust)}.fx-cat.cat-layer{--gc:var(--violet)}.sec-layers .fx-cat.cat-light{--gc:var(--mustard)}
+.fx-cat-h{border-left:7px solid var(--gc,#c3141c)}
+.fx-cat-h .chev{color:var(--gc,#c3141c)}
+.fx-cat-h .cnt{border:0;border-radius:0;width:34px;height:34px;background:var(--gc,#c3141c);color:#e9e3d1;transform:rotate(-8deg);clip-path:polygon(50% 0,61% 16%,79% 6%,79% 26%,98% 30%,86% 46%,100% 62%,81% 68%,84% 88%,64% 82%,50% 100%,36% 82%,16% 88%,19% 68%,0 62%,14% 46%,2% 30%,21% 26%,21% 6%,39% 16%)}
+.fx-cat-b .fx-item .add{border-color:var(--gc,#c3141c);color:var(--gc,#c3141c)!important}
+.fx-cat-b .fx-item:hover .add{background:var(--gc,#c3141c)!important;color:#e9e3d1!important}
+.skin-chrome .fx-cat-b .fx-item:hover{background:color-mix(in srgb,var(--gc,#c3141c) 32%,#141210)}
+.skin-chrome .fx-cat-b .fx-item:nth-child(even):hover{background:color-mix(in srgb,var(--gc,#c3141c) 18%,#e9e3d1)}
+.orig-tag{color:var(--gc,#c3141c)}
+/* section banners in different colours */
+.fx-sec.sec-motion>header::after{background:linear-gradient(100deg,var(--rust),rgba(201,162,39,.35) 55%,rgba(11,10,9,.8))}
+.fx-sec.sec-layers>header::after{background:linear-gradient(100deg,var(--violet),rgba(63,127,122,.35) 55%,rgba(11,10,9,.8))}
+.fx-sec.sec-motion>header i{color:var(--rust)}.fx-sec.sec-layers>header i{color:var(--violet)}
+/* hand-drawn button shapes + colours in the frame */
+.skin-chrome #top .btn,.skin-chrome #viewTools .tbtn,.skin-chrome .fx-f .tbtn,.skin-chrome .transport .tbtn{border-radius:var(--sketch)}
+.skin-chrome #top .sys .btn:nth-of-type(3n+1){box-shadow:2px 2px 0 var(--teal)}.skin-chrome #top .sys .btn:nth-of-type(3n+2){box-shadow:2px 2px 0 var(--mustard)}.skin-chrome #top .sys .btn:nth-of-type(3n){box-shadow:2px 2px 0 var(--plum)}
+.skin-chrome #top .btn.primary{background:var(--rust);border-radius:var(--sketch)}
+.skin-chrome #top .btn.tip-big{border-radius:var(--sketch)}
+.skin-chrome .fx-f .tbtn:nth-child(1){box-shadow:2px 2px 0 var(--teal)}.skin-chrome .fx-f .tbtn:nth-child(2){box-shadow:2px 2px 0 var(--mustard)}.skin-chrome .fx-f .tbtn:nth-child(3){box-shadow:2px 2px 0 var(--plum)}.skin-chrome .fx-f .tbtn:nth-child(4){box-shadow:2px 2px 0 var(--dblue)}
+.skin-chrome .fx-f .tbtn::before{color:var(--mustard)}
+.skin-chrome #rail button.on{background:var(--mustard);color:#0b0a09;border-radius:var(--sketch)}
+.now-editing{border-radius:0;box-shadow:none;background:#c3141c;padding-right:28px;clip-path:polygon(0 0,100% 0,95% 50%,100% 100%,0 100%,2% 50%)}
+.skin-chrome .sw.on{background:var(--teal)}
+.fx-help{border-left:6px solid var(--teal)}
+.skin-chrome .modal-h b{text-shadow:2px 2px 0 var(--rust)}
+/* bigger reading text */
+.skin-chrome .fx-item .ds{font-size:15px;line-height:1.25}
+.skin-chrome .fx-name small{font-size:14px!important}
+.skin-chrome .fx-b .lbl,.skin-chrome .fx-b label,.skin-chrome .ctl-h label{font-size:12px}

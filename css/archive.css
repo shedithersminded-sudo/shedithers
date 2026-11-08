@@ -3,7 +3,7 @@
 :root{
   --ink:#1d1b16;--ink2:#2b2a24;--paper:#e9e3d1;--cream:#f2eee2;--kraft:#c4ab7c;--olive:#8d8a78;--slate:#5e6a73;
   --pink:#ff4fa3;--lime:#d4ff00;--red:#c8321e;--line:rgba(29,27,22,.25);
-  --bebas:'Bebas Neue','Barlow Condensed',Impact,sans-serif;--cond:'Barlow Condensed',sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;--type:'Special Elite','Courier New',monospace;--hand:'Permanent Marker','Comic Sans MS',cursive;
+  --bebas:'Bebas Neue','Barlow Condensed',Impact,sans-serif;--cond:'Barlow Condensed',sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;--type:'Patrick Hand','Special Elite',cursive;--hand:'Permanent Marker','Comic Sans MS',cursive;
   --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   --fiber:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .35' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
   --ease:cubic-bezier(.2,.8,.2,1);--bar:64px;

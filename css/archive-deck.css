@@ -21,8 +21,8 @@
 .d3-back{display:flex;flex-direction:column;gap:8px;padding:16px 14px;transform:rotateY(180deg);background:var(--paper);color:var(--ink);clip-path:polygon(0 2%,12% 0,40% 1.5%,70% 0,100% 2%,99% 50%,100% 98%,66% 100%,30% 98.4%,0 100%,1% 50%)}
 .d3-mark{font:400 12px var(--mono,monospace);letter-spacing:.2em;color:var(--blood)}
 .d3-back b{font:400 26px/.95 'Bebas Neue',sans-serif;letter-spacing:.03em;text-shadow:3px 2px 0 var(--blood)}
-.d3-back q{font:400 15px/1.35 'Special Elite',monospace;quotes:'“' '”'}
-.d3-back small{font:400 11px 'Special Elite',monospace;color:#5a554c}
+.d3-back q{font:400 18px/1.35 'Patrick Hand',cursive;quotes:'“' '”'}
+.d3-back small{font:400 14px 'Patrick Hand',cursive;color:#5a554c}
 .d3-look{align-self:flex-start;margin-top:auto;padding:7px 14px;border-radius:999px;background:var(--blood);color:var(--paper);font:400 17px 'Bebas Neue',sans-serif;letter-spacing:.12em;box-shadow:0 0 0 2px var(--ink)}
 .d3-look:hover{box-shadow:0 0 0 2px var(--ink),0 0 18px rgba(195,20,28,.8)}
 .d3-err{position:absolute;left:-10%;right:-10%;bottom:44px;padding:2px 0;background:var(--ink);color:var(--paper);font:400 12px 'Bebas Neue',sans-serif;letter-spacing:.2em;text-align:center;transform:rotate(-6deg);opacity:.85;pointer-events:none}
