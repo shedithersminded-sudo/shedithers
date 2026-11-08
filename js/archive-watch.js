@@ -70,13 +70,108 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
   paint(); enterBtn.parentNode.insertBefore(tog, enterBtn);
   enterBtn.addEventListener('click', () => {
     if (!on) return;
-    const a = new Audio('assets/ui/intro.mp3'); a.volume = 0.75; a.play().catch(() => { });
+    let vol = 0.75; try { const v = parseFloat(localStorage.getItem('shd.introVol')); if (v >= 0 && v <= 1) vol = v; } catch (_) { }
+    const a = new Audio('assets/ui/intro.mp3'); a.volume = vol; a.play().catch(() => { });
+    a.title = 'Sorry — evo & crevo';
+    try { if ('mediaSession' in navigator && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: 'Sorry', artist: 'evo & crevo', album: 'SHEDITHERS ARCHIVE' }); } catch (_) { }
     const chip = document.createElement('div'); chip.className = 'intro-chip';
-    chip.innerHTML = '<span class="ic-disc"></span><span><b>NOW PLAYING</b><small>SHEDITHERS · intro</small></span>';
-    const stop = document.createElement('button'); stop.textContent = '✕'; stop.setAttribute('aria-label', 'Stop intro song'); chip.append(stop);
-    const end = () => { a.pause(); chip.classList.add('out'); setTimeout(() => chip.remove(), 400); };
-    stop.onclick = end; a.addEventListener('ended', end);
+    chip.innerHTML = '<span class="ic-disc"></span><span class="ic-txt"><b>NOW PLAYING · SORRY</b><small>by evo &amp; crevo</small></span>';
+    const mk = (cls, txt, label) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; b.setAttribute('aria-label', label); b.title = label; return b; };
+    const pp = mk('ic-pp', '❚❚', 'Pause the song');
+    const mute = mk('ic-mute', '🔊', 'Mute the song');
+    const slider = document.createElement('input'); slider.type = 'range'; slider.className = 'ic-vol'; slider.min = 0; slider.max = 100; slider.value = Math.round(vol * 100); slider.setAttribute('aria-label', 'Song volume');
+    const stop = mk('ic-stop', '✕', 'Stop the song');
+    chip.append(pp, mute, slider, stop);
+    const paintPP = () => { const p = a.paused; pp.textContent = p ? '▶' : '❚❚'; pp.setAttribute('aria-label', p ? 'Play the song' : 'Pause the song'); pp.title = pp.getAttribute('aria-label'); chip.classList.toggle('paused', p); };
+    const paintVol = () => { const m = a.muted || a.volume === 0; mute.textContent = m ? '🔇' : a.volume < 0.4 ? '🔉' : '🔊'; mute.setAttribute('aria-label', m ? 'Unmute the song' : 'Mute the song'); mute.title = mute.getAttribute('aria-label'); slider.value = a.muted ? 0 : Math.round(a.volume * 100); };
+    pp.onclick = e => { e.stopPropagation(); a.paused ? a.play().catch(() => { }) : a.pause(); };
+    mute.onclick = e => { e.stopPropagation(); if (a.volume === 0) { a.volume = 0.5; a.muted = false; } else a.muted = !a.muted; paintVol(); };
+    slider.oninput = () => { a.volume = slider.value / 100; a.muted = false; try { localStorage.setItem('shd.introVol', a.volume); } catch (_) { } paintVol(); };
+    a.addEventListener('play', paintPP); a.addEventListener('pause', paintPP);
+    let gone = false;
+    const end = () => { if (gone) return; gone = true; a.pause(); chip.classList.add('out'); setTimeout(() => chip.remove(), 400); };
+    stop.onclick = end; a.addEventListener('ended', end); paintVol();
     const P = window.SHD_ARCHIVE && window.SHD_ARCHIVE.player; if (P) P.audio.addEventListener('play', end, { once: true });
-    document.body.append(chip);
+    chip.setAttribute('data-drag', ''); chip.setAttribute('data-grip', '');
+    document.body.append(chip); if (window.SHD_MOVE) window.SHD_MOVE(chip, 'introchip', 'the song');
   }, true);
+})();
+
+/* ---------------- move the music players anywhere: mouse, finger, pencil or arrow keys ----------------
+ * Drag the mini player, the big player's top bar/disc, or the intro-song chip. Positions are saved per device
+ * as a share of the free space, so a player parked in a corner stays in that corner after rotating or resizing.
+ * Double-tap the ⠿ grip to put it back. */
+(() => {
+  const KEY = 'shd.pos.', PAD = 8, NODRAG = 'input,select,textarea,a,.p-list,.p-note';
+  const vw = () => document.documentElement.clientWidth, vh = () => window.innerHeight;
+  function makeMovable(el, id, label) {
+    if (!el || el.dataset.movable) return; el.dataset.movable = '1';
+    let pos = null; try { pos = JSON.parse(localStorage.getItem(KEY + id)); } catch (_) { }
+    const save = () => { try { pos ? localStorage.setItem(KEY + id, JSON.stringify(pos)) : localStorage.removeItem(KEY + id); } catch (_) { } };
+    const free = () => { const r = el.getBoundingClientRect(); return { w: Math.max(0, vw() - r.width - PAD * 2), h: Math.max(0, vh() - r.height - PAD * 2) }; };
+    const place = () => {
+      if (!pos) { el.classList.remove('moved'); ['left', 'top', 'right', 'bottom'].forEach(k => el.style[k] = ''); return; }
+      el.classList.add('moved'); el.style.right = 'auto'; el.style.bottom = 'auto';
+      const f = free(), cl = v => Math.min(1, Math.max(0, +v || 0));
+      el.style.left = PAD + cl(pos.x) * f.w + 'px'; el.style.top = PAD + cl(pos.y) * f.h + 'px';
+    };
+    const setXY = (x, y) => { const f = free(); pos = { x: f.w ? Math.min(1, Math.max(0, (x - PAD) / f.w)) : 0, y: f.h ? Math.min(1, Math.max(0, (y - PAD) / f.h)) : 1 }; place(); };
+    // grips: visible handle + keyboard control
+    [...(el.matches('[data-grip]') ? [el] : []), ...el.querySelectorAll('[data-grip]')].forEach(slot => {
+      const g = document.createElement('button'); g.type = 'button'; g.className = 'mv-grip'; g.textContent = '⠿';
+      g.setAttribute('aria-label', `Move ${label} (arrow keys; double-tap to reset)`); g.title = `Drag to move ${label} · double-tap to reset`;
+      g.addEventListener('dblclick', e => { e.stopPropagation(); pos = null; save(); place(); });
+      g.addEventListener('keydown', e => {
+        const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key]; if (!d) return;
+        e.preventDefault(); e.stopPropagation(); const r = el.getBoundingClientRect(), s = e.shiftKey ? 80 : 24;
+        setXY(r.left + d[0] * s, r.top + d[1] * s); save();
+      });
+      g.addEventListener('click', e => e.stopPropagation());
+      slot.prepend(g);
+    });
+    // pointer drag (starts after a 6px move, so taps on buttons still work)
+    let st = null, dragged = false;
+    el.addEventListener('pointerdown', e => {
+      if (e.button > 0 || e.target.closest(NODRAG) || !e.target.closest('[data-drag]')) return;
+      const r = el.getBoundingClientRect(); st = { id: e.pointerId, sx: e.clientX, sy: e.clientY, ox: e.clientX - r.left, oy: e.clientY - r.top, on: false };
+    });
+    el.addEventListener('pointermove', e => {
+      if (!st || e.pointerId !== st.id) return;
+      if (!st.on) { if (Math.hypot(e.clientX - st.sx, e.clientY - st.sy) < 6) return; st.on = true; dragged = true; try { el.setPointerCapture(e.pointerId); } catch (_) { } el.classList.add('dragging'); }
+      e.preventDefault(); setXY(e.clientX - st.ox, e.clientY - st.oy);
+    });
+    const up = e => { if (!st || e.pointerId !== st.id) return; const was = st.on; st = null; el.classList.remove('dragging'); if (was) { save(); setTimeout(() => { dragged = false; }, 0); } };
+    el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); el.addEventListener('lostpointercapture', up);
+    el.addEventListener('click', e => { if (dragged) { e.stopPropagation(); e.preventDefault(); dragged = false; } }, true);
+    // stay on screen when the window, phone or tablet changes size, and when the player opens/closes
+    addEventListener('resize', place); addEventListener('orientationchange', () => setTimeout(place, 250));
+    if (window.ResizeObserver) new ResizeObserver(() => pos && place()).observe(el);
+    place();
+  }
+  window.SHD_MOVE = makeMovable;
+  const p = document.getElementById('player');
+  if (p) {
+    const mini = p.querySelector('.p-mini'), head = p.querySelector('.p-head'), relic = p.querySelector('.relic');
+    [mini, head, relic].forEach(n => n && n.setAttribute('data-drag', ''));
+    [mini, head].forEach(n => n && n.setAttribute('data-grip', ''));
+    makeMovable(p, 'player', 'music player');
+  }
+})();
+
+/* ---------------- art skins: the song chip + TikTok TV are cut from the artist's work (CSS backgrounds only) ---------------- */
+(() => {
+  if (typeof ARTWORKS === 'undefined') return;
+  const abs = u => new URL(u, location.href).href, by = id => ARTWORKS.find(a => a.id === id);
+  const url = id => { const a = by(id); return a ? `url('${abs(a.src)}')` : 'none'; };
+  const root = document.documentElement.style;
+  root.setProperty('--sk-disc', url('no-identity'));        // the same art as the intro CD
+  root.setProperty('--sk-chip', url('when-you-rain'));      // song chip body
+  root.setProperty('--sk-tv', url('to-see-and-be-seen'));   // TV casing (eyes + "to see and be seen")
+  root.setProperty('--sk-tvscreen', url('shedithers-eyes')); // shows through the static on the TV screen
+  const tv = document.querySelector('.tv');
+  if (tv && window.SHD_MOVE) {
+    const body = tv.querySelector('.tv-body'), panel = tv.querySelector('.tv-panel'), tag = tv.querySelector('.tv-tag');
+    [body, tag].forEach(n => n && n.setAttribute('data-drag', '')); if (panel) panel.setAttribute('data-grip', '');
+    window.SHD_MOVE(tv, 'tv', 'TikTok TV');
+  }
 })();

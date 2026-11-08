@@ -202,7 +202,7 @@ body.zone .viewer .v-strip,body.zone .viewer .v-log{display:none}
 body.zone .viewer{grid-template-columns:1fr}
 body.zone .viewer .v-nav.next{right:12px}
 body.zone.sleepy .viewer .v-top,body.zone.sleepy .viewer .v-nav{opacity:0;transition:opacity .6s}
-body.zone .viewer .v-mat img,body.zone .viewer .v-mat video{max-height:calc(100dvh - 90px)}
+body.zone .viewer .v-mat img,body.zone .viewer .v-mat video{max-height:calc(100svh - 90px)}
 body.drifting .zone-btn::after{content:'· DRIFT';color:var(--lime)}
 body[data-mood=dim] .grain{opacity:.1}
 

@@ -11,7 +11,7 @@ function h(tag, props, ...kids) { const e = document.createElement(tag); if (pro
 /* ---- intro: the CD label is cut from the artist's work ---- */
 const gate = $('#gate');
 if (gate) {
-  const a = ARTWORKS.find(x => x.id === 'shedithers-eyes') || pick(), b = pick();
+  const a = ARTWORKS.find(x => x.id === 'no-identity') || pick(), b = pick();
   gate.style.setProperty('--pg-art', `url('${absU(a.src)}')`); gate.style.setProperty('--pg-art2', `url('${absU(b.src)}')`);
   const go = () => gate.classList.add('pg-launch');
   $('#enter') && $('#enter').addEventListener('click', go, true);
