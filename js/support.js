@@ -84,7 +84,7 @@ let tipNudged = false;
 function tipNudge() { if (tipNudged || !cashtag()) return; tipNudged = true; setTimeout(() => toast('Made something you love? ♥ TIP the artist or grab stickers in the shop', 'info', 6000), 1200); }
 
 /* ---- thank-you note after every export, in the SHEDITHERS collage style ---- */
-const TY_LINES = ['thank u for making something with me', 'u made that. that’s yours forever', 'thank u for being here with me', 'look what u made', 'thank u for not being ordinary'];
+const TY_LINES = ['u made that. it’s yours forever', 'look at u, not being ordinary', 'thank u for making something with me', 'dream without action is hallucination. u acted', 'prettier in fragments. like u', 'that’s not ordinary. good'];
 function thankYou(rec) {
   const art = ART_GALLERY[Math.floor(Math.random() * ART_GALLERY.length)], line = TY_LINES[Math.floor(Math.random() * TY_LINES.length)], quote = TICKER[Math.floor(Math.random() * TICKER.length)];
   const link = (show, label, fn, cls) => show ? h('button', { class: 'btn sm ' + (cls || ''), onclick: fn }, label) : null;
@@ -97,8 +97,9 @@ function thankYou(rec) {
       h('div', { class: 'ty-quote' }, '“' + quote + '”'),
       h('div', { class: 'ty-sign' }, '— shedithers', h('span', { html: '<svg viewBox="0 0 40 40"><use href="#i-mark"/></svg>' }))),
     h('div', { class: 'badge-heart ty-badge' }, h('span', { html: '<svg viewBox="0 0 24 24"><use href="#i-heart"/></svg>' }), h('div', null, h('s', null, 'Shedithers'), h('b', null, 'LOVES YOU'))));
-  const links = h('div', { class: 'ty-links' }, link(cashtag(), '♥ BUY ME A DRINK', openTip, 'pink'), link(rbUser(), 'STICKERS & PRINTS', openShop), link(tiktokUser(), '♪ TIKTOK', openTiktok), link(ytUser(), '▶ YOUTUBE', openYoutube), link(CFG.email, '✉ IDEAS', openSuggest));
-  const md = openModal({ title: 'TRANSMISSION COMPLETE', sub: 'THANK YOU', cls: 'sm ty', body: h('div', null, card, links), foot: h('button', { class: 'btn primary', onclick: () => md.close() }, 'KEEP CREATING ▸') });
+  const links = h('div', { class: 'ty-links' }, link(cashtag(), '🍹 BUY ME A DRINK', openTip, 'pink'), link(rbUser(), '★ STICKERS + PRINTS', openShop), link(tiktokUser(), '♪ TIKTOK', openTiktok), link(ytUser(), '▶ YOUTUBE', openYoutube), link(CFG.email, '✉ TELL ME SOMETHING', openSuggest));
+  const md = openModal({ title: 'SAVED. IT’S YOURS NOW', sub: 'SHEDITHERS LOVES YOU', cls: 'sm ty', body: h('div', null, card, h('p', { class: 'ty-pp' }, 'post it, tag me @' + (tiktokUser() || 'shedithers') + ', i wanna see ♥'), links), foot: h('button', { class: 'btn primary', onclick: () => md.close() }, 'MAKE ANOTHER ONE ▸') });
+  md.el.classList.add('tip-modal');
   md.el.style.width = 'min(560px,94vw)';
 }
 function tipNudge(rec) { setTimeout(() => thankYou(rec), 450); }

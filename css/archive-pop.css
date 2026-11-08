@@ -416,3 +416,66 @@ input[type=text],input[type=email],textarea{cursor:text}
 .drink-tab b{font-size:20px}
 @keyframes tabCall{0%,88%,100%{box-shadow:0 0 0 2px #0b0a09,0 0 24px rgba(195,20,28,.6)}93%{box-shadow:0 0 0 2px #0b0a09,0 0 46px rgba(255,60,60,1)}}
 @media (max-width:760px),(hover:none) and (pointer:coarse){.drink-tab{animation:none}.tip-guy{width:64px;height:64px;right:58px}.dk-drink{min-height:104px}}
+
+/* ===== about page v2: handmade, in the artist's own words ===== */
+.about-card{width:min(820px,100%)}
+.bio{max-width:640px;margin:10px 0 6px;font:400 17px/1.55 'Special Elite',monospace;color:#0b0a09}
+.bio p{margin:0 0 10px}
+.bio-hi{font:400 34px/1 'Permanent Marker',cursive!important;color:#c3141c;transform:rotate(-2deg);display:inline-block;margin-bottom:6px!important}
+.bio s{text-decoration-color:#c3141c;text-decoration-thickness:3px}
+.ab-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:30px 0 12px;font:400 30px/1 'Permanent Marker',cursive;color:#0b0a09;transform:rotate(-1deg)}
+.ab-h::after{content:'';flex-basis:100%;height:3px;max-width:240px;background:#c3141c;border-radius:3px;transform:rotate(-1.5deg)}
+.ab-h small{font:400 13px 'Special Elite',monospace;color:#6b655a;transform:rotate(1deg)}
+/* the cut-up poem: ransom-note scraps, every word cut from a different place */
+.cutup{display:flex;flex-direction:column;gap:7px;padding:22px 18px;background:#0b0a09;box-shadow:inset 0 0 0 2px #0b0a09,6px 6px 0 #c3141c;clip-path:polygon(0 1%,6% 0,20% 1.2%,44% 0,70% 1%,100% 0,99.3% 40%,100% 100%,72% 99%,40% 100%,14% 98.8%,0 100%,.7% 60%)}
+.cu-line{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.cu{display:inline-block;padding:2px 7px 3px;line-height:1.05;font-size:calc(19px * var(--s,1));transform:rotate(var(--r,0deg));box-shadow:1px 2px 0 rgba(0,0,0,.45);transition:transform .2s,text-shadow .2s}
+.cu:hover{transform:rotate(0) scale(1.08);text-shadow:0 0 8px rgba(255,90,90,.9)}
+.f-bebas{font-family:'Bebas Neue',sans-serif;font-size:calc(25px * var(--s,1));letter-spacing:.04em}
+.f-type{font-family:'Special Elite',monospace}
+.f-marker{font-family:'Permanent Marker',cursive}
+.f-hand{font-family:var(--hand),'Permanent Marker',cursive;font-size:calc(22px * var(--s,1))}
+.f-mono{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:calc(15px * var(--s,1));text-transform:uppercase}
+.f-serif{font-family:Georgia,'Times New Roman',serif;font-style:italic}
+.k-paper{background:#e9e3d1;color:#0b0a09}
+.k-black{background:#1c1a18;color:#e9e3d1;box-shadow:0 0 0 1px #3a3633,1px 2px 0 rgba(0,0,0,.45)}
+.k-red{background:#c3141c;color:#e9e3d1}
+.k-news{background:#d8d2c0 repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.05) 3px 4px);color:#2a2725}
+.cu.strike{text-decoration:line-through;text-decoration-color:#c3141c;text-decoration-thickness:3px}
+/* what i make: scribbled checklist */
+.kinds{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px 18px;padding:0;margin:0;list-style:none;font:400 17px 'Special Elite',monospace}
+.kinds li{display:flex;align-items:center;gap:10px}
+.kinds i{display:grid;place-items:center;width:24px;height:24px;flex:none;border:2px solid #0b0a09;border-radius:3px 6px 4px 5px;font:400 22px/1 'Permanent Marker',cursive;font-style:normal;color:#c3141c;transform:rotate(-4deg)}
+.kinds li.no{color:#8a8478;text-decoration:line-through;text-decoration-color:#c3141c;text-decoration-thickness:2px}
+/* find me: torn tickets */
+.tkts{display:flex;flex-wrap:wrap;gap:12px}
+.tkt{display:flex;flex-direction:column;min-width:150px;padding:10px 16px 11px;background:#0b0a09;color:#e9e3d1;text-decoration:none;transform:rotate(-1.2deg);box-shadow:4px 4px 0 #c3141c;clip-path:polygon(0 0,100% 0,100% 30%,96% 50%,100% 70%,100% 100%,0 100%,0 70%,4% 50%,0 30%);transition:transform .2s,box-shadow .2s}
+.tkt:nth-child(2n){transform:rotate(1.4deg)}
+.tkt.red{background:#c3141c;box-shadow:4px 4px 0 #0b0a09}
+.tkt.paper{background:#f4efe2;color:#0b0a09;box-shadow:4px 4px 0 #0b0a09,inset 0 0 0 2px #0b0a09}
+.tkt b{font:400 22px/1 'Bebas Neue',sans-serif;letter-spacing:.08em}
+.tkt small{font:400 12px 'Special Elite',monospace;opacity:.85}
+.tkt:hover{transform:rotate(0) translateY(-2px);text-shadow:0 0 8px rgba(255,90,90,.9)}
+/* tip jar */
+.ab-tip{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;margin-top:26px;padding:4px 20px 18px;background:#c3141c;color:#e9e3d1;transform:rotate(-.8deg);clip-path:polygon(0 4%,10% 0,35% 3%,60% 0,85% 3%,100% 0,99% 50%,100% 100%,70% 96%,40% 100%,12% 97%,0 100%,1% 50%)}
+.ab-tip .ab-h{color:#e9e3d1}.ab-tip .ab-h::after{background:#0b0a09}
+.ab-tip p{max-width:430px;margin:0;font:400 16px/1.45 'Special Elite',monospace}
+.ab-tip-btn{padding:14px 22px;border-radius:999px;background:#0b0a09;color:#e9e3d1;font:400 22px 'Bebas Neue',sans-serif;letter-spacing:.12em;box-shadow:0 0 0 2px #e9e3d1}
+.ab-tip-btn:hover{box-shadow:0 0 0 2px #e9e3d1,0 0 26px rgba(0,0,0,.6)}
+/* suggestion box */
+.sbox{margin-top:8px}
+.sb-kinds{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.sb-kinds button{padding:6px 14px;border-radius:999px;border:2px solid #0b0a09;background:transparent;color:#0b0a09;font:400 15px 'Special Elite',monospace}
+.sb-kinds button.on{background:#0b0a09;color:#e9e3d1}
+.sb-msg,.sb-in{width:100%;padding:12px 14px;border:2px solid #0b0a09;border-radius:4px 10px 6px 8px;background:#f6f2e6 repeating-linear-gradient(0deg,transparent 0 27px,rgba(195,20,28,.18) 27px 28px);color:#0b0a09;font:400 16px/28px 'Special Elite',monospace}
+.sb-msg{min-height:132px;resize:vertical}
+.sb-msg:focus,.sb-in:focus{outline:3px solid #c3141c;outline-offset:2px}
+.sb-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.sb-row .sb-in{flex:1 1 220px;width:auto}
+.sb-status{flex:1;margin:0;font:400 14px 'Special Elite',monospace;color:#c3141c}
+.sb-status a{color:#0b0a09}
+.sb-send{margin-left:auto;padding:12px 24px;border-radius:999px;background:#c3141c;color:#e9e3d1;font:400 22px 'Bebas Neue',sans-serif;letter-spacing:.12em;box-shadow:0 0 0 2px #0b0a09,0 6px 18px rgba(195,20,28,.45)}
+.sb-send:disabled{opacity:.5}
+.sb-honey{position:absolute;left:-9999px;width:1px;height:1px}
+.about-card .rights{margin-top:26px;font:400 14px 'Special Elite',monospace;color:#5a554c}
+@media (max-width:760px){.cu{font-size:calc(16px * var(--s,1))}.f-bebas{font-size:calc(21px * var(--s,1))}.ab-h{font-size:25px}.tkt{min-width:calc(50% - 6px)}}

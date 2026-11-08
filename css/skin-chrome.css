@@ -151,3 +151,17 @@ body{cursor:url("../assets/ui/cursor-star.png") 16 16, auto;cursor:image-set(url
 .tip-modal .tip-row .btn.primary{min-height:48px;font-size:15px;border-radius:999px}
 .tip-modal .tip-scan{border-top:2px dashed rgba(11,10,9,.3)}.tip-modal .tip-scan .note{color:#3a3633}
 .tip-modal .tip-qr{border:2px solid #0b0a09}
+
+/* ===== thank-you after export: torn paper, red marker, the artist's voice ===== */
+.ty .ty-card{background:#0b0a09;border:0;box-shadow:inset 0 0 0 2px #0b0a09;clip-path:polygon(0 2%,8% 0,30% 1.5%,55% 0,80% 1.2%,100% 0,99.4% 50%,100% 100%,70% 98.6%,40% 100%,10% 98.4%,0 100%,.6% 50%)}
+.ty .ty-card::before{content:'ERROR: NO IDENTITY · ERROR: NO IDENTITY · ERROR: NO IDENTITY';position:absolute;left:-10%;right:-10%;bottom:16%;padding:6px 0;background:#c3141c;color:#0b0a09;font:400 22px 'Bebas Neue',sans-serif;letter-spacing:.14em;white-space:nowrap;transform:rotate(-7deg);z-index:1}
+.ty .ty-print{z-index:2;box-shadow:6px 6px 0 #c3141c,0 12px 30px rgba(0,0,0,.6)}
+.ty .ty-paper{z-index:3;background:#e9e3d1;clip-path:polygon(0 3%,10% 0,40% 2%,70% 0,100% 3%,98.6% 50%,100% 97%,66% 100%,30% 97.6%,0 100%,1.4% 50%)}
+.ty .ty-hand{color:#c3141c;font-size:26px}
+.ty .ty-hand span{color:#c3141c}
+.ty .ty-sign svg,.ty .ty-badge span svg{color:#c3141c}
+.ty .ty-quote{font-size:14px}
+.ty .ty-tape{background:rgba(233,227,209,.8)}
+.ty .ty-badge{z-index:4}
+.ty-pp{margin:12px 2px 2px;font:400 15px 'Special Elite',monospace;color:#0b0a09;text-align:center}
+.ty .ty-links .btn.pink{background:linear-gradient(180deg,#e8434a 0%,#c3141c 45%,#8f0d13 55%,#d32a31 100%);color:#f4eee0;border-color:#4a0609}

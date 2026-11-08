@@ -191,14 +191,65 @@ function viewAbout() {
   setHint([['ESC BACK', () => location.hash = '#/']]); keyNav = e => { if (e.key === 'Escape') location.hash = '#/'; };
   const link = (ok, label, href) => ok ? h('a', { class: 'stamp', href, target: '_blank', rel: 'noopener' }, label) : null;
   const tt = String(CFG.tiktok || '').replace(/^@/, ''), yt = String(CFG.youtube || '').replace(/^@/, ''), cash = String(CFG.cashapp || '').replace(/^\$/, '');
+  const rb = String(CFG.redbubble || '').trim(), mail = String(CFG.email || '').trim();
+  // a poem cut out of my own pieces: every line is words from the art
+  const POEM = [
+    'i look prettier in fragments', 'so click to be saved', 'click to forgive', 'you keep forgetting',
+    'people are either trauma or checkpoints', 'and when it’s all over', 'who will you be?',
+    'i stand alone', 'but i’m not lonely', 'are we alive yet?', 'become unmarketable',
+    'dreams aren’t dreams', 'dream without action is hallucination', 'when you rain you pour',
+    'i’m sorry i’m sorry again', 'shedithers loves you'];
+  let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const FONTS = ['f-bebas', 'f-type', 'f-marker', 'f-hand', 'f-mono', 'f-serif'], INKS = ['k-paper', 'k-black', 'k-red', 'k-news', 'k-paper', 'k-black'];
+  const poem = h('div', { class: 'cutup', 'aria-label': POEM.join(' / ') }, POEM.map((line, li) => h('div', { class: 'cu-line', 'aria-hidden': 'true', style: `margin-left:${Math.round(rnd() * 14)}%` },
+    line.split(' ').map(w => h('span', { class: `cu ${FONTS[Math.floor(rnd() * FONTS.length)]} ${INKS[Math.floor(rnd() * INKS.length)]}${w === 'sorry' && li === 14 && rnd() > .2 ? ' strike' : ''}`, style: `--r:${(rnd() * 8 - 4).toFixed(1)}deg;--s:${(0.85 + rnd() * 0.6).toFixed(2)}` }, w)))));
+  const KINDS = [['digital collage', true], ['mixed media drawing', true], ['moving image', true], ['dithered video + static', true], ['handwriting', true], ['little object studies', true], ['ordinary', false]];
+  // suggestion box, right here (same inbox as the Dither Lab's)
+  let kind = 'idea', lastSent = 0;
+  const msg = h('textarea', { class: 'sb-msg', maxLength: 2000, placeholder: 'tell me what u want next. ideas, bugs, love notes, collabs…', 'aria-label': 'Your message' });
+  const who = h('input', { class: 'sb-in', maxLength: 60, placeholder: 'your name (optional)', 'aria-label': 'Your name' });
+  const reply = h('input', { class: 'sb-in', type: 'email', maxLength: 120, placeholder: 'email, only if u want a reply', 'aria-label': 'Your email' });
+  const honey = h('input', { type: 'text', tabindex: '-1', autocomplete: 'off', class: 'sb-honey', 'aria-hidden': 'true' });
+  const sbStatus = h('p', { class: 'sb-status', role: 'status' });
+  const kinds = h('div', { class: 'sb-kinds' }, ['idea', 'bug', 'love note', 'collab'].map((k, i) => h('button', { type: 'button', class: i ? '' : 'on', 'aria-pressed': i ? 'false' : 'true', onclick: e => { kind = k; [...kinds.children].forEach(b => { b.classList.toggle('on', b === e.currentTarget); b.setAttribute('aria-pressed', b === e.currentTarget); }); } }, k)));
+  const sendBtn = h('button', { type: 'button', class: 'sb-send', onclick: async () => {
+    const text = msg.value.trim(); if (text.length < 3) { msg.focus(); sbStatus.textContent = 'write me something first'; return; }
+    if (honey.value) return; if (Date.now() - lastSent < 45000) { sbStatus.textContent = 'got it ♥ give it a sec before sending another'; return; }
+    if (reply.value && !reply.checkValidity()) { reply.focus(); sbStatus.textContent = 'that email looks off. fix it or leave it blank'; return; }
+    sendBtn.disabled = true; sbStatus.textContent = 'sending…';
+    try {
+      const r = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(mail), { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ _subject: `SHEDITHERS ${kind} ♥ (archive)`, _template: 'table', _captcha: 'false', type: kind, message: text, name: who.value || '', email: reply.value || '' }) });
+      const j = await r.json().catch(() => ({})); if (!r.ok || String(j.success) === 'false') throw new Error(j.message || 'HTTP ' + r.status);
+      lastSent = Date.now(); msg.value = ''; sbStatus.textContent = 'sent. i read every single one ♥';
+    } catch (e) { sbStatus.innerHTML = ''; sbStatus.append('couldn’t send that one. ', h('a', { href: `mailto:${mail}?subject=${encodeURIComponent('SHEDITHERS ' + kind)}&body=${encodeURIComponent(msg.value)}` }, 'email it to me instead ▸')); }
+    sendBtn.disabled = false;
+  } }, 'send it ▸');
+  const ticket = (ok, label, sub, href, cls, ext) => ok ? h('a', { class: 'tkt ' + (cls || ''), href, target: ext === false ? null : '_blank', rel: ext === false ? null : 'noopener' }, h('b', null, label), h('small', null, sub)) : null;
   view.append(h('section', { class: 'about' },
     h('div', { class: 'about-card' }, h('i', { class: 'tape a' }), h('i', { class: 'tape b' }),
-      h('div', { class: 'about-code' }, 'FILE_00 // THE ARTIST'), h('h2', null, 'SHEDITHERS'),
-      h('p', { class: 'type' }, 'Collage, drawing, signals and moving images — made from scraps, static and feelings that don’t fit the ordinary.'),
-      h('p', { class: 'marker big' }, 'shedithers loves you ♥'),
-      h('ul', { class: 'quotes' }, (() => { const seen = new Set(), out = []; ['I don’t want ordinary. It’s not in my nature.', 'becoming and unbecoming so I can become who I always have been and never was'].concat(...ARTWORKS.map(a => (w => { const parts = w.split(' · '); return parts.every(x => !x.includes(' ')) ? [w] : parts; })(String(a.words || '')))).forEach(q => { q = q.trim(); const k = q.toLowerCase().replace(/[^a-z]/g, ''); if (q && k !== 'shedithers' && !seen.has(k)) { seen.add(k); out.push(q); } }); return out; })().map((q, i) => h('li', { style: `--r:${[-1.5, 1, -0.5, 2, -2, 0.5][i % 6]}deg` }, '“' + q + '”'))),
-      h('div', { class: 'links' }, link(tt, '♪ TIKTOK', `https://www.tiktok.com/@${tt}`), link(yt, '▶ YOUTUBE', `https://www.youtube.com/@${yt}`), link(cash, '♥ BUY ME A DRINK', `https://cash.app/$${cash}`), h('a', { class: 'stamp', href: 'index.html' }, 'THE LAB ▸')),
-      h('p', { class: 'rights' }, 'All artwork © SHEDITHERS. Shown for viewing only — please don’t download, edit, reproduce or use it to train or generate images.'))));
+      h('div', { class: 'about-code' }, 'FILE_00 // WHO MADE THIS'), h('h2', null, 'SHEDITHERS'),
+      h('div', { class: 'bio' },
+        h('p', { class: 'bio-hi' }, 'hi. it’s me.'),
+        h('p', null, 'i cut things up and put them back together wrong on purpose. collage, drawings, signals, moving pictures, dithered static, handwriting on whatever’s closest.'),
+        h('p', null, 'i don’t want ordinary. ', h('s', null, 'it’s not'), ' it was never in my nature.'),
+        h('p', null, 'becoming and unbecoming so i can become who i always have been and never was. this archive is the proof.')),
+      h('h3', { class: 'ab-h' }, 'a poem made out of my pieces', h('small', null, 'every word here came off one of my artworks')),
+      poem,
+      h('h3', { class: 'ab-h' }, 'what i make'),
+      h('ul', { class: 'kinds' }, KINDS.map(([k, yes]) => h('li', { class: yes ? 'yes' : 'no' }, h('i', null, yes ? '✗' : ''), k))),
+      h('h3', { class: 'ab-h' }, 'find me'),
+      h('div', { class: 'tkts' },
+        ticket(tt, '♪ tiktok', '@' + tt, `https://www.tiktok.com/@${tt}`, 'red'),
+        ticket(yt, '▶ youtube', '@' + yt, `https://www.youtube.com/@${yt}`),
+        ticket(mail, '✉ email', mail, `mailto:${mail}`),
+        ticket(cash, '$ cash app', '$' + cash, `https://cash.app/$${cash}`, 'red'),
+        ticket(rb, '★ stickers + prints', 'redbubble', `https://www.redbubble.com/people/${rb}/shop`),
+        ticket(true, '▣ the dither lab', 'make your own', 'index.html', 'paper', false)),
+      h('div', { class: 'ab-tip' },
+        h('div', null, h('h3', { class: 'ab-h' }, 'tip jar'), h('p', null, CFG.tipLine || 'buy me a drink ♥')),
+        h('button', { type: 'button', class: 'ab-tip-btn', onclick: () => window.SHD_DRINK && window.SHD_DRINK() }, '🍹 buy me a drink')),
+      mail ? h('div', { class: 'sbox' }, h('h3', { class: 'ab-h' }, 'suggestion box', h('small', null, 'straight to me. i read every one')), honey, kinds, msg, h('div', { class: 'sb-row' }, who, reply), h('div', { class: 'sb-row' }, sbStatus, sendBtn)) : null,
+      h('p', { class: 'rights' }, 'all art © shedithers. look as long as u want. just don’t download it, edit it, sell it, or feed it to AI. it’s mine ♥'))));
 }
 
 /* ---------- hint bar (game-style controls, all tappable) ---------- */

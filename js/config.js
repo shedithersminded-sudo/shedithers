@@ -32,7 +32,7 @@ const SHD_CONFIG = {
   ],
   // Where the suggestion box sends messages
   email: 'shedithersminded@gmail.com',
-  tipLine: 'SHEDITHERS is free. If it made something you love, buy the artist a drink ♥',
+  tipLine: 'all of this is free. if something in here got to u, buy me a drink. no pressure. i’ll still love u either way ♥',
   drinks: [
     { label: 'SLUSHY', emoji: '🍧', amount: 3 },
     { label: 'FRUIT CUP', emoji: '🍓', amount: 5 },
