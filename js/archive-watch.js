@@ -74,10 +74,9 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     // the site's songs, played in order: "Sorry" by evo & crevo, then "you kno u" by evo
     const SONGS = [{ src: 'assets/ui/intro.mp3', title: 'Sorry', artist: 'evo & crevo' }, { src: 'assets/ui/you-kno-u.mp3', title: 'you kno u', artist: 'evo' }];
     let track = 0;
-    const a = new Audio(SONGS[0].src); a.volume = 0; a.play().catch(() => { });
-    // fade in softly over ~3s up to the starting volume (stops if the visitor touches the volume)
-    let fading = true; const t0 = performance.now();
-    const fadeT = setInterval(() => { if (!fading) return clearInterval(fadeT); const k = Math.min(1, (performance.now() - t0) / 3000); a.volume = vol * k; if (k >= 1) { fading = false; clearInterval(fadeT); } }, 60);
+    // starts low; visitors turn it up with the slider if they want
+    const a = new Audio(SONGS[0].src); a.volume = vol; a.play().catch(() => { });
+    let fading = false;
     const chip = document.createElement('div'); chip.className = 'intro-chip';
     chip.innerHTML = '<span class="ic-disc"></span><span class="ic-txt"><b></b><small></small></span>';
     const label = () => {

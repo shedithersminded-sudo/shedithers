@@ -1,4 +1,4 @@
-# SHEDITHERS — handoff (2026-11-07, live version v2.7.2)
+# SHEDITHERS — handoff (2026-11-07, live version v2.7.3)
 
 Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 
@@ -9,7 +9,7 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - **Deploys:** pushing `main` to github.com/shedithersminded-sudo/shedithers auto-deploys to https://shedithers.netlify.app and https://shedithersminded-sudo.github.io/shedithers/. The user always wants both sites updated and verified.
 
 ## Release steps (every change)
-1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=272 and v2.7.2 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
+1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=273 and v2.7.3 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
 2. Commit, ending the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then push.
 3. Check that both live sites serve the new `sw.js` version.
 
@@ -70,3 +70,4 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - v2.7.0: visitor + art counter via GoatCounter (`js/stats.js`, off until `goatcounter` is set in config.js — the user must create the free account themselves). Events: made-art/<ext>, tip-jar-opened, suggestion-sent, tiktok-theater-opened. "made something? post it + tag @shedithers or #shedithers" on the editor start screen and in both export windows.
 - v2.7.1: counter ON — goatcounter: 'shedithers' (stats at https://shedithers.goatcounter.com, user owns the account).
 - v2.7.2: intro music starts quieter (30%, was 75%) and fades in over ~3s; a visitor's saved volume still wins.
+- v2.7.3: no fade — intro music simply starts at 30%; visitors turn it up with the slider.
