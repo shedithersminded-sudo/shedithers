@@ -460,3 +460,7 @@ body.skin-chrome{--kraft:#c4ab7c}
 .pv-bar button{height:30px;padding:0 12px;border-radius:5px;font:400 15px 'Bebas Neue',sans-serif;letter-spacing:.1em;color:#f6f0e4;border:1px solid rgba(255,255,255,.18)}
 .pv-bar .pv-add{background:rgba(195,20,28,.85)}.pv-bar .pv-x{background:rgba(255,255,255,.1)}
 .pv-bar button{white-space:nowrap;flex:none}.pv-bar>span{min-width:0}
+/* v3.0.8: the artist's SHEDITHERS logo replaces the heart mark */
+.logo .mark.logo-img{width:44px;height:44px;object-fit:contain;color:inherit;filter:drop-shadow(0 1px 0 rgba(0,0,0,.5))!important;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.logo:hover .mark.logo-img{transform:rotate(-12deg) scale(1.08)}
+@media (max-width:760px){.logo .mark.logo-img{width:36px;height:36px}}

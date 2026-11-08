@@ -21,7 +21,7 @@ function esc(e) { if (e.key === 'Escape') { e.stopPropagation(); closeForm(); } 
 function openForm() {
   if (modal || !mail) return; window.shdCount && window.shdCount('collab-opened', 'Opened the collab form');
   let kind = 'music', lastSent = 0;
-  const KINDS = ['music', 'clothes / merch', 'art / zine', 'video', 'a show / event', 'something weird'];
+  const KINDS = ['music', 'clothes / merch', 'art / prints', 'video', 'a show / event', 'something weird'];
   const kinds = h('div', { class: 'cb-kinds', role: 'group', 'aria-label': 'What kind of collab' }, KINDS.map((k, i) => h('button', { type: 'button', class: i ? '' : 'on', 'aria-pressed': i ? 'false' : 'true', onclick: e => { kind = k; [...kinds.children].forEach(b => { const on = b === e.currentTarget; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); } }, k)));
   const who = h('input', { class: 'cb-in', maxLength: 60, placeholder: 'your name / @handle', 'aria-label': 'Your name or handle' });
   const reply = h('input', { class: 'cb-in', type: 'email', maxLength: 120, placeholder: 'your email (so i can write back)', 'aria-label': 'Your email', required: true });
@@ -49,7 +49,7 @@ function openForm() {
   const card = h('div', { class: 'cb-card', style: `--cb-art:${art('who-will-you-be')}` },
     h('i', { class: 'cb-art', 'aria-hidden': 'true' }), x,
     h('small', { class: 'cb-kana' }, 'コラボ'), h('h3', null, 'LET’S MAKE SOMETHING'),
-    h('p', { class: 'cb-lede' }, 'not ordinary. not in my nature. if u make music, clothes, zines, videos or something with no name yet, send it. i read every one.'),
+    h('p', { class: 'cb-lede' }, 'not ordinary. not in my nature. if u make music, clothes, art, videos or something with no name yet, send it. i read every one.'),
     h('div', { class: 'cb-label' }, 'what kind?'), kinds, h('div', { class: 'cb-row' }, who, reply), msg, honey,
     h('div', { class: 'cb-row end' }, status, send));
   modal = h('div', { class: 'cb', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Collab request' }, card);
@@ -75,7 +75,7 @@ function build() {
     h('i', { class: 'cl-a', 'aria-hidden': 'true' }), h('i', { class: 'cl-b', 'aria-hidden': 'true' }), h('i', { class: 'cl-scan', 'aria-hidden': 'true' }),
     h('span', { class: 'cl-tag', 'aria-hidden': 'true' }, 'OPEN FOR COLLABS ✦ 2026'),
     h('b', { class: 'cl-title', 'aria-label': 'Wanna collab?' }, title),
-    h('p', { class: 'cl-words' }, 'two signals cross. something weird comes out.', h('br'), 'music · clothes · zines · video · whatever has no name yet.'),
+    h('p', { class: 'cl-words' }, 'two signals cross. something weird comes out.', h('br'), 'music · clothes · prints · video · whatever has no name yet.'),
     btn, h('small', { class: 'cl-note' }, 'goes straight to my inbox ♥'));
   // the poster leans toward the pointer; the button is a little magnetic
   if (!reduce) {
@@ -101,6 +101,8 @@ function add() {
   const P = $('.portal'); if (!P || $('.p-collab', P)) return;
   const after = $('.p-voices', P) || $('.p-deck', P), sec = build();
   if (after && after.nextSibling) P.insertBefore(sec, after.nextSibling); else P.append(sec);
+  // the deck lives under the comments + collabs row
+  const deck = $('.p-deck', P); if (deck) sec.after(deck);
 }
 const view = $('#view'); if (view) { new MutationObserver(add).observe(view, { childList: true }); add(); }
 })();

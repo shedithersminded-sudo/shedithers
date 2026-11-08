@@ -299,3 +299,6 @@ body:not(.entered) .view{visibility:hidden}
 }
 @media (hover:none){.folder:not(.cover) .f-body>*,.folder:not(.cover) .f-window{opacity:1}.folder:not(.cover){flex-grow:1.6}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* v3.0.8: the artist's SHEDITHERS logo (lounging figure in the arched name) replaces the heart */
+.brand .brand-logo{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(195,20,28,.55));transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.brand:hover .brand-logo{transform:rotate(-12deg) scale(1.08)}

@@ -21,7 +21,7 @@ window.SHD_PORTAL = function (view, X) {
 
   /* logo block */
   P.append(h('section', { class: 'p-mod p-logo' },
-    h('div', { class: 'pl-mark', html: '<svg viewBox="0 0 40 40"><use href="#mk"/></svg>' }),
+    h('div', { class: 'pl-mark', html: '<img class="pl-logo" src="assets/ui/logo-paper-sm.png" alt="">' }),
     h('div', { class: 'pl-url' }, 'HTTP://SHEDITHERS.NETLIFY.APP/ART'),
     h('div', { class: 'pl-name' }, 'SHEDITHERS', h('span', { class: 'pl-cursor' }, '▮')),
     h('div', { class: 'pl-virus' }, 'NO IDENTITY CONTROL VIRUS.'),

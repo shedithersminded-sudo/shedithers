@@ -53,3 +53,37 @@
 .d3-card:not(.front) .d3-words{opacity:.75}
 @media (max-width:760px){.d3-words i{font-size:12px!important}}
 @media (prefers-reduced-motion:reduce){.d3-words i{animation:none!important}}
+
+/* ===== v3.0.8: beat-up iridescent cards — holo foil sheen that follows the pointer, scratches, creases, grime,
+   worn uneven corners, a dog-ear and tape; each card worn a little differently ===== */
+.d3-face{border-radius:13px 6px 12px 4px/6px 12px 5px 13px}
+.d3-front::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(115deg,rgba(79,156,149,.0) 8%,rgba(79,156,149,.55) 22%,rgba(154,91,176,.55) 36%,rgba(214,177,58,.5) 50%,rgba(196,90,134,.5) 64%,rgba(95,127,192,.55) 78%,rgba(79,156,149,0) 92%);
+  background-size:260% 260%;background-position:calc(var(--gx) * 1.2) calc(var(--gy) * 1.2);mix-blend-mode:color-dodge;opacity:.42;transition:opacity .3s;animation:d3Holo 7s ease-in-out infinite alternate}
+@keyframes d3Holo{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(70deg)}}
+.d3-card:hover .d3-front::before,.d3-card.front .d3-front::before{opacity:.7}
+.d3-front::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;
+  background:
+    linear-gradient(225deg,#d8d0b8 0 7%,rgba(0,0,0,.45) 7.4%,transparent 9%),
+    linear-gradient(calc(var(--crease,12deg) + 90deg),transparent calc(var(--cy,46%) - .4%),rgba(255,255,255,.22) var(--cy,46%),rgba(0,0,0,.35) calc(var(--cy,46%) + .4%),transparent calc(var(--cy,46%) + 1%)),
+    repeating-linear-gradient(var(--sc,72deg),transparent 0 23px,rgba(255,255,255,.16) 23px 24px,transparent 24px 61px),
+    repeating-linear-gradient(calc(var(--sc,72deg) - 50deg),transparent 0 37px,rgba(0,0,0,.28) 37px 38px,transparent 38px 90px),
+    radial-gradient(ellipse at var(--dx,20%) var(--dy,80%),rgba(70,45,20,.45),transparent 38%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.6 1.1'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;opacity:.85;box-shadow:inset 0 0 0 2px rgba(233,227,209,.18),inset 0 0 22px rgba(30,18,8,.65)}
+/* worn print on the art itself */
+.d3-art{filter:contrast(1.08) saturate(.9) sepia(.12);box-shadow:inset 0 0 0 2px rgba(11,10,9,.85),inset 0 0 18px rgba(0,0,0,.55)}
+/* a strip of tape on some cards */
+.d3-card:nth-child(3n+1) .d3-art::after{content:'';position:absolute;left:30%;top:-6px;width:40%;height:16px;background:rgba(236,226,190,.62);transform:rotate(-4deg);box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.d3-card:nth-child(4n+2) .d3-art::after{content:'';position:absolute;right:-8px;bottom:18%;width:44px;height:14px;background:rgba(212,255,0,.35);transform:rotate(58deg)}
+/* every card is worn its own way */
+.d3-card:nth-child(2n){--crease:-14deg;--cy:58%;--sc:118deg;--dx:78%;--dy:22%}
+.d3-card:nth-child(3n){--crease:4deg;--cy:34%;--sc:40deg;--dx:60%;--dy:90%}
+.d3-card:nth-child(5n){--crease:-30deg;--cy:66%;--sc:150deg;--dx:12%;--dy:30%}
+.d3-card:nth-child(2n) .d3-face{border-radius:5px 14px 6px 12px/12px 5px 14px 6px}
+.d3-card:nth-child(3n) .d3-face{border-radius:10px 10px 3px 14px/4px 14px 10px 8px}
+.d3-card:hover .d3-inner{filter:saturate(1.15)}
+/* the back gets the same grime + a faint holo */
+.d3-back::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 20%,rgba(154,91,176,.18) 40%,rgba(79,156,149,.18) 55%,transparent 75%),repeating-linear-gradient(72deg,transparent 0 30px,rgba(0,0,0,.08) 30px 31px);mix-blend-mode:multiply}
+@media (prefers-reduced-motion:reduce){.d3-front::before{animation:none}}
+
