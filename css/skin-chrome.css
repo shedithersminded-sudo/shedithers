@@ -387,3 +387,60 @@ body.skin-chrome{--kraft:#c4ab7c}
 .skin-chrome .fx-item .ds{font-size:15px;line-height:1.25}
 .skin-chrome .fx-name small{font-size:14px!important}
 .skin-chrome .fx-b .lbl,.skin-chrome .fx-b label,.skin-chrome .ctl-h label{font-size:12px}
+
+/* ===== v2.9.3: tinted glass over the art — clean, straight, professional (overrides the torn-card library) ===== */
+.skin-chrome #left,.skin-chrome #right{position:relative;isolation:isolate;overflow:hidden;background:#0b0a09}
+.skin-chrome #left::before,.skin-chrome #right::before{content:'';position:absolute;inset:-30px;z-index:-2;background:var(--lib-art,none) center 30%/cover no-repeat;filter:blur(16px) saturate(1.2) brightness(.6);transform:scale(1.06)}
+.skin-chrome #left::after,.skin-chrome #right::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(11,10,9,.5),rgba(11,10,9,.78) 60%,rgba(11,10,9,.88))}
+.skin-chrome #leftBody,.skin-chrome #stackList{background:transparent}
+/* search + doubles switch */
+.skin-chrome .search{border-radius:5px;background:rgba(255,255,255,.08);color:#f2ece0;border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.1);font:400 16px 'Patrick Hand',cursive;backdrop-filter:blur(6px)}
+.skin-chrome .search::placeholder{color:#b9b09e}
+.dup-row{display:flex;align-items:center;gap:8px;margin:-2px 2px 12px;font:400 15px 'Patrick Hand',cursive;color:#d8d0bf;cursor:pointer}
+.dup-row input{width:16px;height:16px;accent-color:#3f7f7a}
+/* section banners: art through glass */
+.fx-sec>header{clip-path:none;transform:none!important;border-radius:6px;min-height:66px;padding:16px 14px 12px;border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 10px 24px rgba(0,0,0,.35)}
+.fx-sec>header::before{opacity:.7;filter:grayscale(.2) contrast(1.15)}
+.fx-sec>header::after{mix-blend-mode:normal;opacity:.82}
+.fx-sec>header i{clip-path:none;border-radius:5px;width:32px;height:32px;background:rgba(255,255,255,.14);color:#f2ece0;box-shadow:inset 0 1px 0 rgba(255,255,255,.2);font-size:16px}
+.fx-sec>header b{text-shadow:0 2px 10px rgba(0,0,0,.6)}
+.fx-sec>header small{background:none;color:#ece4d3!important;padding:0;transform:none;box-shadow:none;font:400 15px 'Patrick Hand',cursive}
+/* group bars: glass tinted with the group's colour */
+.fx-cat-h{clip-path:none;transform:none!important;border-radius:6px;padding:9px 12px;color:#f2ece0;background:color-mix(in srgb,var(--gc,#c3141c) 24%,rgba(22,20,18,.55));backdrop-filter:blur(10px) saturate(1.3);border:1px solid color-mix(in srgb,var(--gc,#c3141c) 45%,rgba(255,255,255,.08));border-left:4px solid var(--gc,#c3141c);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 6px 16px rgba(0,0,0,.25)}
+.fx-cat-h:hover{background:color-mix(in srgb,var(--gc,#c3141c) 38%,rgba(22,20,18,.55))}
+.fx-cat-h .gt b{font:400 19px/1 'Bebas Neue',sans-serif;letter-spacing:.12em;color:#f6f0e4}
+.fx-cat-h .gt small{color:#d8d0bf;font-size:15px}
+.fx-cat-h .chev{color:#f2ece0}
+.fx-cat-h .cnt{clip-path:none;transform:none;border-radius:4px;width:auto;min-width:30px;height:24px;padding:0 6px;background:rgba(0,0,0,.35);color:#f2ece0;border:1px solid color-mix(in srgb,var(--gc,#c3141c) 60%,transparent);font-size:15px}
+.fx-cat-h .new{transform:none;border-radius:4px;background:var(--gc,#c3141c);color:#f6f0e4}
+.fx-cat-b{margin:2px 0 0 8px;padding:6px 0 4px 8px;border-left:1px solid color-mix(in srgb,var(--gc,#c3141c) 40%,transparent)}
+/* effect rows: straight glass rows, no tilt, no tears */
+.skin-chrome .fx-item,.skin-chrome .fx-item:nth-child(even){clip-path:none;transform:none!important;border-radius:5px;margin:0 0 5px;padding:9px 10px;background:rgba(20,18,16,.58);border:1px solid rgba(255,255,255,.07);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.skin-chrome .fx-item .nm,.skin-chrome .fx-item:nth-child(even) .nm{color:#f6f0e4;font-size:18px}
+.skin-chrome .fx-item .ds,.skin-chrome .fx-item:nth-child(even) .ds{color:#d0c7b5;font-size:15px}
+.skin-chrome .fx-item .ix,.skin-chrome .fx-item:nth-child(even) .ix{color:#8f8676}
+.skin-chrome .fx-cat-b .fx-item:hover,.skin-chrome .fx-cat-b .fx-item:nth-child(even):hover{background:color-mix(in srgb,var(--gc,#c3141c) 30%,rgba(20,18,16,.62))!important;border-color:color-mix(in srgb,var(--gc,#c3141c) 70%,transparent)}
+.skin-chrome .fx-item .add{transform:none;border-radius:4px;border:1px solid var(--gc,#c3141c);background:color-mix(in srgb,var(--gc,#c3141c) 22%,transparent)!important;color:#f6f0e4!important;font:400 14px 'Bebas Neue',sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px}
+.skin-chrome .fx-item.orig::after{display:none}
+.orig-tag{font:400 14px 'Patrick Hand',cursive;color:color-mix(in srgb,var(--gc,#c3141c) 60%,#f6f0e4)}
+/* right side: glass layer cards */
+.skin-chrome .fx{border-radius:7px;background:rgba(20,18,16,.62);border:1px solid rgba(255,255,255,.09);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 8px 20px rgba(0,0,0,.3);backdrop-filter:blur(6px)}
+.skin-chrome .fx-h{background:rgba(255,255,255,.04)}
+/* the move / duplicate / menu / remove buttons: bigger, clearer */
+.skin-chrome .fx-h .ib{width:32px;height:32px;min-width:32px;border-radius:6px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);color:#f6f0e4;box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.skin-chrome .fx-h .ib svg{width:17px;height:17px}
+.skin-chrome .fx-h .ib:hover{background:var(--teal);border-color:#8fd1ca}
+.skin-chrome .fx-h .ib[data-tip="Remove"]{background:rgba(195,20,28,.25);border-color:rgba(195,20,28,.6)}
+.skin-chrome .fx-h .ib[data-tip="Remove"]:hover{background:#c3141c}
+/* "what it does": a frosted glass label with a cut corner */
+.fx-help{transform:none;border-radius:0;padding:11px 14px 11px 14px;color:#f2ece0;background:linear-gradient(135deg,rgba(63,127,122,.32),rgba(20,18,16,.6));backdrop-filter:blur(8px);border:0;border-left:3px solid var(--teal);box-shadow:none;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,0 100%);font-size:16px}
+.fx-help b{color:#a9ddd6;font-size:16px}
+.fx-help-2{color:#cfc6b4;font-size:14.5px}
+/* frame buttons: tinted glass, crisp corners (not round) */
+.skin-chrome #top .btn,.skin-chrome #viewTools .tbtn,.skin-chrome .fx-f .tbtn,.skin-chrome .transport .tbtn,.skin-chrome #top .btn.primary,.skin-chrome #top .btn.tip-big,.skin-chrome #rail button.on{border-radius:5px}
+.skin-chrome .fx-f .tbtn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);height:32px;font-size:15px}
+.skin-chrome .fx-f .tbtn:hover{background:var(--teal)}
+.now-editing{clip-path:none;border-radius:6px;background:linear-gradient(135deg,rgba(195,20,28,.85),rgba(122,58,107,.75));border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}
+.skin-chrome .fx.pinned{box-shadow:0 0 0 1px rgba(195,20,28,.9),0 10px 26px rgba(0,0,0,.4)!important}
+.fx.fx-ph{border-radius:6px}
+.fx-sec.sec-picture>header::after{background:linear-gradient(100deg,rgba(110,10,16,.9),rgba(40,8,10,.55) 55%,rgba(11,10,9,.85))}

@@ -86,8 +86,10 @@ function leftLibrary(body) {
 async function openLibItem(it) { if (S.media && S.media.id === it.id) return; try { await setMedia(it); } catch (e) { toast(e.message, 'err'); } }
 function leftEffects(body) {
   $('#leftMeta').textContent = E.EFFECTS.length + ' MODULES';
-  const q = h('input', { class: 'search', placeholder: 'SEARCH EFFECTS… (try “vhs”, “stars”, “dots”)', spellcheck: false });
+  const q = h('input', { class: 'search', placeholder: 'search effects… (try “vhs”, “stars”, “dots”)', spellcheck: false });
   const list = h('div', { class: 'fx-lib' });
+  const dupBox = h('input', { type: 'checkbox', checked: allowDoubles() ? true : null, onchange: e => { try { localStorage.setItem('shd.allowDoubles', e.target.checked ? '1' : '0'); } catch (_) { } } });
+  const dupRow = h('label', { class: 'dup-row', 'data-tip': 'Off: clicking an effect you already have opens it instead of adding a copy. Shift+click always adds another.' }, dupBox, h('span', null, 'allow the same effect more than once'));
   const draw = () => {
     list.innerHTML = ''; const s = q.value.trim().toLowerCase(); let n = 0;
     for (const sec of FX_SECTIONS) {
@@ -100,7 +102,7 @@ function leftEffects(body) {
         const head = h('button', { type: 'button', class: 'fx-cat-h', 'aria-expanded': String(open), onclick: () => { const o = !grp.classList.contains('open'); grp.classList.toggle('open', o); head.setAttribute('aria-expanded', o); if (!s) { GROUP_OPEN[key] = o; saveGroupOpen(); } } },
           h('i', { class: 'chev' }, '▸'), h('span', { class: 'gt' }, h('b', null, gname), h('small', null, gwhat)), fresh ? h('em', { class: 'new' }, fresh + ' new') : null, h('span', { class: 'cnt' }, pad2(items.length)));
         grp.append(head, h('div', { class: 'fx-cat-b' }, items.map(e => {
-          const it = h('div', { class: 'fx-item' + (fxMoves(e) ? ' moves' : '') + (ORIGINALS.has(e.id) ? ' orig' : ''), draggable: true, 'data-tip': fxMoves(e) ? 'Click to add — this makes your picture move (GIF / video)' : 'Click to add · or drag into your layers', onclick: () => addFx(e.id) },
+          const it = h('div', { class: 'fx-item' + (fxMoves(e) ? ' moves' : '') + (ORIGINALS.has(e.id) ? ' orig' : ''), draggable: true, 'data-tip': fxMoves(e) ? 'Click to add — this makes your picture move (GIF / video)' : 'Click to add · or drag into your layers', onclick: ev => libAdd(e.id, null, ev.shiftKey) },
             h('span', { class: 'ix' }, pad2(++n)), h('span', { class: 'nm' }, e.name, ORIGINALS.has(e.id) ? h('i', { class: 'orig-tag' }, '★ shedithers original') : null, h('span', { class: 'ds' }, fxHelp(e))), h('span', { class: 'add' }, fxMoves(e) ? '▶ add' : '+ add'));
           it.addEventListener('dragstart', ev => { ev.dataTransfer.setData('shd/add', e.id); ev.dataTransfer.effectAllowed = 'copy'; });
           return it;
@@ -112,7 +114,7 @@ function leftEffects(body) {
     }
     if (!n) list.append(h('div', { class: 'empty-note' }, 'nothing matches that ★ try another word'));
   };
-  q.addEventListener('input', draw); body.append(q, list); draw(); setTimeout(() => q.focus(), 10);
+  q.addEventListener('input', draw); body.append(q, dupRow, list); draw(); setTimeout(() => q.focus(), 10);
 }
 
 /* presets */
@@ -214,7 +216,14 @@ function dropIndex(y) { const cards = $$('.fx:not(.pinned)', list); for (let i =
 function showInd(i) { $$('.drop-ind', list).forEach(x => x.remove()); if (i < 0) return; const cards = $$('.fx:not(.pinned)', list), ind = h('div', { class: 'drop-ind' }); if (i < cards.length) list.insertBefore(ind, cards[i]); else list.append(ind); }
 list.addEventListener('dragover', e => { const t = e.dataTransfer.types; if (!t.includes('shd/fx') && !t.includes('shd/add')) return; e.preventDefault(); const i = dropIndex(e.clientY); if (i !== dropAt) { dropAt = i; showInd(i); } });
 list.addEventListener('dragleave', e => { if (!list.contains(e.relatedTarget)) { dropAt = -1; showInd(-1); } });
-list.addEventListener('drop', e => { e.preventDefault(); const i = dropIndex(e.clientY); showInd(-1); dropAt = -1; const u = e.dataTransfer.getData('shd/fx'), a = e.dataTransfer.getData('shd/add'); if (u) moveFx(u, i); else if (a) addFx(a, i); });
+list.addEventListener('drop', e => { e.preventDefault(); const i = dropIndex(e.clientY); showInd(-1); dropAt = -1; const u = e.dataTransfer.getData('shd/fx'), a = e.dataTransfer.getData('shd/add'); if (u) moveFx(u, i); else if (a) libAdd(a, i, e.shiftKey); });
+/* one of each effect by default: clicking one you already have opens it instead of stacking a copy */
+function allowDoubles() { try { return localStorage.getItem('shd.allowDoubles') === '1'; } catch (_) { return false; } }
+function libAdd(id, at, force) {
+  const have = S.stack.find(f => f.id === id);
+  if (have && !force && !allowDoubles()) { S.sel = have.uid; have.open = true; renderStack(); $('#stackList').scrollTo({ top: 0, behavior: 'smooth' }); toast(`${E.MAP[id].name} is already on — opened it for you. (Shift+click or turn on “allow the same effect more than once” to add another.)`, 'info', 3200); return; }
+  addFx(id, at);
+}
 
 function renderStack() {
   SYNC = []; list.innerHTML = ''; $('#stackCount').textContent = pad2(S.stack.length);
@@ -427,3 +436,13 @@ function openSettings() {
       h('div', { class: 'btnrow' }, h('button', { class: 'btn sm', onclick: openShortcuts }, 'SHORTCUTS'), h('button', { class: 'btn sm danger', onclick: () => confirmModal('CLEAR ALL LOCAL DATA', 'Permanently delete all saved projects, library media, custom presets, palettes and export history from this browser? This cannot be undone.', async () => { try { DB.db && DB.db.close(); DB.db = null; await new Promise(r => { const q = indexedDB.deleteDatabase('shedithers'); q.onsuccess = q.onerror = q.onblocked = r; }); } catch (_) { } ['shd.presets', 'shd.palettes', 'shd.exports', 'shd.last'].forEach(k => localStorage.removeItem(k)); toast('Local data cleared — reloading'); setTimeout(() => location.reload(), 900); }, 'DELETE ALL') }, 'CLEAR DATA'))));
   openModal({ title: 'SETTINGS', sub: 'SYSTEM CONFIG', body, cls: 'sm', foot: h('span', { class: 'note' }, 'SHEDITHERS LOVES YOU ♥') }).el.style.width = 'min(640px,94vw)';
 }
+
+/* the side panels sit on tinted glass with the artist's work blurred behind them (a different piece each visit) */
+addEventListener('load', () => {
+  if (typeof artById !== 'function') return;
+  const pool = ['when-you-rain', 'no-identity', 'to-see-and-be-seen', 'not-in-my-nature', 'mad-women-and-poets', 'are-we-alive-yet', 'i-stand-alone', 'who-will-you-be'].map(artById).filter(Boolean);
+  if (pool.length < 2) return;
+  const i = Math.floor(Math.random() * pool.length), url = a => `url('${new URL(a.src, location.href).href}')`;
+  const L = document.getElementById('left'), R = document.getElementById('right');
+  if (L) L.style.setProperty('--lib-art', url(pool[i])); if (R) R.style.setProperty('--lib-art', url(pool[(i + 3) % pool.length]));
+});

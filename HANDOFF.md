@@ -1,4 +1,4 @@
-# SHEDITHERS — handoff (2026-11-07, live version v2.9.2)
+# SHEDITHERS — handoff (2026-11-07, live version v2.9.3)
 
 Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 
@@ -9,7 +9,7 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - **Deploys:** pushing `main` to github.com/shedithersminded-sudo/shedithers auto-deploys to https://shedithers.netlify.app and https://shedithersminded-sudo.github.io/shedithers/. The user always wants both sites updated and verified.
 
 ## Release steps (every change)
-1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=292 and v2.9.2 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
+1. Bump `?v=` in `archive.html` and `index.html`, and `VERSION` in `sw.js`. The current values are v=293 and v2.9.3 (index.html had fallen behind at v=220; both pages now match). Stale caches have crashed the site before.
 2. Commit, ending the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then push.
 3. Check that both live sites serve the new `sw.js` version.
 
@@ -77,3 +77,4 @@ Paste this into a new chat, or say "read C:\CODE\shedithers\HANDOFF.md".
 - v2.9.0: 22 SHEDITHERS-original effects in engine.js (block before CATS): bloodink, stardither, heartdither, scrawl, tornpixels, inkdrip, starmosaic, tornpaper, tape, xerox, crumple, redroom, lightleak, halo, searchlight/leakdrift/flarepass (`moves: true` → auto motion), eyes, channelsurf, papertear, stopmotion, starrays — 91 effects total. Library groups collapsible (state in localStorage shd.fxOpen), search opens matching groups, collage styling with art-scrap section banners. NOTE: no `-x ** 2` (unary before **) — it breaks the whole engine.
 - v2.9.1: bug sweep (all 91 effects × default/min/max run clean; every editor panel/modal + archive route opened clean). Fixed: editor unusable on phones (now one column: picture, layers, library), keyboard handlers crashing on document-level key events, pink THE LAB nav tag. Slop check: removed "neon glow on everything" — hard offset ink/red shadows + tags instead of glowing pills. Editor frame now matches the archive (kraft torn top bar, paper panel headers, ink tags).
 - v2.9.2: reading font is now Patrick Hand (+3px) on both pages (was Special Elite); muted palette vars (--rust --mustard --moss --teal --dblue --plum --violet --rose) beside red/ink/paper; each effect group has its own colour; stronger hover glow in a random muted colour per word (js/glow.js); hand-drawn "sketch" border-radius shapes, star-burst counts, flag NOW EDITING. Style rule update: colours are welcome if muted (not neon).
+- v2.9.3: one of each effect by default (libAdd in panels.js: clicking one you have opens it; "allow the same effect more than once" switch = localStorage shd.allowDoubles; Shift+click forces). Library + layers restyled as tinted glass over a random blurred artwork (--lib-art on #left/#right), straight rows, no tilt/torn cards; bigger card buttons (32px); "what it does" = frosted label with cut corner.
