@@ -114,22 +114,68 @@ $('#brShow').onclick = e => { BR.show = !BR.show; e.currentTarget.classList.togg
 const TEXTPX = new Map(), FONTWAIT = new Set();
 function textFont(p, px) { return `${p.italic ? 'italic ' : ''}${p.weight || 700} ${Math.max(1, px).toFixed(1)}px "${p.font}", "Barlow Condensed", sans-serif`; }
 function textPixels(p, w, hh) {
-  const k = w / Math.max(1, docDims().w), size = p.size * k, font = textFont(p, size);
-  const key = JSON.stringify([p.text, p.font, p.weight, p.italic, p.case, p.align, p.x, p.y, p.rot, p.spacing, p.lineh, p.fill, p.stroke, p.strokeW, p.glowC, p.glow, size.toFixed(2), w, hh]);
+  const k = w / Math.max(1, docDims().w), size = p.size * k, style = p.style || 'plain';
+  const key = JSON.stringify([p.text, p.font, p.weight, p.italic, p.case, p.align, p.x, p.y, p.rot, p.spacing, p.lineh, p.fill, p.fill2, p.stroke, p.strokeW, p.glowC, p.glow, style, p.arc, p.depth, size.toFixed(2), w, hh]);
   if (TEXTPX.has(key)) return TEXTPX.get(key);
-  if (document.fonts && !document.fonts.check(font) && !FONTWAIT.has(p.font)) { FONTWAIT.add(p.font); document.fonts.load(font).then(() => { TEXTPX.clear(); requestRender(); }).catch(() => { }); }
+  const RANSOM_FONTS = ['Bebas Neue', 'UnifrakturMaguntia', 'Permanent Marker', 'Special Elite', 'Georgia', 'Monoton', 'Creepster', 'VT323', 'Pacifico', 'Rubik Glitch'];
+  const fontsNeeded = style === 'ransom' ? RANSOM_FONTS : [p.font];
+  fontsNeeded.forEach(fn => { const f = textFont(Object.assign({}, p, { font: fn }), size); if (document.fonts && !document.fonts.check(f) && !FONTWAIT.has(fn)) { FONTWAIT.add(fn); document.fonts.load(f).then(() => { TEXTPX.clear(); requestRender(); }).catch(() => { }); } });
   let txt = String(p.text || ''); if (p.case === 'upper') txt = txt.toUpperCase(); else if (p.case === 'lower') txt = txt.toLowerCase();
   const lines = txt.split('\n'), c = h_canvas(w, hh), cx = c.getContext('2d', { willReadFrequently: true });
-  cx.font = font; cx.textBaseline = 'middle'; cx.textAlign = p.align || 'center';
-  if ('letterSpacing' in cx) cx.letterSpacing = (p.spacing * k).toFixed(1) + 'px';
-  const lh = size * p.lineh / 100, widths = lines.map(l => cx.measureText(l).width), bw = Math.max(1, ...widths), bh = lh * lines.length;
-  cx.translate(p.x / 100 * w, p.y / 100 * hh); cx.rotate(p.rot * Math.PI / 180);
-  const ax = p.align === 'left' ? -bw / 2 : p.align === 'right' ? bw / 2 : 0;
-  const draw = (fn) => lines.forEach((l, i) => fn(l, ax, -bh / 2 + lh * (i + 0.5)));
-  cx.lineJoin = 'round'; cx.miterLimit = 2;
-  if (p.glow > 0) { cx.shadowColor = p.glowC; cx.shadowBlur = p.glow * k; cx.fillStyle = p.glowC; draw((l, x, y) => cx.fillText(l, x, y)); draw((l, x, y) => cx.fillText(l, x, y)); cx.shadowBlur = 0; cx.shadowColor = 'transparent'; }
-  if (p.strokeW > 0) { cx.strokeStyle = p.stroke; cx.lineWidth = p.strokeW * 2 * k; draw((l, x, y) => cx.strokeText(l, x, y)); }
-  cx.fillStyle = p.fill; draw((l, x, y) => cx.fillText(l, x, y));
+  const font = textFont(p, size); cx.font = font; cx.textBaseline = 'middle'; cx.textAlign = 'center';
+  const sp = p.spacing * k; if ('letterSpacing' in cx) cx.letterSpacing = sp.toFixed(1) + 'px';
+  const lh = size * p.lineh / 100, bh = lh * lines.length, rnd = (() => { let a = 7; for (const ch of txt) a = (a * 31 + ch.charCodeAt(0)) | 0; return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; })();
+  // layout every glyph (supports arc / curved text and per-letter ransom styling)
+  const glyphs = []; const arc = (p.arc || 0) / 100;
+  lines.forEach((ln, li) => {
+    const chars = [...ln], rf = [], rs = []; const widths = chars.map((ch, ci) => { if (style === 'ransom') { rf[ci] = RANSOM_FONTS[Math.floor(rnd() * RANSOM_FONTS.length)]; rs[ci] = size * (0.85 + rnd() * 0.3); cx.font = textFont(Object.assign({}, p, { font: rf[ci] }), rs[ci]); return cx.measureText(ch).width + rs[ci] * 0.34 + sp; } return cx.measureText(ch).width + sp; }); cx.font = font;
+    const lw = widths.reduce((a, b) => a + b, 0), x0 = p.align === 'left' ? 0 : p.align === 'right' ? -lw : -lw / 2, y0 = -bh / 2 + lh * (li + 0.5);
+    let x = x0; chars.forEach((ch, i) => { const cxp = x + widths[i] / 2; x += widths[i];
+      let gx = cxp, gy = y0, gr = 0;
+      if (arc) { const R = (lw / Math.max(0.15, Math.abs(arc))) / Math.PI * 1.2, th = cxp / R; gx = Math.sin(th) * R; gy = y0 + (R - Math.cos(th) * R) * -Math.sign(arc); gr = th * Math.sign(arc); }
+      glyphs.push({ ch, x: gx, y: gy, r: gr, i: glyphs.length, rf: rf[i], rs: rs[i] });
+    });
+  });
+  cx.translate(p.x / 100 * w, p.y / 100 * hh); cx.rotate(p.rot * Math.PI / 180); cx.lineJoin = 'round'; cx.lineCap = 'round'; cx.miterLimit = 2;
+  const each = fn => glyphs.forEach(g => { if (g.ch === ' ') return; cx.save(); cx.translate(g.x, g.y); cx.rotate(g.r); fn(g); cx.restore(); });
+  const fillTxt = (g, ox = 0, oy = 0) => cx.fillText(g.ch, ox, oy), strokeTxt = (g, ox = 0, oy = 0) => cx.strokeText(g.ch, ox, oy);
+  const vgrad = (a, b, stops) => { const gr = cx.createLinearGradient(0, -size / 2, 0, size / 2); (stops || [[0, a], [1, b]]).forEach(([o, col]) => gr.addColorStop(o, col)); return gr; };
+  const depth = (p.depth || 0) * k;
+  if (p.glow > 0 && style !== 'neon') { cx.shadowColor = p.glowC; cx.shadowBlur = p.glow * k; cx.fillStyle = p.glowC; each(g => fillTxt(g)); cx.shadowBlur = 0; cx.shadowColor = 'transparent'; }
+  switch (style) {
+    case 'chrome':
+      cx.strokeStyle = '#0d0d0f'; cx.lineWidth = Math.max(2, size * 0.09); each(g => strokeTxt(g, size * 0.03, size * 0.04));
+      cx.fillStyle = vgrad(0, 0, [[0, '#ffffff'], [0.42, '#c9cfd6'], [0.5, '#5a6169'], [0.56, '#2a2f35'], [0.75, '#9aa3ad'], [1, '#f2f5f8']]); each(g => fillTxt(g));
+      cx.strokeStyle = 'rgba(255,255,255,.8)'; cx.lineWidth = Math.max(1, size * 0.012); each(g => strokeTxt(g)); break;
+    case 'drip':
+      cx.fillStyle = p.fill; each(g => { fillTxt(g); const n = 1 + Math.floor(rnd() * 2), gw = cx.measureText(g.ch).width; for (let j = 0; j < n; j++) { const dx = (rnd() - 0.5) * gw * 0.7, len = (0.25 + rnd() * 0.75) * (depth || size * 0.4), wd = size * (0.05 + rnd() * 0.05); cx.beginPath(); cx.roundRect ? cx.roundRect(dx - wd / 2, size * 0.25, wd, len, wd / 2) : cx.rect(dx - wd / 2, size * 0.25, wd, len); cx.fill(); cx.beginPath(); cx.arc(dx, size * 0.25 + len, wd * 0.75, 0, 7); cx.fill(); } }); break;
+    case 'sticker':
+      cx.shadowColor = 'rgba(0,0,0,.45)'; cx.shadowBlur = size * 0.08; cx.shadowOffsetY = size * 0.04; cx.strokeStyle = '#ffffff'; cx.lineWidth = size * 0.28; each(g => strokeTxt(g));
+      cx.shadowColor = 'transparent'; cx.strokeStyle = p.stroke; cx.lineWidth = size * 0.06; each(g => strokeTxt(g)); cx.fillStyle = p.fill; each(g => fillTxt(g)); break;
+    case 'glitch': {
+      cx.globalCompositeOperation = 'lighter'; const o = size * 0.05; cx.fillStyle = '#ff0040'; each(g => fillTxt(g, -o, 0)); cx.fillStyle = '#00e5ff'; each(g => fillTxt(g, o, 0)); cx.globalCompositeOperation = 'source-over';
+      cx.fillStyle = p.fill; each(g => fillTxt(g)); cx.globalCompositeOperation = 'destination-out'; for (let i = 0; i < 6; i++) { const y = (rnd() - 0.5) * bh, hgt = size * (0.02 + rnd() * 0.05); cx.fillRect(-w, y, w * 2, hgt); } cx.globalCompositeOperation = 'source-over'; break; }
+    case 'neon':
+      cx.shadowColor = p.fill; for (const b of [40, 20, 8]) { cx.shadowBlur = b * k * (size / 140); cx.strokeStyle = p.fill; cx.lineWidth = size * 0.06; each(g => strokeTxt(g)); }
+      cx.shadowBlur = 0; cx.strokeStyle = '#ffffff'; cx.lineWidth = size * 0.02; each(g => strokeTxt(g)); break;
+    case 'ransom':
+      each(g => { const f = g.rf || RANSOM_FONTS[0], s = g.rs || size; cx.font = textFont(Object.assign({}, p, { font: f }), s); cx.rotate((rnd() - 0.5) * 0.35); const mw = cx.measureText(g.ch).width, pd = s * 0.12, bgs = ['#f2eee2', '#111111', '#ff4fa3', '#d4ff00', '#e7dcc0', '#c8321e', '#ffffff'], bg = bgs[Math.floor(rnd() * bgs.length)]; cx.fillStyle = bg; cx.fillRect(-mw / 2 - pd, -s * 0.55, mw + pd * 2, s * 1.1); cx.fillStyle = bg === '#111111' || bg === '#c8321e' ? '#ffffff' : '#111111'; fillTxt(g); }); cx.font = font; break;
+    case 'bubble':
+      cx.strokeStyle = p.stroke; cx.lineWidth = size * 0.34; each(g => strokeTxt(g)); cx.strokeStyle = p.fill; cx.lineWidth = size * 0.24; each(g => strokeTxt(g));
+      cx.fillStyle = p.fill2; each(g => fillTxt(g)); cx.strokeStyle = 'rgba(255,255,255,.7)'; cx.lineWidth = size * 0.035; each(g => strokeTxt(g, -size * 0.03, -size * 0.04)); break;
+    case 'label':
+      cx.font = textFont(Object.assign({}, p, { font: 'VT323' }), size); lines.forEach((ln, li) => { const y0 = -bh / 2 + lh * (li + 0.5), mw = cx.measureText(ln).width, pd = size * 0.25; cx.fillStyle = '#111111'; cx.fillRect(-mw / 2 - pd, y0 - size * 0.5, mw + pd * 2, size); cx.fillStyle = '#f5f5f0'; cx.fillText(ln, 0, y0); }); break;
+    case 'extrude':
+      cx.fillStyle = p.fill2; for (let d = Math.max(1, depth || size * 0.12); d > 0; d -= Math.max(1, k)) each(g => fillTxt(g, d, d)); cx.strokeStyle = p.stroke; cx.lineWidth = Math.max(1, size * 0.03); each(g => strokeTxt(g)); cx.fillStyle = p.fill; each(g => fillTxt(g)); break;
+    case 'gradient':
+      cx.fillStyle = vgrad(p.fill, p.fill2); each(g => fillTxt(g)); break;
+    case 'scribble':
+      cx.fillStyle = p.fill; each(g => fillTxt(g)); cx.strokeStyle = p.fill2; cx.lineWidth = Math.max(2, size * 0.05); glyphs.forEach(g => { if (rnd() < 0.35) { cx.save(); cx.translate(g.x, g.y); cx.beginPath(); for (let i = 0; i < 4; i++) { cx.moveTo(-size * 0.35, (rnd() - 0.5) * size * 0.5); cx.lineTo(size * 0.35, (rnd() - 0.5) * size * 0.5); } cx.stroke(); cx.restore(); } }); break;
+    default:
+      if (p.strokeW > 0) { cx.strokeStyle = p.stroke; cx.lineWidth = p.strokeW * 2 * k; each(g => strokeTxt(g)); }
+      cx.fillStyle = p.fill; each(g => fillTxt(g));
+  }
+  if (p.strokeW > 0 && !['plain', 'sticker', 'bubble', 'label', 'neon'].includes(style)) { cx.strokeStyle = p.stroke; cx.lineWidth = p.strokeW * k; each(g => strokeTxt(g)); }
   const a = cx.getImageData(0, 0, w, hh).data; if (TEXTPX.size > 16) TEXTPX.clear(); TEXTPX.set(key, a); return a;
 }
 /* Text tool: click the picture to drop a text layer there; drag to move the selected one. */

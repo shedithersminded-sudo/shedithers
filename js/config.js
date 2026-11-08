@@ -10,6 +10,9 @@ const SHD_CONFIG = {
   tiktok: 'shedithers',
   // Your YouTube handle (without @)
   youtube: 'shedithersminded',
+  // TikTok TV: paste links to your favourite TikToks here (e.g. 'https://www.tiktok.com/@shedithers/video/1234567890').
+  // Leave empty to show your whole @shedithers feed instead.
+  tiktokVideos: [],
   // Where the suggestion box sends messages
   email: 'shedithersminded@gmail.com',
   tipLine: 'SHEDITHERS is free. If it made something you love, buy the artist a drink ♥',

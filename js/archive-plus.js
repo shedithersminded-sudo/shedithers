@@ -30,6 +30,7 @@ const stampEl = h('button', { class: 'disc-stamp', 'aria-label': 'Discoveries fo
 function updStamp() { stampEl.textContent = `FOUND ${pad(found.size)}/${pad(Object.keys(NOTES).length)}`; stampEl.classList.toggle('show', found.size > 0); }
 document.body.append(stampEl); updStamp();
 stampEl.onclick = () => note('YOUR DISCOVERIES', found.size ? [...found].map(k => '✦ ' + NOTES[k]).join('\n\n') : 'nothing yet. look closer.', true);
+window.SHD_FX = { discover: (...a) => discover(...a), note: (...a) => note(...a), burst: (...a) => burst(...a), NOTES, upd: () => updStamp() };
 function discover(key, x, y) { const isNew = !found.has(key); found.add(key); LS.set('shd.found', [...found]); updStamp(); if (isNew) { stampEl.classList.remove('bump'); void stampEl.offsetWidth; stampEl.classList.add('bump'); } burst(x, y); note(isNew ? 'DISCOVERY ✦ NEW' : 'DISCOVERY', NOTES[key]); }
 let noteEl = null;
 function note(title, text, list) {

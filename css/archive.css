@@ -18,7 +18,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 svg{width:1em;height:1em}
 /* artwork elements: protected, never styled beyond fitting */
 .f-window img,.f-window video,.print-mat img,.print-mat video,.t-window img,.t-window video,.v-mat img,.v-mat video,.v-strip img,.v-strip video{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}
-.grain{position:fixed;inset:0;pointer-events:none;z-index:50;background:var(--noise);opacity:.18;mix-blend-mode:overlay}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:1;background:var(--noise);opacity:.18;mix-blend-mode:overlay}
 .paper{background:var(--paper)}
 
 /* ---------- gate ---------- */
