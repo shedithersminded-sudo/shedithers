@@ -17,7 +17,13 @@
 [[redirects]]
   from = "/art"
   to = "/archive.html"
+  status = 200
+  force = true
+[[redirects]]
+  from = "/art/"
+  to = "/art"
   status = 301
+  force = true
 [[redirects]]
   from = "/a"
   to = "/archive.html"
