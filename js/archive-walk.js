@@ -41,8 +41,8 @@ const flyer = `<button class="wk-hold" type="button" aria-label="Tap the flyer t
     <span class="fy-top"><em>underground · invite only</em><em>N°01</em></span>
     <b class="fy-name">shedithers</b>
     <span class="fy-art"><i class="fy-k"></i><i class="fy-r"></i><span class="fy-stamp">no photos</span></span>
-    <span class="fy-line">EVO &amp; CREVO</span>
-    <span class="fy-line sm">+ shedithers (live dither set) · the dither lab open all night</span>
+    <span class="fy-line">REMEMBER TO FORGET</span>
+    <span class="fy-line sm">a night of dither + glitch · the archive + the dither lab open all night</span>
     <span class="fy-info">SUN 08.11.26 — 10PM ’TIL LATE<br>LOCATION: FOLLOW THE BASS<br>NO IDENTITY · NO PAYWALL · NO PHONES OUT</span>
     <span class="fy-stub"><span>ADMIT ONE</span><span class="fy-go">tap to go in ▸</span></span>
   </span>${front}</button>`;

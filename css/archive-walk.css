@@ -60,7 +60,7 @@
 .fy-art::after{content:'';position:absolute;inset:0;background:radial-gradient(circle,#111 28%,transparent 31%) 0 0/1.6cqw 1.6cqw;mix-blend-mode:screen;opacity:.35}
 .fy-r{mix-blend-mode:multiply;opacity:.75;filter:grayscale(1) brightness(1.9) contrast(2.2) sepia(1) saturate(9) hue-rotate(-38deg);translate:1.2cqw .7cqw}
 .fy-stamp{position:absolute;z-index:1;right:3cqw;bottom:2.4cqw;padding:.6cqw 2cqw;border:.6cqw solid #c4141c;color:#c4141c;font:400 4.2cqw 'Anton',sans-serif;letter-spacing:.1em;text-transform:uppercase;transform:rotate(-8deg);background:rgba(232,229,220,.6)}
-.fy-line{display:block;font:400 10.5cqw/.95 'Anton',sans-serif;letter-spacing:.01em;text-transform:uppercase}
+.fy-line{display:block;font:400 9.2cqw/.95 'Anton',sans-serif;letter-spacing:.01em;text-transform:uppercase}
 .fy-line.sm{margin:1cqw 0 2cqw;font:400 3.5cqw/1.25 'Special Elite',monospace;text-transform:uppercase;letter-spacing:.02em}
 .fy-info{display:block;padding-top:1.6cqw;border-top:.4cqw dashed #111;font:400 3.5cqw/1.45 'Special Elite',monospace;letter-spacing:.02em}
 .fy-stub{display:flex;justify-content:space-between;align-items:center;margin:auto -7cqw 0;padding:2.4cqw 21cqw 3.4cqw;border-top:.5cqw dashed #111;font:400 4.2cqw 'Anton',sans-serif;letter-spacing:.12em}
