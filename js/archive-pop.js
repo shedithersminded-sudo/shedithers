@@ -31,7 +31,7 @@ function addPop() {
     h('span', { class: 'spk-top' }, h('i', { class: 'spk-tw' }), h('span', { class: 'spk-tag' }, 'shedithers', h('small', null, 'sound system'))),
     h('i', { class: 'spk-cone' }, h('i', { class: 'spk-cap' })),
     h('span', { class: 'spk-eq', 'aria-hidden': 'true' }, ...[0, 1, 2, 3, 4, 5, 6].map(n => h('i', { style: `--n:${n}` }))));
-  cd.onclick = () => { if (!A) return; A.player.expand(); if (A.player.list.length && A.player.audio.paused) A.player.audio.play().catch(() => { }); };
+  cd.onclick = () => { const chipPP = document.querySelector('.intro-chip:not(.out) .ic-pp'); if (chipPP) { chipPP.click(); return; } if (!A) return; A.player.expand(); if (A.player.list.length && A.player.audio.paused) A.player.audio.play().catch(() => { }); };
   spk = cd; // one set of audio listeners for the whole visit; they drive whichever speaker is on the page
   if (A && !hooked) { hooked = true; const au = A.player.audio; au.addEventListener('play', () => spk && spk.classList.add('playing')); au.addEventListener('pause', () => spk && spk.classList.remove('playing')); }
   if (A && !A.player.audio.paused) cd.classList.add('playing');

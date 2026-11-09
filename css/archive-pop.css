@@ -679,3 +679,17 @@ nav a.drink-nav{box-shadow:2px 2px 0 #0b0a09}
 @keyframes dkBeat{0%,100%{transform:scale(1)}15%{transform:scale(1.35)}30%{transform:scale(1)}45%{transform:scale(1.2)}}
 @media (max-width:760px){.dk-any{font-size:18px;letter-spacing:.08em;padding:12px 8px}.dk-card{padding:22px 16px 16px}.tip-banner{margin:-22px -16px 12px}.dk-tick{margin:12px -16px 0}.dk-drink{min-height:108px}}
 @media (prefers-reduced-motion:reduce){.dk-bgl,.dk-bgt,.dk-card::before,.dk-head h3 span,.dk-tick span,.dk-drink,.dk-drink .dk-ico,.dk-any,.dk-any i,.dk-foot i{animation:none!important;opacity:1}.dk.in .dk-card{animation:none}}
+
+/* v3.1.4: one music player at a time. while the intro song chip is up, the regular player hides */
+body.song-on .art-player,body.song-on .player.mini{display:none!important}
+/* the song chip takes the regular player's spot while it's the only player (unless it was dragged somewhere) */
+body.song-on .intro-chip:not(.moved){bottom:max(12px,env(safe-area-inset-bottom))!important}
+/* phones: the FOUND stamp sits on the left, clear of the drink tab */
+@media (max-width:760px){.disc-stamp{right:auto!important;left:12px!important;top:auto!important;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 262px)!important}}
+/* phones: the folded-up TV button gets its own slot above the MESS button (it used to sit on top of ZONE) */
+@media (max-width:760px){.tv.off:not(.moved),.tv.min:not(.moved){top:auto!important;left:auto!important;right:8px!important;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 254px)!important}}
+/* tablets (iPad): TV stays clear of the drink tab, FOUND stamp sits beside the Dither Lab badge instead of on it */
+@media (min-width:761px) and (max-width:1100px){
+  .tv.off:not(.moved),.tv.min:not(.moved){left:auto!important;right:calc(max(8px,env(safe-area-inset-right)) + 86px)!important}
+  .disc-stamp{left:196px!important;right:auto!important}
+}

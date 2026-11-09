@@ -99,11 +99,13 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     slider.oninput = () => { fading = false; a.volume = slider.value / 100; a.muted = false; try { localStorage.setItem('shd.introVol', a.volume); } catch (_) { } paintVol(); };
     a.addEventListener('play', paintPP); a.addEventListener('pause', paintPP);
     let gone = false;
-    const end = () => { if (gone) return; gone = true; a.pause(); chip.classList.add('out'); setTimeout(() => chip.remove(), 400); };
+    const end = () => { if (gone) return; gone = true; a.pause(); chip.classList.add('out'); document.body.classList.remove('song-on'); setTimeout(() => chip.remove(), 400); };
     const next = () => { if (gone) return; if (track >= SONGS.length - 1) return end(); track++; a.src = SONGS[track].src; label(); a.play().catch(() => { }); };
     stop.onclick = end; a.addEventListener('ended', next); paintVol();
     const P = window.SHD_ARCHIVE && window.SHD_ARCHIVE.player; if (P) P.audio.addEventListener('play', end, { once: true });
     chip.setAttribute('data-drag', ''); chip.setAttribute('data-grip', '');
+    // one player at a time: while the intro song has its chip, the regular music player steps aside
+    document.body.classList.add('song-on');
     document.body.append(chip); if (window.SHD_MOVE) window.SHD_MOVE(chip, 'introchip', 'the song');
   }, true);
 })();
