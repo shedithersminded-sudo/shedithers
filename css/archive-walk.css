@@ -214,3 +214,63 @@
 .walk.arrive .wk-track{opacity:0;transition:opacity .4s}
 .gate>.heaven{position:absolute;inset:0;z-index:0}
 .gate.in-heaven .pg-dots{display:none}
+
+/* ===== v3.3.0: blob-tracking art screen replaces the alley picture + the heaven columns ===== */
+.walk.bs .wk-scene picture{display:none}
+.walk.bs .wk-scene{background:#0b0a09}
+.walk.bs .wk-portal{animation:bsNear 8.2s cubic-bezier(.3,.1,.4,1) forwards}
+@keyframes bsNear{from{scale:.55}to{scale:1.25}}
+.walk.bs .wk-vig{opacity:.55}
+.gate>.gate-bs{position:absolute;inset:0;z-index:0}
+.gate.in-bs .g-render,.gate.in-bs .pg-dots{display:none}
+
+/* ===== v3.3.3: the portal is two thin glowing white rings side by side, a loop (artist's reference picture) ===== */
+.wk-portal.loop{border-radius:0;mix-blend-mode:normal;filter:none}
+.wk-portal.loop>i{display:none}
+.pt-o{display:none}
+.wk-portal.loop .pt-o{display:block;position:absolute;top:0;width:50.5%;height:100%;border-radius:50%;border:1.5px solid rgba(255,255,255,.95);box-shadow:0 0 6px rgba(255,255,255,.9),0 0 22px rgba(255,255,255,.35),inset 0 0 10px rgba(255,255,255,.18);animation:ptLoop 5.2s ease-in-out infinite}
+.wk-portal.loop .pt-o.a{left:0}.wk-portal.loop .pt-o.b{right:0;animation-delay:-2.6s}
+/* the wispy, hairy light on the edge of each ring, drifting round */
+.wk-portal.loop .pt-o::before{content:'';position:absolute;inset:-7px;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.55) 0 .6deg,transparent .6deg 2.2deg);-webkit-mask:radial-gradient(closest-side,transparent 88%,#000 93%,transparent 100%),conic-gradient(from 20deg,#000 0 18%,transparent 30% 55%,#000 70% 82%,transparent 95%);-webkit-mask-composite:source-in;mask:radial-gradient(closest-side,transparent 88%,#000 93%,transparent 100%),conic-gradient(from 20deg,#000 0 18%,transparent 30% 55%,#000 70% 82%,transparent 95%);mask-composite:intersect;filter:blur(.4px);animation:ptSpin 9s linear infinite}
+.wk-portal.loop .pt-o.b::before{animation-direction:reverse}
+@keyframes ptLoop{50%{box-shadow:0 0 9px #fff,0 0 34px rgba(255,255,255,.55),inset 0 0 14px rgba(255,255,255,.25)}}
+.walk.bs .wk-portal.loop{animation:bsNear 8.2s cubic-bezier(.3,.1,.4,1) forwards}
+.walk.arrive .wk-portal.loop{transform:translate(-50%,-50%) scale(9);opacity:0}
+.walk.still .wk-portal.loop .pt-o,.walk.still .wk-portal.loop .pt-o::before{animation:none}
+
+/* ===== v3.4.0: the flyer is a pile of tumbling 3D cubes wearing the artist's art ===== */
+.fly.cube-flyer{background:transparent!important;box-shadow:none!important}
+.fly.cube-flyer>:not(.fy-stub):not(.fy-cubes):not(.fy-song){visibility:hidden}
+.fly.cube-flyer .fy-stub{background:#e9e3d1;box-shadow:0 6px 14px rgba(0,0,0,.5)}
+.fy-cubes{--c:40px;position:absolute;inset:0 0 16% 0;perspective:520px;pointer-events:none}
+.fy-cubes .cube{position:absolute;left:calc(50% + var(--x));top:var(--y);width:var(--c);height:var(--c);margin:calc(var(--c) / -2);transform-style:preserve-3d;
+  transform:scale(var(--s)) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz));animation:cubeDrop 1.1s cubic-bezier(.3,1.4,.5,1) var(--d) both,cubeIdle 7s ease-in-out calc(var(--d) + 1.1s) infinite alternate}
+.fy-cubes .cf{position:absolute;inset:0;background:#0b0a09 center/cover no-repeat;box-shadow:inset 0 0 0 1px rgba(11,10,9,.6),inset 0 0 8px rgba(0,0,0,.45);backface-visibility:hidden}
+.fy-cubes .f0{transform:translateZ(calc(var(--c) / 2))}.fy-cubes .f1{transform:rotateY(180deg) translateZ(calc(var(--c) / 2))}
+.fy-cubes .f2{transform:rotateY(90deg) translateZ(calc(var(--c) / 2));filter:brightness(.75)}.fy-cubes .f3{transform:rotateY(-90deg) translateZ(calc(var(--c) / 2));filter:brightness(.75)}
+.fy-cubes .f4{transform:rotateX(90deg) translateZ(calc(var(--c) / 2));filter:brightness(1.15)}.fy-cubes .f5{transform:rotateX(-90deg) translateZ(calc(var(--c) / 2));filter:brightness(.55)}
+@keyframes cubeDrop{from{opacity:0;transform:translateY(-260%) scale(var(--s)) rotateX(calc(var(--rx) + 300deg)) rotateY(calc(var(--ry) - 220deg)) rotateZ(var(--rz))}60%{opacity:1}}
+@keyframes cubeIdle{to{transform:scale(var(--s)) rotateX(calc(var(--rx) + 14deg)) rotateY(calc(var(--ry) + 24deg)) rotateZ(var(--rz))}}
+.walk.still .fy-cubes .cube{animation:none}
+.fly.cube-flyer>.fy-cubes{visibility:visible!important}
+.fly.cube-flyer::before,.fly.cube-flyer::after{display:none!important}
+.fly.cube-flyer{background:none!important;filter:none!important}
+
+/* ===== v3.4.1: the flyer is a black tablet (art cubes tumbling on its screen) held in dithered skeleton hands ===== */
+.fly.tablet{background:#050505!important;border-radius:5.5cqw;padding:0;box-shadow:0 0 0 .6cqw #1b1a18,0 0 0 .9cqw #000,0 22px 44px rgba(0,0,0,.7)!important}
+.fly.tablet>:not(.fy-stub):not(.fy-screen){visibility:hidden!important}
+.fy-screen{position:absolute;inset:5cqw 5cqw 19cqw;border-radius:2.4cqw;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#1a1816,#060505 75%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),inset 0 0 30px rgba(0,0,0,.9)}
+.fy-screen .fy-cubes{inset:4% 0 0 0}
+.fy-glare{position:absolute;inset:0;pointer-events:none;background:linear-gradient(125deg,rgba(255,255,255,.12) 0 18%,transparent 34%,transparent 70%,rgba(255,255,255,.05) 86%)}
+.fy-cam{position:absolute;left:50%;top:-3.2cqw;width:1.6cqw;height:1.6cqw;margin-left:-.8cqw;border-radius:50%;background:#1d2a33;box-shadow:inset 0 0 0 .3cqw #0a0d10}
+.fly.tablet .fy-stub{position:absolute;left:5cqw;right:5cqw;bottom:5cqw;margin:0;padding:3cqw 6cqw;border:0;border-radius:2cqw;background:#c3141c!important;color:#e9e3d1;box-shadow:none!important}
+.fly.tablet .fy-stub span{color:#e9e3d1!important}
+/* skeleton hands */
+.fy-hands.bones .bo,.fy-hands.bones .bi{fill:none;stroke-linecap:round}
+.fy-hands.bones .bo{stroke:#0b0a09}
+.fy-hands.bones .bi{stroke:var(--dth)}
+.fy-hands.bones .bko{fill:#0b0a09}
+.fy-hands.bones .bki{fill:var(--dth);stroke:#0b0a09;stroke-width:1.5}
+.fy-hands.bones .tip{stroke-width:3}
+.fy-hands.bones{filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))}
+.fly.tablet>.fy-screen{visibility:visible!important}

@@ -17,6 +17,8 @@ function runBoot() {
   const finish = () => { if (done) return; done = true; tm.forEach(clearTimeout); boot.classList.add('gone'); document.body.classList.add('ready'); document.removeEventListener('keydown', onKey, true); setTimeout(() => { boot.remove(); fitView(); }, 700); };
   const onKey = e => { if (e.key !== 'Tab') { e.preventDefault(); finish(); } };
   if (!SETTINGS.boot) { finish(); return; }
+  // the opening wears the same blob-tracking art screen as the archive intro (js/blob-screen.js)
+  if (window.SHD_BLOBSCREEN) { const bs = h('div', { class: 'boot-bs' }); boot.prepend(bs); boot.classList.add('has-bs'); const scr = window.SHD_BLOBSCREEN(bs); tm.push(setInterval(() => { if (done) setTimeout(() => scr.stop(), 900); }, 300)); }
   boot.addEventListener('click', finish); document.addEventListener('keydown', onKey, true);
   fillTicker($('.boot-ticker'), TICKER);
   INTRO_LOG.forEach((l, k) => later(() => { $('#bootLog').append(h('div', null, '> ' + l)); $('#boot .boot-bar i').style.width = ((k + 1) / INTRO_LOG.length * 100) + '%'; }, 150 + k * 230));

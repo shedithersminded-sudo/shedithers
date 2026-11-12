@@ -15,22 +15,11 @@ const render = el('div', 'g-render'); render.setAttribute('aria-hidden', 'true')
 render.append(el('i', 'pr-tint'), el('i', 'pr-streaks'), el('i', 'pr-grid'));
 gate.prepend(render);
 
-/* 1b) through the portal you land in heaven, in the site's colours: a night sky burning red and orange, two paper-stone
- * columns with glowing halo rings, and a road of floating stone tiles that bob in a sine wave and loop forever.
- * (inspo the artist picked: a heaven's gate loop. rebuilt here from scratch in CSS.) */
-if (typeof SHD_CONFIG !== 'undefined' && SHD_CONFIG.soundcloudSong) {
-  const hv = el('div', 'heaven'); hv.setAttribute('aria-hidden', 'true');
-  let tiles = '';
-  for (let r = 0; r < 14; r++) for (let c = 0; c < 7; c++) {
-    if (Math.abs(c - 3 - Math.sin(r * 0.55) * 1.6) > 2.2 && (r * 7 + c) % 3) continue; // a winding road, ragged at the edges
-    tiles += `<i class="hv-tile" style="--r:${r};--c:${c};--j:${((r * 13 + c * 7) % 10) / 10}"></i>`;
-  }
-  hv.innerHTML = `<i class="hv-sky"></i><i class="hv-cloud c1"></i><i class="hv-cloud c2"></i><i class="hv-cloud c3"></i>
-    <div class="hv-view"><div class="hv-floor"><div class="hv-loop">${tiles}</div><div class="hv-loop two">${tiles}</div></div></div>
-    <div class="hv-col l"><i class="hv-cap"></i><i class="hv-shaft"></i><i class="hv-base"></i><i class="hv-halo a"></i><i class="hv-halo b"></i></div>
-    <div class="hv-col r"><i class="hv-cap"></i><i class="hv-shaft"></i><i class="hv-base"></i><i class="hv-halo a"></i><i class="hv-halo b"></i></div>
-    <i class="hv-cloud c4"></i><i class="hv-grain"></i>`;
-  render.after(hv); gate.classList.add('in-heaven');
+/* 1b) the gate wears the blob-tracking art screen: the artist's pieces flash by on the beat, dithered, with
+ * flickering yellow characters and tracking boxes locked onto the shapes (js/blob-screen.js) */
+if (window.SHD_BLOBSCREEN) {
+  const bsg = el('div', 'gate-bs'); render.after(bsg); const gateScr = window.SHD_BLOBSCREEN(bsg); gate.classList.add('in-bs');
+  const mo = new MutationObserver(() => { if (!document.body.contains(gate)) { gateScr.stop(); mo.disconnect(); } }); mo.observe(document.body, { childList: true, subtree: true });
 }
 let gi = 0; const gT = setInterval(() => { if (!document.body.contains(render)) return clearInterval(gT); const L = render.querySelectorAll('.pr-layer'); L[gi].classList.remove('on'); gi = (gi + 1) % L.length; L[gi].classList.add('on'); }, 7000);
 
@@ -45,13 +34,18 @@ const tall = matchMedia('(max-aspect-ratio: 5/6)').matches;
 const PH = { wide: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAXACgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDz2EYPPIpWthLMfLGAaji6jmtu1RGBwB2J/KuepPk1OiLTVmZp0qXZuyMeuaqtbOrlcZx6V3cL2wsVX7QWdiUEODx3+mKx9Vt1hZNu0ZTJrCnipSdmXUp0/snONAV60VPORg0V1ptolqCK6vjFaNneiM9M54ORRRSnFNamCZqyapB9l2+RmTdu8wnn6YrJvL43BA+7gYoorGnSitTRybM6Rs5Gc0UUV1IzbP/Z', tall: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAoABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzMAnpS7G9Kv2truCvjOea6EaXbm1y2NxXOAvf65rnqYhQZ0U6Cmrt2OP2NjpRWzd2aoN3yqvYUVcaqauJ0SxpsaeXkk5zxjtXSR3MjWbW7WkYTOBOM5/wrirK7MeAxJXOcVv/ANvNHYm3iwsZ5wGIP6VwYijJva5VOWm5BrSxx20KA5b5sn8aKzbq+a5UJI/yjOO/WiumlFxjZg5XMkMRT/ObHWiiuqyOdNoYXJoooosFz//Z' }; // tiny blurred stand-ins while the real picture loads
 const scene = `<div class="wk-scene" aria-hidden="true" style="--ph:url('${tall ? PH.tall : PH.wide}')"><picture><source media="(max-aspect-ratio: 5/6)" srcset="${abs('assets/ui/walk-scene-tall.jpg')}"><img src="${abs('assets/ui/walk-scene.jpg')}" alt="" decoding="async"></picture><i class="wk-bass"></i><i class="wk-doods"></i><i class="wk-fog"></i></div>`;
 /* bone-print rave gloves: palms behind the flyer, thumbs over the front */
-const palm = `<path d="M-74 770 C-64 690 -48 616 -32 564 C-20 524 -6 490 20 470 C40 456 62 466 60 488 L54 562 C62 624 72 694 78 770 Z" class="gl"/>
-  <path d="M-44 740 L-18 586 M-6 744 L10 574 M30 744 L34 584" class="bn"/><circle cx="-18" cy="578" r="7" class="bnk"/><circle cx="10" cy="566" r="7" class="bnk"/><circle cx="34" cy="576" r="7" class="bnk"/>`;
-const thumb = `<path d="M4 552 C16 522 40 490 72 468 C92 455 114 460 110 482 C106 500 84 512 66 526 C50 540 38 558 30 576 Z" class="gl"/>
-  <path d="M26 560 L54 516 M64 504 L90 478" class="bn"/><circle cx="59" cy="510" r="6" class="bnk"/>
-  <ellipse cx="96" cy="472" rx="11" ry="7" transform="rotate(-38 96 472)" class="nail"/>`;
-const hands = (inner, cls) => `<svg class="fy-hands ${cls}" viewBox="0 0 400 720" aria-hidden="true"><g>${inner(false)}</g><g transform="translate(400 0) scale(-1 1)">${inner(true)}</g></svg>`;
-const back = hands(r => palm + (r ? `<path d="M-60 690 Q2 712 66 690" class="glow"/>` : ''), 'back');
+/* skeleton hands, drawn as dithered bone: every bone is a dark outline with a dot-dither fill (ink + paper) */
+const bone = (x1, y1, x2, y2, w) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="bo" stroke-width="${w * 1.5 + 8}"/><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="bi" stroke-width="${w * 1.5}"/>`;
+const knob = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r * 1.4 + 4}" class="bko"/><circle cx="${x}" cy="${y}" r="${r * 1.4}" class="bki"/>`;
+const palm = bone(-46, 790, -22, 640, 18) + bone(-8, 790, 12, 642, 15) +
+  knob(-24, 624, 9) + knob(-3, 618, 8) + knob(15, 626, 8) + knob(-13, 602, 7) + knob(6, 600, 7) +
+  bone(-22, 598, -19, 556, 9) + bone(-4, 594, 8, 546, 9) + bone(11, 598, 32, 552, 9) + bone(22, 606, 50, 570, 8) +
+  knob(-19, 556, 6) + knob(8, 546, 6) + knob(32, 552, 6) + knob(50, 570, 5) +
+  bone(-19, 556, -16, 512, 7) + bone(8, 546, 12, 494, 7) + bone(32, 552, 38, 504, 7) + bone(50, 570, 62, 532, 6);
+const thumb = bone(14, 612, 46, 548, 10) + knob(46, 548, 6) + bone(46, 548, 72, 506, 8) + knob(72, 506, 5) + bone(72, 506, 94, 478, 7) + `<circle cx="97" cy="474" r="6" class="bki tip"/>`;
+const dith = id => `<defs><pattern id="${id}" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#9d9684"/><rect width="2" height="2" fill="#e9e3d1"/><rect x="2" y="2" width="2" height="2" fill="#e9e3d1"/><rect x="2" y="0" width="1" height="1" fill="#4a463d"/></pattern></defs>`;
+const hands = (inner, cls) => `<svg class="fy-hands bones ${cls}" viewBox="0 0 400 720" aria-hidden="true">${dith('dth-' + cls)}<g style="--dth:url(#dth-${cls})" transform="translate(0 -70)">${inner(false)}</g><g style="--dth:url(#dth-${cls})" transform="translate(400 -70) scale(-1 1)">${inner(true)}</g></svg>`;
+const back = hands(() => palm, 'back');
 const front = hands(() => thumb, 'front');
 const flyer = `<button class="wk-hold" type="button" aria-label="Tap the flyer to go in">${back}
   <span class="fly">
@@ -79,15 +73,32 @@ const FLYERS = ['memory-is-punishment', 'she-knows-the-night', 'when-you-rain', 
   .map(id => ARTWORKS.find(a => a.id === id)).filter(Boolean);
 const fyArt = FLYERS[Math.floor(Math.random() * FLYERS.length)] || ARTWORKS.find(a => a.id === 'shedithers-eyes');
 if (fyArt) { const fly = walk.querySelector('.fly'); fly.style.setProperty('--fy-art', `url('${abs(fyArt.src)}')`); fly.classList.add('art-flyer'); fly.insertAdjacentHTML('afterbegin', '<span class="fy-song">♪ follow me to heaven</span><i class="fy-tex" aria-hidden="true"></i><span class="fy-sim" aria-hidden="true"><b>ADMIT ONE</b> into a better simulation · v2.0 · no return</span>'); }
+/* the flyer becomes a pile of little 3D cubes with the artist's pieces on every face: they tumble down into the
+ * gloves and settle into a heap, then slowly turn (artist's reference: a tumbling pile of dice). The ticket stub stays. */
+if (typeof SHD_INTRO_ART !== 'undefined' && SHD_INTRO_ART.length) {
+  const fly = walk.querySelector('.fly'), pile = el('span', 'fy-cubes'); pile.setAttribute('aria-hidden', 'true');
+  const art = SHD_INTRO_ART.slice().sort(() => Math.random() - .5), url = id => `url('${abs('assets/ui/intro-art/' + id + '.jpg')}')`;
+  // a heap: wide at the bottom, a few on top, a little messy
+  const rows = [6, 5, 4, 3, 2]; let n = 0, html = '';
+  rows.forEach((count, r) => { for (let c = 0; c < count; c++) {
+    const x = (c - (count - 1) / 2) * 15.5 + (Math.random() - .5) * 5, y = 78 - r * 14.5 + (Math.random() - .5) * 3, rx = (Math.random() * 40 - 20) | 0, ry = (Math.random() * 70 - 35) | 0, rz = (Math.random() * 30 - 15) | 0;
+    const faces = Array.from({ length: 6 }, (_, f) => `<i class="cf f${f}" style="background-image:${url(art[(n * 6 + f) % art.length])}"></i>`).join('');
+    html += `<span class="cube" style="--x:${x.toFixed(1)}%;--y:${y.toFixed(1)}%;--rx:${rx}deg;--ry:${ry}deg;--rz:${rz}deg;--d:${(n * .07 + Math.random() * .15).toFixed(2)}s;--s:${(.85 + Math.random() * .3).toFixed(2)}">${faces}</span>`; n++; } });
+  pile.innerHTML = html; const scr = el('span', 'fy-screen'); scr.append(pile); scr.insertAdjacentHTML('beforeend', '<i class="fy-glare"></i><i class="fy-cam"></i>'); fly.append(scr); fly.classList.add('cube-flyer', 'tablet');
+  const sizeCubes = () => { const w = fly.offsetWidth; if (w) pile.style.setProperty('--c', Math.max(22, w * .17) + 'px'); }; requestAnimationFrame(sizeCubes); if (window.ResizeObserver) new ResizeObserver(sizeCubes).observe(fly);
+}
 if ((typeof SHD_CONFIG !== 'undefined' && SHD_CONFIG.soundcloudSong)) { const st = walk.querySelectorAll('.wk-steps span'); if (st[1]) st[1].textContent = 'follow me to heaven.'; walk.classList.add('walk-heaven'); }
 document.body.append(walk); document.body.classList.add('walking');
+let walkScr = null;
+if (window.SHD_BLOBSCREEN) { walk.classList.add('bs'); walkScr = window.SHD_BLOBSCREEN(walk.querySelector('.wk-scene'), { beatsPer: 4 }); }
 /* the warehouse door is a glowing portal. It sits exactly on the door in the picture (worked out from how the
  * picture is cropped to the screen), swirls, and pumps with the bass. Going in = flying through it. */
-const portal = el('div', 'wk-portal', '<i class="pt-glow"></i><i class="pt-rays"></i><i class="pt-ring"></i><i class="pt-swirl"></i><i class="pt-core"></i><i class="pt-motes"></i>');
+const portal = el('div', 'wk-portal', '<i class="pt-glow"></i><i class="pt-rays"></i><i class="pt-ring"></i><i class="pt-swirl"></i><i class="pt-core"></i><i class="pt-motes"></i><b class="pt-o a"></b><b class="pt-o b"></b>');
 portal.setAttribute('aria-hidden', 'true'); walk.querySelector('.wk-scene').append(portal);
 // door in the source pictures: centre x/y and size, in that picture's pixels
 const DOOR = { wide: { iw: 2400, ih: 1400, x: 1200, y: 760, w: 270, h: 340 }, tall: { iw: 1200, ih: 2000, x: 600, y: 890, w: 240, h: 315 } };
 function placePortal() {
+  if (walkScr) { const st = portal.style; st.left = '50%'; st.top = '46%'; st.width = 'min(62vw,70svh)'; st.height = 'min(31vw,35svh)'; portal.classList.add('loop'); return; }
   const d = matchMedia('(max-aspect-ratio: 5/6)').matches ? DOOR.tall : DOOR.wide, W = walk.clientWidth, H = walk.clientHeight;
   const k = Math.max(W / d.iw, H / d.ih), ox = (W - d.iw * k) * 0.5, oy = (H - d.ih * k) * 0.56;
   const st = portal.style; st.left = (ox + d.x * k) + 'px'; st.top = (oy + d.y * k) + 'px'; st.width = (d.w * k * 1.35) + 'px'; st.height = (d.h * k * 1.12) + 'px';
@@ -116,7 +127,7 @@ function drawTrack() {
   });
   trT = setTimeout(() => requestAnimationFrame(drawTrack), reduce ? 1000 : 50);
 }
-if (!reduce) requestAnimationFrame(drawTrack); // after the rest of the walk is set up
+if (!reduce && !walkScr) requestAnimationFrame(drawTrack); // after the rest of the walk is set up (the art screen does real tracking itself)
 let done = false, dist = 0.2;
 const dEl = walk.querySelector('.wk-dist');
 const tick = setInterval(() => { if (!walk.classList.contains("ready")) return; dist = Math.max(0, dist - 0.03); dEl.textContent = dist > 0.01 ? `${dist.toFixed(2)} MI ▸` : 'YOU’RE HERE ★'; }, 600);
@@ -124,7 +135,7 @@ function finish() {
   if (done) return; done = true; clearInterval(tick); clearTimeout(auto); bass.stop();
   try { sessionStorage.setItem('shd.walked', '1'); } catch (_) { }
   walk.classList.add('arrive'); document.body.classList.remove('walking');
-  removeEventListener('resize', placePortal); clearTimeout(trT);
+  removeEventListener('resize', placePortal); clearTimeout(trT); if (walkScr) setTimeout(() => walkScr.stop(), 1100);
   setTimeout(() => { walk.remove(); const b = document.getElementById('enter'); if (b) b.focus(); }, reduce ? 0 : 1100);
 }
 walk.querySelector('.wk-hold').addEventListener('click', finish);
@@ -237,6 +248,6 @@ const bass = SCSONG ? bassSC() : (() => {
 })();
 const go = () => { if (walk.classList.contains('ready') || done) return; walk.classList.add('ready'); auto = setTimeout(finish, reduce ? 999999 : 8200); bass.start(); };
 const sImg = walk.querySelector('.wk-scene img');
-if (sImg.complete && sImg.naturalWidth) go(); else { sImg.addEventListener('load', go, { once: true }); sImg.addEventListener('error', go, { once: true }); setTimeout(go, 4000); }
+if (walkScr || (sImg.complete && sImg.naturalWidth)) go(); else { sImg.addEventListener('load', go, { once: true }); sImg.addEventListener('error', go, { once: true }); setTimeout(go, 4000); }
 setTimeout(() => walk.querySelector('.wk-hold').focus({ preventScroll: true }), 50);
 })();

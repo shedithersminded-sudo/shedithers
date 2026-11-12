@@ -48,3 +48,5 @@ body.night .v-log .nf{background:#0b0a09}
 .v-log .nf-desc{flex-direction:column;gap:2px}
 .v-log .nf-desc p{border:0;border-left:2px solid #c3141c;text-align:left}
 .v-log .nf-sup .nf-v{flex-direction:column}
+.v-mat{position:relative}.track-over{position:absolute;pointer-events:none;z-index:3}
+.v-track[aria-pressed=true]{background:#e9e3d1;color:#0b0a09}

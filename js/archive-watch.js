@@ -282,8 +282,9 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     const h3 = el('h3'); h3.setAttribute('aria-label', 'BUY ME A DRINK'); [...'BUY ME A DRINK'].forEach((c, i) => { const sp = el('span', c === ' ' ? 'sp' : null, c === ' ' ? ' ' : c); sp.style.setProperty('--i', i); sp.setAttribute('aria-hidden', 'true'); h3.append(sp); });
     const d = new Date(), dd = [d.getMonth() + 1, d.getDate(), d.getFullYear() % 100].map(n => String(n).padStart(2, '0')).join('/');
     const meta = el('div', 'dk-meta'); meta.append(el('span', null, dd), el('b', null, 'TIP JAR'), el('span', null, '$' + tag.toUpperCase()));
-    head.append(el('small', null, 'チップ・ジャー'), h3, meta, el('p', null, CFG.tipLine || 'Buy the artist a drink ♥'));
-    const tick = el('div', 'dk-tick'); tick.setAttribute('aria-hidden', 'true'); const tr = el('span'); tr.textContent = ('no paywall ✦ no catch ✦ stay as long as u want ✦ straight to the artist ✦ keeps the weird stuff coming ✦ ').repeat(2); tick.append(tr);
+    const note = el('div', 'dk-note'); (CFG.tipLines && CFG.tipLines.length ? CFG.tipLines : [['type', CFG.tipLine || 'buy me a drink ♥']]).forEach(([k, t], i) => { const ln = el('span', 'dn-' + k, t); ln.style.setProperty('--i', i); note.append(ln); });
+    head.append(el('small', null, 'チップ・ジャー'), h3, meta, note);
+    const tick = el('div', 'dk-tick'); tick.setAttribute('aria-hidden', 'true'); const tr = el('span'); tr.textContent = ('free to look ✦ no sign up ✦ straight to the artist ✦ keeps the lights on ✦ stay weird ✦ thank u ✦ ').repeat(2); tick.append(tr);
     const menu = el('div', 'dk-menu');
     (CFG.drinks || []).forEach((d, i) => { const a = el('a', 'dk-drink'); a.href = cashURL(d.amount); a.target = '_blank'; a.rel = 'noopener'; a.style.setProperty('--r', [-2, 1.5, -1, 2][i % 4] + 'deg'); const ic = el('i', d.icon ? 'dk-ico' : null, d.icon ? null : (d.emoji || '♥')); if (d.icon) { const im = el('img'); im.src = `assets/ui/drinks/${d.icon}.svg`; im.alt = ''; im.draggable = false; ic.append(im); } a.append(ic, el('b', null, d.label), el('span', null, '$' + d.amount)); menu.append(a); });
     const any = el('a', 'dk-any'); any.append(el('span', null, 'ANY AMOUNT · OPEN CASH APP'), el('i', null, '▸')); any.href = cashURL(); any.target = '_blank'; any.rel = 'noopener';

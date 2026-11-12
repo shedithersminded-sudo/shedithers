@@ -171,3 +171,11 @@
   .pv-bar b{font-size:15px!important}.pv-bar .pv-tip{font-size:10px}
   .pv-bar button{flex:1 1 0;height:28px!important}
 }
+
+/* v3.3.0: the opening runs the blob-tracking art screen behind everything */
+:root body #boot.has-bs{background:#0b0a09!important}
+:root body #boot.has-bs>.boot-bs{position:absolute;inset:0;z-index:0}
+:root body #boot.has-bs>:not(.boot-bs){position:relative;z-index:1}
+:root body #boot.has-bs .boot-light,:root body #boot.has-bs::before,:root body #boot.has-bs::after{display:none!important}
+:root body #boot.has-bs .boot-title::before,:root body #boot.has-bs .boot-title::after{animation:none!important;display:none!important}
+:root body #boot.has-bs .boot-enter,:root body #boot.has-bs .boot-cap b{animation:none!important}

@@ -902,6 +902,68 @@ EFFECTS.push(
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y * w + x) * 4, an = Math.atan2(y - cy, x - cx) + t * TAU / p.n, ray = Math.pow(Math.max(0, Math.cos(an * p.n / 2)), 8), fall = 1 - Math.hypot(x - cx, y - cy) / md; const e = ray * fall * a; if (e > 0.01) for (let q = 0; q < 3; q++) d[k + q] = d[k + q] + (col[q] - d[k + q]) * e; } } },
 );
 
+/* ---------- BLOB TRACKING: finds shapes in the picture (bright spots, dark shapes, detail, or movement on video)
+ * and locks boxes onto them like a computer watching a crowd: boxes, centre marks, lines between them, tiny labels ---------- */
+const BT_FONT = { A: [2, 5, 7, 5, 5], B: [6, 5, 6, 5, 6], C: [3, 4, 4, 4, 3], D: [6, 5, 5, 5, 6], E: [7, 4, 6, 4, 7], F: [7, 4, 6, 4, 4], G: [3, 4, 5, 5, 3], H: [5, 5, 7, 5, 5], I: [7, 2, 2, 2, 7], J: [1, 1, 1, 5, 2], K: [5, 5, 6, 5, 5], L: [4, 4, 4, 4, 7], M: [5, 7, 7, 5, 5], N: [6, 5, 5, 5, 5], O: [2, 5, 5, 5, 2], P: [6, 5, 6, 4, 4], Q: [2, 5, 5, 6, 3], R: [6, 5, 6, 5, 5], S: [3, 4, 2, 1, 6], T: [7, 2, 2, 2, 2], U: [5, 5, 5, 5, 7], V: [5, 5, 5, 5, 2], W: [5, 5, 7, 7, 5], X: [5, 5, 2, 5, 5], Y: [5, 5, 2, 2, 2], Z: [7, 1, 2, 4, 7],
+  '0': [7, 5, 5, 5, 7], '1': [2, 6, 2, 2, 7], '2': [6, 1, 2, 4, 7], '3': [6, 1, 2, 1, 6], '4': [5, 5, 7, 1, 1], '5': [7, 4, 6, 1, 6], '6': [3, 4, 7, 5, 7], '7': [7, 1, 1, 2, 2], '8': [7, 5, 7, 5, 7], '9': [7, 5, 7, 1, 6], '.': [0, 0, 0, 0, 2], ':': [0, 2, 0, 2, 0], '-': [0, 0, 7, 0, 0], '#': [5, 7, 5, 7, 5], '?': [6, 1, 2, 0, 2], '/': [1, 1, 2, 4, 4], ' ': [0, 0, 0, 0, 0] };
+const BT_WORDS = ['NO IDENTITY', 'SUBJECT', 'GHOST', 'YOU', 'UNKNOWN', 'LOOPING', 'SIGNAL', 'ERROR', 'HUMAN?', 'REMEMBER'];
+EFFECTS.push({ id: 'blobtrack', cat: 'glitch', name: 'Blob Tracking', desc: 'Boxes lock onto shapes like a computer watching a crowd', params: [
+  SEL('mode', 'Track', [['bright', 'BRIGHT SPOTS'], ['dark', 'DARK SHAPES'], ['detail', 'DETAIL / EDGES'], ['motion', 'MOVEMENT (VIDEO)']], 'bright'),
+  R('thr', 'Sensitivity', 0, 100, 55, 1, '%'), R('max', 'Most boxes', 1, 60, 12), R('grid', 'Detail of the search', 12, 140, 56), R('minsz', 'Ignore blobs smaller than', 0, 20, 2, 1, '%'),
+  SEL('style', 'Box style', [['box', 'BOX'], ['corners', 'CORNERS'], ['circle', 'CIRCLE'], ['cross', 'CROSSHAIR']], 'box'),
+  C('col', 'Box colour', '#e9e3d1'), C('col2', 'Dot colour', '#c3141c'), R('thick', 'Line width', 1, 8, 1, 1, 'px'),
+  SEL('net', 'Lines between them', [['chain', 'CHAIN (NEAREST)'], ['web', 'WEB'], ['none', 'NONE']], 'chain'), B('dots', 'Filled centre dots', true), B('labels', 'Labels', true), SEL('ltext', 'Label text', [['id', 'ID NUMBER'], ['xy', 'X / Y'], ['conf', 'CONFIDENCE'], ['words', 'WORDS']], 'id'),
+  R('lsize', 'Label size', 1, 6, 2), B('fill', 'Tint inside boxes', false), R('dim', 'Darken the picture', 0, 90, 0, 1, '%'), SEED(), ANIM()], fn: blobTrackFx });
+function blobTrackFx(s, d, w, h, p, c) {
+  const S = c.S || 1, gw = Math.max(8, p.grid | 0), cell = w / gw, gh = Math.max(4, Math.round(h / cell)), G = new Float32Array(gw * gh), prev = c.prev && c.prev.length === s.length ? c.prev : null;
+  // 1) average each grid cell
+  for (let gy = 0; gy < gh; gy++) for (let gx = 0; gx < gw; gx++) {
+    const x0 = Math.floor(gx * cell), x1 = Math.min(w, Math.floor((gx + 1) * cell)), y0 = Math.floor(gy * h / gh), y1 = Math.min(h, Math.floor((gy + 1) * h / gh)); let sum = 0, n = 0, mot = 0;
+    for (let y = y0; y < y1; y += 2) for (let x = x0; x < x1; x += 2) { const k = (y * w + x) * 4, L = lum(s[k], s[k + 1], s[k + 2]); sum += L; n++; if (prev) mot += Math.abs(L - lum(prev[k], prev[k + 1], prev[k + 2])); }
+    G[gy * gw + gx] = p.mode === 'dark' ? 255 - sum / Math.max(1, n) : p.mode === 'motion' && prev ? Math.min(255, mot / Math.max(1, n) * 4) : sum / Math.max(1, n);
+  }
+  if (p.mode === 'detail' || (p.mode === 'motion' && !prev)) { const E = new Float32Array(gw * gh); for (let y = 1; y < gh - 1; y++) for (let x = 1; x < gw - 1; x++) { const i = y * gw + x; E[i] = Math.min(255, (Math.abs(G[i + 1] - G[i - 1]) + Math.abs(G[i + gw] - G[i - gw])) * 1.5); } G.set(E); }
+  // 2) threshold against the picture's own spread, so it works on dark and light pictures alike
+  let mean = 0; for (let i = 0; i < G.length; i++) mean += G[i]; mean /= G.length; let sd = 0; for (let i = 0; i < G.length; i++) sd += (G[i] - mean) ** 2; sd = Math.sqrt(sd / G.length) || 1;
+  const cut = mean + sd * (1.6 - p.thr / 100 * 2.2), M = new Uint8Array(gw * gh); for (let i = 0; i < G.length; i++) M[i] = G[i] > cut ? 1 : 0;
+  // 3) group touching cells into blobs
+  const lab = new Int32Array(gw * gh).fill(-1), blobs = [], st = [];
+  for (let i = 0; i < M.length; i++) { if (!M[i] || lab[i] >= 0) continue; const b = { x0: 1e9, y0: 1e9, x1: -1, y1: -1, n: 0, sx: 0, sy: 0, v: 0 }; lab[i] = blobs.length; st.push(i);
+    while (st.length) { const j = st.pop(), x = j % gw, y = (j / gw) | 0; b.n++; b.sx += x; b.sy += y; b.v += G[j]; if (x < b.x0) b.x0 = x; if (x > b.x1) b.x1 = x; if (y < b.y0) b.y0 = y; if (y > b.y1) b.y1 = y;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= gw || ny >= gh) continue; const q = ny * gw + nx; if (M[q] && lab[q] < 0) { lab[q] = blobs.length; st.push(q); } } }
+    blobs.push(b); }
+  const minN = Math.max(1, gw * gh * p.minsz / 100 / 10);
+  const pick = blobs.filter(b => b.n >= minN).sort((a, b) => b.n - a.n).slice(0, p.max | 0);
+  // 4) draw: picture (optionally darkened), then boxes, lines, labels
+  const dm = 1 - p.dim / 100; for (let k = 0; k < s.length; k += 4) { d[k] = s[k] * dm; d[k + 1] = s[k + 1] * dm; d[k + 2] = s[k + 2] * dm; d[k + 3] = s[k + 3]; }
+  const A = hex(p.col), B2 = hex(p.col2), T = Math.max(1, Math.round(p.thick * S)), ink = [11, 10, 9];
+  const put = (x, y, col, a) => { x |= 0; y |= 0; if (x < 0 || y < 0 || x >= w || y >= h) return; const k = (y * w + x) * 4; if (a == null) { d[k] = col[0]; d[k + 1] = col[1]; d[k + 2] = col[2]; } else { d[k] += (col[0] - d[k]) * a; d[k + 1] += (col[1] - d[k + 1]) * a; d[k + 2] += (col[2] - d[k + 2]) * a; } };
+  const dot = (x, y, col) => { for (let a = 0; a < T; a++) for (let b = 0; b < T; b++) put(x + a - (T >> 1), y + b - (T >> 1), col); };
+  const line = (x0, y0, x1, y1, col, dash) => { const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)) | 0; for (let i = 0; i <= n; i++) { if (dash && (i / (4 * S) | 0) % 2) continue; dot(x0 + (x1 - x0) * i / (n || 1), y0 + (y1 - y0) * i / (n || 1), col); } };
+  const text = (str, x, y, sc, col, bg) => { str = String(str).toUpperCase(); const cw = 4 * sc, wd = str.length * cw + sc, ht = 7 * sc;
+    if (bg) for (let yy = 0; yy < ht; yy++) for (let xx = 0; xx < wd; xx++) put(x + xx, y + yy, bg);
+    for (let i = 0; i < str.length; i++) { const g = BT_FONT[str[i]] || BT_FONT['?']; for (let r = 0; r < 5; r++) for (let q = 0; q < 3; q++) if (g[r] & (4 >> q)) for (let a = 0; a < sc; a++) for (let b = 0; b < sc; b++) put(x + sc + i * cw + q * sc + a, y + sc + r * sc + b, col); } };
+  const rnd = rng(c.seed), ch = h / gh, centres = [];
+  pick.forEach((b, i) => {
+    const col = A, X0 = Math.max(0, b.x0 * cell - cell * .5), Y0 = Math.max(0, b.y0 * ch - ch * .5), X1 = Math.min(w - 1, (b.x1 + 1.5) * cell), Y1 = Math.min(h - 1, (b.y1 + 1.5) * ch), cx = (b.sx / b.n + .5) * cell, cy = (b.sy / b.n + .5) * ch;
+    centres.push([cx, cy, col]);
+    if (p.fill) for (let y = Y0 | 0; y < Y1; y++) for (let x = X0 | 0; x < X1; x++) put(x, y, col, .18);
+    if (p.style === 'circle') { const r = Math.max(X1 - X0, Y1 - Y0) / 2, n = Math.max(24, r * 2 | 0); for (let k = 0; k < n; k++) { const t = k / n * TAU; dot(cx + Math.cos(t) * r, cy + Math.sin(t) * r, col); } }
+    else if (p.style === 'corners') { const lx = (X1 - X0) * .25, ly = (Y1 - Y0) * .25; [[X0, Y0, 1, 1], [X1, Y0, -1, 1], [X0, Y1, 1, -1], [X1, Y1, -1, -1]].forEach(([x, y, sx, sy]) => { line(x, y, x + lx * sx, y, col); line(x, y, x, y + ly * sy, col); }); }
+    else if (p.style === 'cross') { const r = Math.max(6 * S, Math.min(X1 - X0, Y1 - Y0) / 2); line(cx - r, cy, cx + r, cy, col); line(cx, cy - r, cx, cy + r, col); }
+    else { line(X0, Y0, X1, Y0, col); line(X1, Y0, X1, Y1, col); line(X1, Y1, X0, Y1, col); line(X0, Y1, X0, Y0, col); }
+    if (p.style !== 'cross') { const r = 3 * S; line(cx - r, cy, cx + r, cy, col); line(cx, cy - r, cx, cy + r, col); }
+    if (p.labels) { const sc = Math.max(1, Math.round(p.lsize * S)), id = (Math.floor(rnd() * 4096)).toString(16).toUpperCase().padStart(3, '0');
+      const t = p.ltext === 'xy' ? `X${cx | 0} Y${cy | 0}` : p.ltext === 'conf' ? `CONF .${(60 + rnd() * 39) | 0}` : p.ltext === 'words' ? BT_WORDS[(i + (c.seed % 7)) % BT_WORDS.length] : `ID #${id}`;
+      text(t, X0, Math.max(0, Y0 - 7 * sc), sc, ink, col); }
+  });
+  if (p.net === 'web' && centres.length > 1) for (let i = 0; i < centres.length; i++) { const a = centres[i], b = centres[(i * 3 + 1) % centres.length]; if (a !== b) line(a[0], a[1], b[0], b[1], A, true); }
+  if (p.net === 'chain' && centres.length > 1) { const left = centres.slice(); let at = left.shift(); while (left.length) { let bi = 0, bd = 1e12; left.forEach((q, i) => { const dd = (q[0] - at[0]) ** 2 + (q[1] - at[1]) ** 2; if (dd < bd) { bd = dd; bi = i; } }); const nx = left.splice(bi, 1)[0]; line(at[0], at[1], nx[0], nx[1], A); at = nx; } }
+  // filled dots on every third shape (the dancer-reference look)
+  if (p.dots) centres.forEach((q, i) => { if (i % 3) return; const r = Math.max(3, 5 * S); for (let y = -r; y <= r; y++) for (let x = -r; x <= r; x++) if (x * x + y * y <= r * r) put(q[0] + x, q[1] + y, B2); });
+  return d;
+}
+
 const CATS = [['layer', 'Layers'], ['gif', 'GIF FX'], ['light', 'Light'], ['texture', 'Textures'], ['dither', 'Dithering'], ['pixel', 'Pixel'], ['glitch', 'Glitch'], ['image', 'Image'], ['halftone', 'Halftone']];
 const MAP = {}; EFFECTS.forEach(e => MAP[e.id] = e);
 function defaults(def) { const o = {}; def.params.forEach(q => o[q.k] = q.def); return o; }

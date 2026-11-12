@@ -90,6 +90,14 @@ const SHD_CONFIG = {
   ],
   // Where the suggestion box sends messages
   email: 'shedithersminded@gmail.com',
+  // the tip jar note, one line per row: [style, words]. styles: marker, type, hand, stamp, small
+  tipLines: [
+    ['marker', 'everything here is free.'],
+    ['type', 'no paywall. no sign up. look as long as u want.'],
+    ['hand', 'if a piece got under ur skin, or u made something in the dither lab...'],
+    ['stamp', 'buy me a drink'],
+    ['small', 'it goes straight to me. it keeps the site up and the weird stuff coming ♥'],
+  ],
   tipLine: 'no paywall, no catch. stay as long as u want. if u liked looking at my art, or made something cool in the editor, maybe buy me a drink. it keeps the lights on and the weird stuff coming ♥',
   // icon = little doodle in assets/ui/drinks/ (emoji is the fallback)
   drinks: [

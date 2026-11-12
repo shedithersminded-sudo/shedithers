@@ -280,6 +280,8 @@ function showWork() {
     a.words ? h('p', { class: 'words' }, '“' + a.words + '”') : null, h('p', { class: 'rights' }, 'View only · © SHEDITHERS')].filter(Boolean));
   $$('button', vStrip).forEach((b, i) => b.classList.toggle('on', i === vIdx)); const on = $$('button', vStrip)[vIdx]; on && on.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduce ? 'auto' : 'smooth' });
   history.replaceState(null, '', `#/work/${a.id}`); setDetail(false);
+  // TRACK: blob tracking over the piece (overlay only, js/blob-screen.js). Stays on as you move between pieces.
+  if (window.SHD_TRACK_ON) window.SHD_TRACK_ON(a);
 }
 function closeViewer(silent) {
   if (viewer.hidden) return; viewer.classList.remove('in'); document.body.classList.remove('locked');

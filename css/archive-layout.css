@@ -95,3 +95,16 @@
 @media (max-width:760px){.pz-r,.pz-l{display:none}.portal{gap:30px}.portal>.p-mod:not(.p-foot):not(.p-logo){padding:10px}}
 @media (min-width:761px) and (prefers-reduced-motion:no-preference){.portal>.p-mod:hover .pz-knob{animation:pzWiggle .5s ease-in-out}}
 @keyframes pzWiggle{30%{translate:2px -2px}60%{translate:-2px 1px}}
+
+/* ---------- tip jar note: torn paper, every line in its own hand ---------- */
+.dk-note{position:relative;margin:12px 0 4px;padding:16px 18px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;background:#efe8d2;color:#1d1b16;transform:rotate(-1deg);
+  clip-path:polygon(0 3%,5% 0,12% 2%,20% 0,29% 2%,38% 0,47% 3%,56% 0,65% 2%,74% 0,83% 3%,92% 0,100% 2%,99% 50%,100% 98%,91% 100%,82% 97%,73% 100%,64% 98%,55% 100%,46% 97%,37% 100%,28% 98%,19% 100%,10% 97%,0 100%,1% 50%);box-shadow:0 8px 18px rgba(0,0,0,.45)}
+.dk-note::before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 23px,rgba(195,20,28,.12) 23px 24px),var(--fiber,none)}
+.dk-note>span{position:relative;animation:dnIn .5s cubic-bezier(.2,.9,.25,1.2) both;animation-delay:calc(var(--i) * 90ms)}
+.dn-marker{font:400 26px/1 'Permanent Marker',cursive;color:#0b0a09;rotate:-2deg}
+.dn-type{font:400 14px/1.35 'Special Elite','Courier New',monospace}
+.dn-hand{font:400 19px/1.2 'Patrick Hand',cursive;color:#3a3633}
+.dn-stamp{margin:4px 0 2px;padding:4px 12px 2px;border:3px solid #c3141c;color:#c3141c;font:400 22px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.12em;text-transform:uppercase;rotate:-4deg;box-shadow:inset 0 0 0 2px rgba(195,20,28,.25);mix-blend-mode:multiply}
+.dn-small{font:500 10px/1.45 'JetBrains Mono',monospace;letter-spacing:.04em;color:#5a5648}
+@keyframes dnIn{from{opacity:0;translate:-8px 0}}
+@media (prefers-reduced-motion:reduce){.dk-note>span{animation:none}}

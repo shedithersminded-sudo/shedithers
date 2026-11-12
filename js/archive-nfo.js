@@ -75,3 +75,15 @@ if (vLog) { new MutationObserver(addNfo).observe(vLog, { childList: true }); add
 const view = $('#view');
 if (view) { new MutationObserver(addDir).observe(view, { childList: true }); addDir(); }
 })();
+
+/* ---------- TRACK button in the art viewer: blob tracking over the piece, in the house tracking style ---------- */
+(() => {
+  const info = document.getElementById('vInfo'); if (!info || !window.SHD_TRACKOVER) return;
+  let on = false, cur = null; try { on = localStorage.getItem('shd.track') === '1'; } catch (_) { }
+  const btn = document.createElement('button'); btn.className = 'v-btn v-track'; btn.type = 'button'; btn.title = 'Blob tracking over the piece';
+  const paint = () => { btn.textContent = on ? '⌖ TRACKING' : '⌖ TRACK'; btn.setAttribute('aria-pressed', String(on)); };
+  info.before(btn); paint();
+  const run = a => { if (cur) { cur.stop(); cur = null; } if (!on || !a || a.type === 'video') return; const img = document.querySelector('#vMat img'); if (img) cur = window.SHD_TRACKOVER(img, a.id); };
+  let last = null; window.SHD_TRACK_ON = a => { last = a; run(a); };
+  btn.addEventListener('click', () => { on = !on; try { localStorage.setItem('shd.track', on ? '1' : '0'); } catch (_) { } paint(); run(last); });
+})();
