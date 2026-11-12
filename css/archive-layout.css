@@ -108,3 +108,12 @@
 .dn-small{font:500 10px/1.45 'JetBrains Mono',monospace;letter-spacing:.04em;color:#5a5648}
 @keyframes dnIn{from{opacity:0;translate:-8px 0}}
 @media (prefers-reduced-motion:reduce){.dk-note>span{animation:none}}
+
+/* song bar: the SoundCloud links stay quiet. the artist name reads as plain text and "on soundcloud" only fades in
+   (small, faint) while you hover the player, or tap into it on a phone */
+.intro-chip .ic-sc{color:inherit!important;text-decoration:none!important;cursor:text}
+.intro-chip .ic-txt small .ic-sc:last-child:not(:first-child){opacity:0;font-size:.85em;transition:opacity .25s}
+.intro-chip:hover .ic-sc,.intro-chip:focus-within .ic-sc{cursor:pointer}
+.intro-chip:hover .ic-txt small .ic-sc:last-child:not(:first-child),.intro-chip:focus-within .ic-txt small .ic-sc:last-child:not(:first-child){opacity:.55}
+.intro-chip:hover .ic-sc:hover{opacity:1!important;text-decoration:underline!important;text-underline-offset:2px}
+.intro-chip .ic-dot{opacity:0;transition:opacity .25s}.intro-chip:hover .ic-dot,.intro-chip:focus-within .ic-dot{opacity:.55}

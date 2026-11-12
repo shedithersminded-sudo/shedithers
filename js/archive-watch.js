@@ -140,7 +140,7 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
       // the artist name links to their SoundCloud profile
       if (s.profile) { const pl = document.createElement('a'); pl.href = s.profile; pl.target = '_blank'; pl.rel = 'noopener'; pl.className = 'ic-sc'; pl.textContent = s.artist; pl.addEventListener('click', e => e.stopPropagation()); sm.append(pl); } else sm.append(s.artist);
       // show where the song lives: a link to it on SoundCloud
-      if (s.link && s.link !== s.profile) { sm.append(' · '); const l = document.createElement('a'); l.href = s.link; l.target = '_blank'; l.rel = 'noopener'; l.className = 'ic-sc'; l.textContent = 'on soundcloud ▸'; l.addEventListener('click', e => e.stopPropagation()); sm.append(l); }
+      if (s.link && s.link !== s.profile) { const dot = document.createElement('span'); dot.className = 'ic-dot'; dot.textContent = ' · '; sm.append(dot); const l = document.createElement('a'); l.href = s.link; l.target = '_blank'; l.rel = 'noopener'; l.className = 'ic-sc'; l.textContent = 'on soundcloud ▸'; l.addEventListener('click', e => e.stopPropagation()); sm.append(l); }
       try { if ('mediaSession' in navigator && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: s.title, artist: s.artist, album: 'SHEDITHERS ARCHIVE' }); } catch (_) { }
     };
     label();
