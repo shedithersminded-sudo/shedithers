@@ -56,6 +56,21 @@ const ARTWORKS = [
   { id: 'shedithers-eyes', file: 'shedithers-eyes.jpg', w: 1080, h: 762, title: 'SHEDITHERS (EYES)', col: 'signal', date: '2026-08-14', medium: 'Digital painting', words: 'shedithers' },
   { id: 'prettier-in-fragments', file: 'prettier-in-fragments.jpg', w: 984, h: 554, title: 'I LOOK PRETTIER IN FRAGMENTS', col: 'screens', date: '2026-08-14', medium: 'Digital collage', words: 'I look prettier in fragments · I work on my problems and then release them' },
   { id: 'motion-03', file: 'shedithers-motion-03.mp4', type: 'video', w: 0, h: 0, title: 'SHEDITHERS · MOTION 03', col: 'motion', date: '2026-11-07', medium: 'Moving image', words: '' },
+  { id: 'memory-is-punishment', file: 'memory-is-punishment.png', w: 1728, h: 2304, title: 'MEMORY IS PUNISHMENT', col: 'collage', date: '2026-05-12', medium: 'Digital collage', words: 'Memory is punishment.' },
+  { id: 'collectible-artworks', file: 'collectible-artworks.gif', w: 800, h: 1131, title: 'COLLECTIBLE ARTWORKS', col: 'signal', date: '2026-09-16', medium: 'Animated collage', words: '' },
+  { id: 'aging-and-dying', file: 'aging-and-dying.gif', w: 800, h: 532, title: 'I LOVE AGING & DYING', col: 'signal', date: '2026-09-16', medium: 'Animated collage', words: 'i ♥ aging & dying' },
+  { id: 'she-knows-the-night', file: 'she-knows-the-night.png', w: 1024, h: 1024, title: 'SHE KNOWS THE NIGHT', col: 'signal', date: '2026-10-09', medium: 'Digital', words: 'for she knows the night may surround her, but it can never possess her.' },
+  { id: 'so-free', file: 'so-free.png', w: 619, h: 774, title: 'NOW THAT I’VE RUINED EVERYTHING', col: 'collage', date: '2025-11-07', medium: 'Digital collage', words: 'now that i’ve ruined everything i’m so fucking free' },
+  { id: 'bridges-i-burn', file: 'bridges-i-burn.png', w: 7291, h: 8750, title: 'MAY THE BRIDGES I BURN LIGHT THE WAY', col: 'collage', date: '2026-05-19', medium: 'Mixed media', words: 'may the bridges i burn light the way' },
+  { id: 'untitled-bubbles', file: 'untitled-bubbles.png', w: 1728, h: 2304, title: 'UNTITLED · BUBBLES', col: 'collage', date: '2026-05-07', medium: 'Mixed media collage', words: '' },
+  { id: 'i-do-i-think', file: 'i-do-i-think.png', w: 1452, h: 1374, title: 'I DO I THINK I AM I SAY', col: 'drawing', date: '2026-11-01', medium: 'Drawing', words: 'I do · I think · I am · I say' },
+  { id: 'nothing-hates-you', file: 'nothing-hates-you.png', w: 962, h: 426, title: 'NOTHING HATES YOU', col: 'drawing', date: '2026-11-09', medium: 'Drawing', words: 'nothing hates you' },
+  { id: 'untitled-hands', file: 'untitled-hands.png', w: 2808, h: 3744, title: 'UNTITLED · HANDS', col: 'drawing', date: '2026-05-15', medium: 'Drawing + digital', words: '' },
+  { id: 'mkmis', file: 'mkmis.mov', type: 'video', w: 0, h: 0, title: 'MKMIS', col: 'motion', date: '2026-08-08', medium: 'Moving image', words: '' },
+  { id: 'motion-04', file: 'motion-04.mp4', type: 'video', w: 0, h: 0, title: 'SHEDITHERS · MOTION 04', col: 'motion', date: '2026-07-03', medium: 'Moving image', words: '' },
+  { id: 'motion-05', file: 'motion-05.mp4', type: 'video', w: 0, h: 0, title: 'SHEDITHERS · MOTION 05', col: 'motion', date: '2026-06-30', medium: 'Moving image', words: '' },
+  { id: 'motion-06', file: 'motion-06.mp4', type: 'video', w: 0, h: 0, title: 'SHEDITHERS · MOTION 06', col: 'motion', date: '2026-07-02', medium: 'Moving image', words: '' },
+  { id: 'shesdithers', file: 'shesdithers.mp4', type: 'video', w: 0, h: 0, title: 'SHESDITHERS', col: 'motion', date: '2026-08-13', medium: 'Moving image', words: '' },
 ];
 const UI_HANDS = 'assets/ui/hands.mp4'; /* the artist asked for this one in the interface, not the exhibit */
 COLLECTIONS.push({ id: 'screens', code: 'CODE_006', name: 'WIDESCREEN', sub: 'LANDSCAPE WORKS', color: '#a9a28a', ink: '#1d1b16' });

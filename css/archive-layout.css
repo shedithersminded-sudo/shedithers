@@ -1,0 +1,97 @@
+/* SHEDITHERS v3.1.5 — loaded last.
+ * 1. deck cards: the rainbow foil is gone, a soft white glint follows the pointer instead
+ * 2. paper slips that come out of the front card
+ * 3. buy me a drink: a soft white glow + a little sparkle
+ * 4. home page order: everything fits together, still a bit crooked on purpose */
+
+/* ---------- 1. deck shine: white glint, no rainbow ---------- */
+.d3-front::before{background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,0) 40%,rgba(255,255,255,.7) 50%,rgba(255,255,255,0) 60%,transparent 70%);background-size:260% 260%;background-position:calc(var(--gx,50%) * 1.2) calc(var(--gy,50%) * 1.2);mix-blend-mode:soft-light;opacity:0;animation:none;filter:none}
+.d3-card.front .d3-front::before,.d3-card:hover .d3-front::before{opacity:.75}
+.d3-back::after{background:repeating-linear-gradient(72deg,transparent 0 30px,rgba(0,0,0,.08) 30px 31px)}
+.d3-card .d3-art{filter:contrast(1.05) saturate(.95)}
+.d3-card.front .d3-inner{box-shadow:0 0 0 1px rgba(255,255,255,.25),0 18px 40px rgba(0,0,0,.55)}
+.d3-card.tug .d3-inner{animation:d3Tug .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes d3Tug{30%{translate:0 -10px}60%{translate:0 3px}}
+
+/* ---------- 2. the paper slip ---------- */
+.d3-slip{position:absolute;left:50%;top:6%;z-index:50;width:min(300px,82%);padding:18px 22px 14px;transform:translateX(-50%) rotate(var(--rot,-2deg));background:#efe8d2;color:#1d1b16;font:400 17px/1.35 'Special Elite','Courier New',monospace;text-align:center;
+  clip-path:polygon(0 4%,4% 0,9% 3%,15% 0,22% 2%,30% 0,38% 3%,46% 0,55% 2%,63% 0,71% 3%,80% 0,88% 2%,95% 0,100% 3%,99% 50%,100% 97%,94% 100%,86% 97%,78% 100%,70% 98%,61% 100%,52% 97%,44% 100%,35% 98%,27% 100%,18% 97%,10% 100%,3% 98%,0 100%,1% 50%);
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,.55));animation:slipIn .5s cubic-bezier(.2,.9,.25,1.2) both;user-select:text;-webkit-user-select:text}
+.d3-slip::before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 25px,rgba(195,20,28,.13) 25px 26px),var(--fiber,none);opacity:.9}
+.d3-slip>*{position:relative}
+.d3-slip small{display:block;margin-bottom:6px;font:700 9px var(--mono,monospace);letter-spacing:.3em;color:#c3141c;text-transform:uppercase}
+.d3-slip p{margin:0 0 10px}
+.d3-slip-from{font:500 10px var(--mono,monospace);color:#1d1b16;letter-spacing:.06em;text-decoration:underline;text-underline-offset:3px}
+.d3-slip-from:hover{color:#c3141c}
+.d3-slip-x{position:absolute;top:6px;right:8px;width:24px;height:24px;border:0;background:none;color:#1d1b16;font:700 12px var(--mono,monospace);cursor:pointer}
+.d3-slip.gone{animation:slipOut .35s ease-in both}
+@keyframes slipIn{from{opacity:0;transform:translateX(-50%) translateY(60%) rotate(0) scaleY(.2)}to{opacity:1;transform:translateX(-50%) rotate(var(--rot,-2deg))}}
+@keyframes slipOut{to{opacity:0;transform:translateX(-50%) translateY(-30px) rotate(calc(var(--rot,-2deg) * 3))}}
+@media (prefers-reduced-motion:reduce){.d3-slip,.d3-slip.gone,.d3-card.tug .d3-inner{animation:none}}
+
+/* ---------- 3. buy me a drink: soft white glow ---------- */
+.drink-tab{animation:drinkGlow 3.2s ease-in-out infinite}
+@keyframes drinkGlow{0%,100%{filter:drop-shadow(0 0 3px rgba(255,255,255,.35)) drop-shadow(0 0 10px rgba(255,255,255,.18))}50%{filter:drop-shadow(0 0 6px rgba(255,255,255,.8)) drop-shadow(0 0 20px rgba(255,255,255,.4))}}
+.drink-tab::after{content:'✦';position:absolute;top:10px;left:-4px;z-index:2;color:#fff;font-size:13px;text-shadow:0 0 6px #fff,0 0 12px #fff;animation:drinkTwinkle 2.4s ease-in-out infinite;pointer-events:none}
+@keyframes drinkTwinkle{0%,100%{opacity:.2;transform:scale(.6) rotate(0)}50%{opacity:1;transform:scale(1.1) rotate(45deg)}}
+@media (prefers-reduced-motion:reduce){.drink-tab,.drink-tab::after{animation:none}}
+
+/* ---------- 4. home page order ---------- */
+@media (min-width:1101px){
+  .portal{grid-auto-flow:row dense}
+  .portal>.p-mod{grid-row:auto!important;align-self:start}
+  .p-logo{grid-column:1/9!important;order:1}
+  .portal>.p-news{grid-column:9/13!important;grid-row:span 2!important;order:2}
+  .p-deck{grid-column:1/9!important;order:3}
+  .p-links{grid-column:1/8!important;order:7}
+  .p-pop{grid-column:1/13!important;order:4}
+  .p-strips{grid-column:1/13!important;order:5}
+  .p-voices{grid-column:1/8!important;order:6}
+  .portal>.p-lab{grid-column:8/13!important;grid-row:span 2!important;order:6}
+  .portal>.nd{grid-column:1/6!important;grid-row:span 2!important;order:9}
+  .p-instant{grid-column:6/13!important;order:10}
+  .p-flash{grid-column:6/13!important;order:11}
+  .p-wall{grid-column:1/13!important;order:12}
+  .p-traffic{grid-column:1/13!important;order:13}
+  .p-speed{grid-column:1/13!important;order:14}
+  .p-collab{grid-column:1/13!important;order:15}
+  .p-mail{grid-column:1/13!important;order:16}
+  .p-foot{grid-column:1/13!important;order:99}
+}
+@media (max-width:1100px){
+  .p-logo{order:1}.p-deck{order:2}.p-news{order:3}.p-pop{order:4}.p-strips{order:5}.nd{order:6}.p-voices{order:7}.p-instant{order:8}.p-lab{order:9}
+  .p-traffic{order:10}.p-speed{order:11}.p-flash{order:12}.p-wall{order:13}.p-collab{order:14}.p-links{order:15}.p-mail{order:16}.p-foot{order:99}
+}
+@media (max-width:1100px) and (min-width:761px){.portal>.p-mod{grid-column:1/-1!important;grid-row:auto!important}}
+/* a little crooked, like it was pasted in by hand */
+@media (min-width:761px) and (prefers-reduced-motion:no-preference){
+  .p-deck{rotate:-.4deg}.nd{rotate:.6deg}.p-voices{rotate:-.3deg}.p-instant{rotate:.3deg}.p-lab{rotate:-.5deg}.p-flash{rotate:.4deg}.p-wall{rotate:-.4deg}.p-collab{rotate:.3deg}
+}
+.intro-chip .ic-sc{color:inherit;text-decoration:underline;text-underline-offset:2px}.intro-chip .ic-sc:hover{color:#e9e3d1}
+.d3-slip-read{margin:-2px 0 10px!important;padding-top:8px;border-top:1px dashed rgba(29,27,22,.35);font:400 13px/1.35 "Patrick Hand","Special Elite",cursive}.d3-slip-read b{color:#c3141c;font:700 9px var(--mono,monospace);letter-spacing:.2em;text-transform:uppercase}
+
+/* ---------- TikTok TV: carry handle + lifts while you hold it ---------- */
+.tv-handle{position:absolute;left:50%;top:-30px;z-index:5;display:flex;flex-direction:column;align-items:center;transform:translateX(-50%);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.tv-handle i{display:block;width:74px;height:26px;border:5px solid #0b0a09;border-bottom:0;border-radius:40px 40px 0 0;box-shadow:inset 0 2px 0 rgba(233,227,209,.35),0 0 0 2px #c3141c}
+.tv-handle b{position:absolute;top:-18px;padding:1px 6px;background:#e9e3d1;color:#0b0a09;font:700 9px var(--mono,monospace);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;rotate:-3deg;opacity:0;transition:opacity .2s}
+.tv:hover .tv-handle b,.tv-handle:focus-visible b{opacity:1}
+.tv.dragging{cursor:grabbing;scale:1.06;rotate:-3deg;filter:drop-shadow(0 22px 26px rgba(0,0,0,.6));transition:scale .15s,rotate .15s}
+.tv.dragging .tv-handle{cursor:grabbing}
+@media (hover:none){.tv-handle b{opacity:1}}
+
+/* ---------- the home page as a weird puzzle: every block is a dark piece with tabs that stick out and cut-ins,
+   a dashed cut line around it, and a coloured pin on one tab. Still crooked, still messy. ---------- */
+.portal>.p-mod{content-visibility:visible}
+.portal{gap:30px 26px}
+.portal>.p-mod:not(.p-foot):not(.p-logo){padding:14px;background:rgba(17,15,13,.8);border-radius:6px;box-shadow:0 0 0 2px rgba(233,227,209,.18),0 14px 30px rgba(0,0,0,.45);outline:2px dashed rgba(233,227,209,.32);outline-offset:-8px}
+.pz{position:absolute;z-index:6;width:38px;height:38px;border-radius:50%;pointer-events:none;font-style:normal}
+.pz-knob{background:rgb(17,15,13);box-shadow:0 0 0 2px rgba(233,227,209,.18)}
+.pz-knob::after{content:'';position:absolute;inset:6px;border-radius:50%;border:2px dashed rgba(233,227,209,.32)}
+.pz-knob::before{content:'';position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px;border-radius:50%;background:var(--ink,#c3141c);box-shadow:0 0 6px var(--ink,#c3141c)}
+.pz-sock{border:2px dashed rgba(233,227,209,.4);background:rgba(0,0,0,.35)}
+.pz-r{right:-30px;top:var(--at)}.pz-l{left:-14px;top:var(--at)}
+.pz-b{bottom:-30px;left:var(--at)}.pz-t{top:-14px;left:var(--at)}
+.p-logo .pz,.p-foot .pz{display:none}
+@media (max-width:760px){.pz-r,.pz-l{display:none}.portal{gap:30px}.portal>.p-mod:not(.p-foot):not(.p-logo){padding:10px}}
+@media (min-width:761px) and (prefers-reduced-motion:no-preference){.portal>.p-mod:hover .pz-knob{animation:pzWiggle .5s ease-in-out}}
+@keyframes pzWiggle{30%{translate:2px -2px}60%{translate:-2px 1px}}

@@ -12,6 +12,8 @@ function h(tag, props, ...kids) { const e = document.createElement(tag); if (pro
 const mail = String(CFG.email || '').trim();
 const tt = String(CFG.tiktok || 'shedithers').replace(/^@/, ''), yt = String(CFG.youtube || '').replace(/^@/, '');
 const pin = String(CFG.pinterest || '').trim();
+const sc = String(CFG.soundcloud || '').trim(), scSong = String(CFG.soundcloudSong || '').trim();
+const scSin = String(CFG.soundcloudSinnceree || '').trim();
 const cash = String(CFG.cashapp || '').replace(/^\$+/, '');
 
 /* ---------- the form ---------- */
@@ -63,6 +65,9 @@ window.SHD_COLLAB = openForm;
 const STOPS = [
   { k: 'tiktok', label: 'TIKTOK', sub: '@' + tt, word: 'watch me unravel', href: `https://www.tiktok.com/@${tt}`, art: 'are-we-alive-yet' },
   yt && { k: 'youtube', label: 'YOUTUBE', sub: '@' + yt, word: 'the long versions', href: `https://www.youtube.com/@${yt}`, art: 'when-you-rain' },
+  sc && { k: 'soundcloud', label: 'EVO', sub: 'on soundcloud', word: 'the music on this site', href: `https://soundcloud.com/${sc}`, art: 'knives-in-my-throat' },
+  scSong && { k: 'soundcloud-song', label: 'FOLLOW ME TO HEAVEN', sub: 'on soundcloud', word: 'press play', href: scSong, art: 'when-you-rain' },
+  scSin && { k: 'soundcloud-sinnceree', label: 'SINNCEREE', sub: 'on soundcloud', word: 'family on the aux', href: `https://soundcloud.com/${scSin}`, art: 'bridges-i-burn' },
   { k: 'pinterest', label: 'PINTEREST', sub: pin ? pin.replace(/^https?:\/\/(www\.)?pinterest\.[a-z.]+\//, '').replace(/\/$/, '') : 'shedithers', word: 'scroll the fragments', href: pin || 'https://www.pinterest.com/search/pins/?q=shedithers', art: 'i-stand-alone-orange' },
   { k: 'here', label: 'THE ARCHIVE', sub: 'u are here', word: 'every file, view only', href: '#/', art: 'no-identity', here: true },
   { k: 'lab', label: 'DITHER LAB', sub: 'make ur own', word: 'remember to forget', href: 'index.html', art: 'who-will-you-be' },

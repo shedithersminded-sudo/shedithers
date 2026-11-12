@@ -693,3 +693,11 @@ body.song-on .intro-chip:not(.moved){bottom:max(12px,env(safe-area-inset-bottom)
   .tv.off:not(.moved),.tv.min:not(.moved){left:auto!important;right:calc(max(8px,env(safe-area-inset-right)) + 86px)!important}
   .disc-stamp{left:196px!important;right:auto!important}
 }
+
+/* TikTok TV scrolls up and down like the app: up/down buttons beside the screen, videos slide in vertically */
+.tt-ud{display:flex;flex-direction:column;gap:10px;flex:none}
+.tt-screen.up{animation:tt-up .4s cubic-bezier(.2,.8,.2,1)}
+.tt-screen.down{animation:tt-down .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes tt-up{from{transform:translateY(40%);opacity:0}to{transform:none;opacity:1}}
+@keyframes tt-down{from{transform:translateY(-40%);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.tt-screen.up,.tt-screen.down{animation:none}}

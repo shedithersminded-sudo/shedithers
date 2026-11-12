@@ -19,21 +19,28 @@ function openTheater(start) {
     label.textContent = `CH ${String(ch + 1).padStart(2, '0')} / ${String(ids.length).padStart(2, '0')}`;
     [...list.children].forEach((b, k) => b.classList.toggle('on', k === ch));
   };
+  // scroll up and down like the TikTok app: buttons, mouse wheel, swipe, arrow keys
+  let lock = 0;
+  const go = d => { if (!ids.length || Date.now() < lock) return; lock = Date.now() + 450; screen.classList.remove('up', 'down'); void screen.offsetWidth; screen.classList.add(d > 0 ? 'up' : 'down'); play(ch + d); };
+  screen.addEventListener('animationend', () => screen.classList.remove('up', 'down'));
   if (ids.length) { ids.forEach((id, i) => list.append(h('button', { onclick: () => play(i) }, 'CH ' + String(i + 1).padStart(2, '0')))); }
   else screen.append(h('iframe', { src: `https://www.tiktok.com/embed/@${handle}?lang=en`, title: 'SHEDITHERS on TikTok', allow: 'autoplay; encrypted-media', allowfullscreen: true }));
   theater = h('div', { class: 'tt', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'TikTok theater' },
     h('div', { class: 'tt-dots', 'aria-hidden': 'true' }),
     h('div', { class: 'tt-set' },
       h('div', { class: 'tt-top' }, h('span', { class: 'tt-tag' }, '♪ TIKTOK TV · @' + handle), label, h('button', { class: 'tt-x', 'aria-label': 'Close TikTok theater', onclick: close }, '✕')),
-      h('div', { class: 'tt-body' }, h('button', { class: 'tt-k', 'aria-label': 'Previous video', onclick: () => ids.length && play(ch - 1), disabled: !ids.length }, '◂'), screen, h('button', { class: 'tt-k', 'aria-label': 'Next video', onclick: () => ids.length && play(ch + 1), disabled: !ids.length }, '▸')),
+      h('div', { class: 'tt-body' }, screen, h('div', { class: 'tt-ud' }, h('button', { class: 'tt-k', 'aria-label': 'Previous video', title: 'Previous video', onclick: () => go(-1), disabled: !ids.length }, '▲'), h('button', { class: 'tt-k', 'aria-label': 'Next video', title: 'Next video', onclick: () => go(1), disabled: !ids.length }, '▼'))),
       ids.length ? list : h('p', { class: 'tt-note' }, 'watching @' + handle + ' right here ♥'),
       h('div', { class: 'tt-foot' }, h('span', null, 'you never leave the archive · '), h('a', { href: `https://www.tiktok.com/@${handle}`, target: '_blank', rel: 'noopener' }, 'follow on tiktok ▸'))));
+  theater.addEventListener('wheel', e => { if (Math.abs(e.deltaY) < 12 || e.target.closest('.tt-list')) return; e.preventDefault(); go(e.deltaY > 0 ? 1 : -1); }, { passive: false });
+  let ty = null; theater.addEventListener('touchstart', e => { ty = e.touches[0].clientY; }, { passive: true });
+  theater.addEventListener('touchend', e => { if (ty == null) return; const dy = ty - e.changedTouches[0].clientY; ty = null; if (Math.abs(dy) > 50) go(dy > 0 ? 1 : -1); }, { passive: true });
   theater.addEventListener('click', e => { if (e.target === theater || e.target.classList.contains('tt-dots')) close(); });
   document.body.append(theater); document.body.classList.add('locked'); requestAnimationFrame(() => theater.classList.add('in'));
   if (ids.length) play(ch);
   document.addEventListener('keydown', key, true);
 }
-function key(e) { if (!theater) return; if (e.key === 'Escape') { e.stopPropagation(); close(); } }
+function key(e) { if (!theater) return; if (e.key === 'Escape') { e.stopPropagation(); close(); } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); e.stopPropagation(); const b = theater.querySelectorAll('.tt-ud .tt-k')[e.key === 'ArrowDown' ? 1 : 0]; b && b.click(); } }
 function close() { if (!theater) return; const t = theater; theater = null; t.classList.remove('in'); document.body.classList.remove('locked'); document.removeEventListener('keydown', key, true); setTimeout(() => t.remove(), 300); }
 window.SHD_WATCH = s => { window.shdCount && !theater && window.shdCount('tiktok-theater-opened', 'Opened the TikTok theater'); openTheater(s); };
 
@@ -71,17 +78,69 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
   enterBtn.addEventListener('click', () => {
     if (!on) return;
     let vol = 0.3; try { const v = parseFloat(localStorage.getItem('shd.introVol')); if (v >= 0 && v <= 1) vol = v; } catch (_) { }
-    // the site's songs, played in order: "Sorry" by evo & crevo, then "you kno u" by evo
-    const SONGS = [{ src: 'assets/ui/intro.mp3', title: 'Sorry', artist: 'evo & crevo' }, { src: 'assets/ui/you-kno-u.mp3', title: 'you kno u', artist: 'evo' }];
+    // the site's songs, played in order: "Follow Me To Heaven" by sinnceree (from SoundCloud), "Sorry" by evo & crevo, then "you kno u" by evo
+    const SC = (typeof SHD_CONFIG !== 'undefined' && SHD_CONFIG.soundcloud) ? 'https://soundcloud.com/' + SHD_CONFIG.soundcloud : '';
+    const SONG3 = (typeof SHD_CONFIG !== 'undefined' && SHD_CONFIG.soundcloudSong) || '';
+    const SONGS = [{ src: 'assets/ui/intro.mp3', title: 'Sorry', artist: 'evo & crevo', link: SC }, { src: 'assets/ui/you-kno-u.mp3', title: 'you kno u', artist: 'evo', link: SC }];
+    // songs that live on SoundCloud play through SoundCloud's own embed player (no file needed)
+    const SIN = (typeof SHD_CONFIG !== 'undefined' && SHD_CONFIG.soundcloudSinnceree) ? 'https://soundcloud.com/' + SHD_CONFIG.soundcloudSinnceree : '';
+    SONGS.forEach(s => s.profile = SC);
+    if (SONG3) SONGS.unshift({ sc: SONG3, title: 'Follow Me To Heaven', artist: 'sinnceree', link: SONG3, profile: SIN });
     let track = 0;
+    /* one remote for both kinds of song: a normal audio file, or the SoundCloud widget. The chip's buttons talk to this. */
+    const au = new Audio(), on2 = {}; let onSC = false, sw = null, swLoading = null, swPaused = true, swVol = vol, swMuted = false;
+    const fire = t => (on2[t] || []).forEach(f => f());
+    const scVol = () => sw && sw.setVolume(swMuted ? 0 : Math.round(swVol * 100));
+    function ensureSC(url) {
+      if (sw) { sw.load(url, { auto_play: true, callback: () => { scVol(); sw.play(); } }); return Promise.resolve(sw); }
+      if (swLoading) return swLoading;
+      // the intro alley may already have this song going: pick up the same player so it carries on without restarting
+      const W = window.SHD_SCW;
+      if (W && W.widget && W.url === url) {
+        sw = W.widget; const E = window.SC.Widget.Events;
+        sw.bind(E.PLAY, () => { swPaused = false; fire('play'); }); sw.bind(E.PAUSE, () => { swPaused = true; fire('pause'); }); sw.bind(E.FINISH, () => { swPaused = true; fire('pause'); fire('ended'); });
+        scVol(); sw.play(); swLoading = Promise.resolve(sw); return swLoading;
+      }
+      swLoading = new Promise(res => {
+        const go = () => {
+          const f = document.createElement('iframe'); f.className = 'sc-hidden'; f.allow = 'autoplay'; f.title = 'SoundCloud player';
+          f.src = 'https://w.soundcloud.com/player/?url=' + encodeURIComponent(url) + '&auto_play=true&visual=false&show_artwork=false';
+          f.style.cssText = 'position:fixed;left:-9999px;top:0;width:300px;height:166px;border:0'; document.body.append(f);
+          sw = window.SC.Widget(f); const E = window.SC.Widget.Events;
+          sw.bind(E.READY, () => { scVol(); sw.play(); res(sw); });
+          sw.bind(E.PLAY, () => { swPaused = false; fire('play'); }); sw.bind(E.PAUSE, () => { swPaused = true; fire('pause'); }); sw.bind(E.FINISH, () => { swPaused = true; fire('pause'); fire('ended'); });
+        };
+        if (window.SC && window.SC.Widget) go(); else { const sc = document.createElement('script'); sc.src = 'https://w.soundcloud.com/player/api.js'; sc.onload = go; document.head.append(sc); }
+      });
+      return swLoading;
+    }
+    const a = {
+      get paused() { return onSC ? swPaused : au.paused; },
+      play() { if (onSC) { if (sw) sw.play(); else ensureSC(SONGS[track].sc); return Promise.resolve(); } return au.play(); },
+      pause() { if (onSC) { sw && sw.pause(); } else au.pause(); },
+      get volume() { return onSC ? swVol : au.volume; }, set volume(v) { swVol = v; au.volume = v; scVol(); },
+      get muted() { return au.muted; }, set muted(m) { au.muted = m; swMuted = m; scVol(); },
+      set currentTime(t) { if (onSC) { sw && sw.seekTo(t * 1000); } else au.currentTime = t; },
+      set title(t) { au.title = t; },
+      addEventListener(t, f) { au.addEventListener(t, f); (on2[t] = on2[t] || []).push(f); },
+    };
+    function setTrack() {
+      const s = SONGS[track];
+      if (s.sc) { au.pause(); onSC = true; swPaused = true; if (sw) ensureSC(s.sc); else ensureSC(s.sc); }
+      else { if (sw) sw.pause(); onSC = false; au.src = s.src; au.play().catch(() => { }); }
+    }
     // starts low; visitors turn it up with the slider if they want
-    const a = new Audio(SONGS[0].src); a.volume = vol; a.play().catch(() => { });
+    au.volume = vol; setTrack();
     let fading = false;
     const chip = document.createElement('div'); chip.className = 'intro-chip';
     chip.innerHTML = '<span class="ic-disc"></span><span class="ic-txt"><b></b><small></small></span>';
     const label = () => {
       const s = SONGS[track]; a.title = `${s.title} — ${s.artist}`;
-      chip.querySelector('.ic-txt b').textContent = 'NOW PLAYING · ' + s.title.toUpperCase(); chip.querySelector('.ic-txt small').textContent = 'by ' + s.artist;
+      chip.querySelector('.ic-txt b').textContent = 'NOW PLAYING · ' + s.title.toUpperCase(); const sm = chip.querySelector('.ic-txt small'); sm.textContent = 'by ';
+      // the artist name links to their SoundCloud profile
+      if (s.profile) { const pl = document.createElement('a'); pl.href = s.profile; pl.target = '_blank'; pl.rel = 'noopener'; pl.className = 'ic-sc'; pl.textContent = s.artist; pl.addEventListener('click', e => e.stopPropagation()); sm.append(pl); } else sm.append(s.artist);
+      // show where the song lives: a link to it on SoundCloud
+      if (s.link && s.link !== s.profile) { sm.append(' · '); const l = document.createElement('a'); l.href = s.link; l.target = '_blank'; l.rel = 'noopener'; l.className = 'ic-sc'; l.textContent = 'on soundcloud ▸'; l.addEventListener('click', e => e.stopPropagation()); sm.append(l); }
       try { if ('mediaSession' in navigator && window.MediaMetadata) navigator.mediaSession.metadata = new MediaMetadata({ title: s.title, artist: s.artist, album: 'SHEDITHERS ARCHIVE' }); } catch (_) { }
     };
     label();
@@ -90,8 +149,10 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     const mute = mk('ic-mute', '🔊', 'Mute the song');
     const slider = document.createElement('input'); slider.type = 'range'; slider.className = 'ic-vol'; slider.min = 0; slider.max = 100; slider.value = Math.round(vol * 100); slider.setAttribute('aria-label', 'Song volume');
     const stop = mk('ic-stop', '✕', 'Stop the song');
+    const restart = mk('ic-restart', '⏮', 'Restart the song');
+    const skip = mk('ic-skip', '⏭', 'Skip to the next song');
     const tipB = mk('ic-tip', '', 'Buy me a drink'); tipB.innerHTML = '<img src="assets/ui/drinks/cocktail.svg" alt="">'; tipB.onclick = e => { e.stopPropagation(); window.SHD_DRINK && window.SHD_DRINK(); };
-    chip.append(pp, mute, slider, tipB, stop);
+    chip.append(restart, pp, skip, mute, slider, tipB, stop);
     const paintPP = () => { const p = a.paused; pp.textContent = p ? '▶' : '❚❚'; pp.setAttribute('aria-label', p ? 'Play the song' : 'Pause the song'); pp.title = pp.getAttribute('aria-label'); chip.classList.toggle('paused', p); };
     const paintVol = () => { const v = fading ? vol : a.volume, m = a.muted || v === 0; mute.textContent = m ? '🔇' : v < 0.4 ? '🔉' : '🔊'; mute.setAttribute('aria-label', m ? 'Unmute the song' : 'Mute the song'); mute.title = mute.getAttribute('aria-label'); slider.value = a.muted ? 0 : Math.round(v * 100); };
     pp.onclick = e => { e.stopPropagation(); a.paused ? a.play().catch(() => { }) : a.pause(); };
@@ -100,13 +161,17 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     a.addEventListener('play', paintPP); a.addEventListener('pause', paintPP);
     let gone = false;
     const end = () => { if (gone) return; gone = true; a.pause(); chip.classList.add('out'); document.body.classList.remove('song-on'); setTimeout(() => chip.remove(), 400); };
-    const next = () => { if (gone) return; if (track >= SONGS.length - 1) return end(); track++; a.src = SONGS[track].src; label(); a.play().catch(() => { }); };
+    const next = () => { if (gone) return; if (track >= SONGS.length - 1) return end(); track++; label(); setTrack(); };
+    restart.onclick = e => { e.stopPropagation(); a.currentTime = 0; a.play().catch(() => { }); };
+    // skip goes to the next song; on the last one it loops back to the first
+    skip.onclick = e => { e.stopPropagation(); track = (track + 1) % SONGS.length; label(); setTrack(); };
     stop.onclick = end; a.addEventListener('ended', next); paintVol();
     const P = window.SHD_ARCHIVE && window.SHD_ARCHIVE.player; if (P) P.audio.addEventListener('play', end, { once: true });
     chip.setAttribute('data-drag', ''); chip.setAttribute('data-grip', '');
     // one player at a time: while the intro song has its chip, the regular music player steps aside
     document.body.classList.add('song-on');
     document.body.append(chip); if (window.SHD_MOVE) window.SHD_MOVE(chip, 'introchip', 'the song');
+    if (window.SHD_TUCK) window.SHD_TUCK(chip, null, 'the song', '♪');
   }, true);
 })();
 
@@ -168,6 +233,7 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     [mini, head, relic].forEach(n => n && n.setAttribute('data-drag', ''));
     [mini, head].forEach(n => n && n.setAttribute('data-grip', ''));
     makeMovable(p, 'player', 'music player');
+    if (window.SHD_TUCK) window.SHD_TUCK(p, 'player', 'music', '♪');
   }
 })();
 
@@ -184,8 +250,11 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
   const tv = document.querySelector('.tv');
   if (tv && window.SHD_MOVE) {
     const body = tv.querySelector('.tv-body'), panel = tv.querySelector('.tv-panel'), tag = tv.querySelector('.tv-tag');
-    [body, tag].forEach(n => n && n.setAttribute('data-drag', '')); if (panel) panel.setAttribute('data-grip', '');
+    // a carry handle on top so it's clear you can pick the TV up and move it anywhere
+    const handle = document.createElement('span'); handle.className = 'tv-handle'; handle.setAttribute('aria-hidden', 'true'); handle.innerHTML = '<i></i><b>pick me up</b>'; tv.prepend(handle);
+    [body, tag, handle].forEach(n => n && n.setAttribute('data-drag', '')); if (panel) panel.setAttribute('data-grip', '');
     window.SHD_MOVE(tv, 'tv', 'TikTok TV');
+    if (window.SHD_TUCK) window.SHD_TUCK(tv, 'tv', 'TikTok TV', '📺');
   }
 })();
 

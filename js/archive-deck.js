@@ -13,6 +13,25 @@ const PICK = ARTWORKS.filter(a => a.type !== 'video' && a.w && a.h).sort((x, y) 
 const N = PICK.length; if (N < 3) return;
 const STEP = 360 / N;
 const INKS = ['red', 'black', 'paper', 'teal', 'mustard', 'plum'];
+// small riddles for the "reading:" line on each slip
+const READINGS = [
+  'what you keep checking was never locked.',
+  'the thing you lost is wearing a different coat.',
+  'someone is still holding the other end.',
+  'you already know which one. you just want it said out loud.',
+  'what grows in the dark still reaches for something.',
+  'count what stayed, not what left.',
+  'you are the echo and the wall.',
+  'the answer sleeps in the last thing you said no to.',
+  'what gets heavier the longer you hold it? put it down and see.',
+  'i have no mouth but i keep you up at night. what am i?',
+  'the more you feed it, the less it eats. find the hunger.',
+  'what breaks when you say its name? say it anyway.',
+  'a door, a mirror, a wire. one of them is you today.',
+  'what is always behind you and never catches up?',
+];
+// every line of words in the art, for the paper slips
+const LINES = ARTWORKS.filter(a => a.words && a.words.trim()).map(a => ({ text: a.words.trim(), a }));
 
 function build() {
   let angle = 0, vel = 0, drag = null, flipped = null, auto = !reduce, visible = false, raf = 0, last = 0;
@@ -40,7 +59,8 @@ function build() {
       const isFront = card.classList.contains('front');
       if (e.target.closest('.d3-look')) { location.hash = `#/work/${a.id}`; return; }
       if (!isFront) { goTo(i); return; }
-      flip(card);
+      if (card.classList.contains('flipped')) { flip(card); return; }
+      pull(card, a);
     });
     card.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.closest('.d3-look')) { e.preventDefault(); location.hash = `#/work/${a.id}`; } });
     card.addEventListener('pointermove', e => {
@@ -52,6 +72,25 @@ function build() {
     card.addEventListener('pointerleave', () => { card.style.setProperty('--tx', '0deg'); card.style.setProperty('--ty', '0deg'); });
     ring.append(card); return card;
   });
+  // tap the front card and a paper slip comes out of it with a line from the art. not a cookie, still a card.
+  let slip = null, lastLine = '';
+  function pull(card, a) {
+    let pick = String(a.words || '').trim();
+    if (!pick || pick === lastLine || Math.random() < .5) {
+      const others = LINES.filter(l => l.text !== lastLine); const o = others[Math.floor(Math.random() * others.length)];
+      if (o) { pick = o.text; a = o.a; }
+    }
+    lastLine = pick;
+    if (slip) { const old = slip; old.classList.add('gone'); setTimeout(() => old.remove(), 350); }
+    const close = h('button', { type: 'button', class: 'd3-slip-x', 'aria-label': 'Put the paper away', onclick: e => { e.stopPropagation(); away(); } }, '✕');
+    slip = h('div', { class: 'd3-slip', role: 'status', style: `--rot:${(Math.random() * 6 - 3).toFixed(1)}deg` },
+      close, h('small', null, 'you pulled'), h('p', null, pick),
+      h('p', { class: 'd3-slip-read' }, h('b', null, 'reading: '), READINGS[Math.floor(Math.random() * READINGS.length)]),
+      h('a', { href: `#/work/${a.id}`, class: 'd3-slip-from' }, `from “${a.title.toLowerCase()}” ▸`));
+    stage.append(slip); card.classList.remove('tug'); void card.offsetWidth; card.classList.add('tug');
+    window.shdCount && window.shdCount('deck-slip', 'Pulled a paper from the deck');
+  }
+  function away() { if (!slip) return; const s = slip; slip = null; s.classList.add('gone'); setTimeout(() => s.remove(), 350); kick(); }
   function flip(card) { const on = !card.classList.contains('flipped'); cards.forEach(c => c.classList.remove('flipped')); card.classList.toggle('flipped', on); flipped = on ? card : null; }
   function frontIndex() { return ((Math.round(-angle / STEP) % N) + N) % N; }
   function paint() {
@@ -67,9 +106,9 @@ function build() {
     if (drag) { /* finger moves it */ }
     else if (target != null) { const d = target - angle; angle += d * Math.min(1, dt / 120); if (Math.abs(d) < .05) { angle = target; target = null; } }
     else if (Math.abs(vel) > .02) { angle += vel * dt / 16; vel *= Math.pow(.92, dt / 16); if (Math.abs(vel) <= .02) goTo(frontIndex()); }
-    else if (auto && !flipped && !hover) angle -= .012 * dt;
+    else if (auto && !flipped && !hover && !slip) angle -= .012 * dt;
     paint();
-    if (visible && !document.hidden && (drag || target != null || Math.abs(vel) > .02 || (auto && !flipped && !hover))) raf = requestAnimationFrame(tick);
+    if (visible && !document.hidden && (drag || target != null || Math.abs(vel) > .02 || (auto && !flipped && !hover && !slip))) raf = requestAnimationFrame(tick);
   }
   function kick() { if (!raf) { last = 0; raf = requestAnimationFrame(tick); } }
 
@@ -93,7 +132,7 @@ function build() {
     h('button', { type: 'button', class: 'd3-btn red', onclick: () => flip(cards[frontIndex()]) }, '↻ flip'));
   const sizeIt = () => { const w = Math.min(stage.clientWidth || 600, 900), cw = w < 560 ? 150 : 190; stage.style.setProperty('--cw', cw + 'px'); stage.style.setProperty('--r', Math.round(cw / 2 / Math.tan(Math.PI / N) * 1.08) + 'px'); };
   const sec = h('section', { class: 'p-mod p-deck' },
-    h('div', { class: 'p-head' }, h('small', null, 'デッキ'), h('b', null, 'THE DECK'), h('span', null, 'DRAG TO SPIN · TAP A CARD TO FLIP')),
+    h('div', { class: 'p-head' }, h('small', null, 'デッキ'), h('b', null, 'THE DECK'), h('span', null, 'DRAG TO SPIN · TAP THE FRONT CARD, GET A WORD')),
     stage, controls);
   new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) kick(); }, { rootMargin: '100px' }).observe(stage);
   document.addEventListener('visibilitychange', kick);

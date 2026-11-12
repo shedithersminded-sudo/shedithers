@@ -15,6 +15,12 @@ const SHD_CONFIG = {
   pinterest: '',
   // Your YouTube handle (without @)
   youtube: 'shedithersminded',
+  // evo on SoundCloud (his songs play on the site), the part after soundcloud.com/
+  soundcloud: 'evosrevenge',
+  // A song to point people to (full SoundCloud link). Empty = hidden.
+  soundcloudSong: 'https://soundcloud.com/sinnceree/follow-me-to-heaven',
+  // sinnceree (evo's brother) on SoundCloud, the part after soundcloud.com/
+  soundcloudSinnceree: 'sinnceree',
   // TikTok TV: paste links to your favourite TikToks here (e.g. 'https://www.tiktok.com/@shedithers/video/1234567890').
   // Leave empty to show your whole @shedithers feed instead.
   tiktokVideos: [
@@ -22,7 +28,6 @@ const SHD_CONFIG = {
     'https://www.tiktok.com/@shedithers/video/7703278709691714830',
     'https://www.tiktok.com/@shedithers/video/7703211470544309517',
     'https://www.tiktok.com/@shedithers/video/7702714588151745805',
-    'https://www.tiktok.com/@shedithers/video/7702500154061999374',
     'https://www.tiktok.com/@shedithers/video/7699131538335649054',
     'https://www.tiktok.com/@shedithers/video/7691549697604848926',
     'https://www.tiktok.com/@shedithers/video/7690831153753820447',

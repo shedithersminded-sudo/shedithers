@@ -14,6 +14,24 @@ const render = el('div', 'g-render'); render.setAttribute('aria-hidden', 'true')
   .forEach((a, i) => { const L = el('i', 'pr-layer' + (i === 0 ? ' on' : '')); L.style.backgroundImage = `url('${abs(a.src)}')`; render.append(L); });
 render.append(el('i', 'pr-tint'), el('i', 'pr-streaks'), el('i', 'pr-grid'));
 gate.prepend(render);
+
+/* 1b) through the portal you land in heaven, in the site's colours: a night sky burning red and orange, two paper-stone
+ * columns with glowing halo rings, and a road of floating stone tiles that bob in a sine wave and loop forever.
+ * (inspo the artist picked: a heaven's gate loop. rebuilt here from scratch in CSS.) */
+if (typeof SHD_CONFIG !== 'undefined' && SHD_CONFIG.soundcloudSong) {
+  const hv = el('div', 'heaven'); hv.setAttribute('aria-hidden', 'true');
+  let tiles = '';
+  for (let r = 0; r < 14; r++) for (let c = 0; c < 7; c++) {
+    if (Math.abs(c - 3 - Math.sin(r * 0.55) * 1.6) > 2.2 && (r * 7 + c) % 3) continue; // a winding road, ragged at the edges
+    tiles += `<i class="hv-tile" style="--r:${r};--c:${c};--j:${((r * 13 + c * 7) % 10) / 10}"></i>`;
+  }
+  hv.innerHTML = `<i class="hv-sky"></i><i class="hv-cloud c1"></i><i class="hv-cloud c2"></i><i class="hv-cloud c3"></i>
+    <div class="hv-view"><div class="hv-floor"><div class="hv-loop">${tiles}</div><div class="hv-loop two">${tiles}</div></div></div>
+    <div class="hv-col l"><i class="hv-cap"></i><i class="hv-shaft"></i><i class="hv-base"></i><i class="hv-halo a"></i><i class="hv-halo b"></i></div>
+    <div class="hv-col r"><i class="hv-cap"></i><i class="hv-shaft"></i><i class="hv-base"></i><i class="hv-halo a"></i><i class="hv-halo b"></i></div>
+    <i class="hv-cloud c4"></i><i class="hv-grain"></i>`;
+  render.after(hv); gate.classList.add('in-heaven');
+}
 let gi = 0; const gT = setInterval(() => { if (!document.body.contains(render)) return clearInterval(gT); const L = render.querySelectorAll('.pr-layer'); L[gi].classList.remove('on'); gi = (gi + 1) % L.length; L[gi].classList.add('on'); }, 7000);
 
 /* 2) the walk (once per visit, only when the gate is showing) */
@@ -56,9 +74,49 @@ walk.innerHTML = `${scene}<i class="wk-vig"></i>
   <button class="wk-skip" type="button">skip ▸</button><i class="wk-grain"></i>
   <div class="wk-bar top" aria-hidden="true"></div>
   <div class="wk-bar bot" aria-hidden="true"><span class="wk-obs">shedithers</span><span class="wk-date">08✦11✦2026</span><span class="wk-check"><i></i><i></i><i></i><i></i><i></i><i></i></span></div>`;
-const fyArt = ARTWORKS.find(a => a.id === 'shedithers-eyes') || ARTWORKS.find(a => a.id === 'no-identity');
-if (fyArt) walk.querySelector('.fly').style.setProperty('--fy-art', `url('${abs(fyArt.src)}')`);
+/* the flyer in your hands IS one of the artist's pieces (a different one each visit), with the ticket stub under it */
+const FLYERS = ['memory-is-punishment', 'she-knows-the-night', 'when-you-rain', 'who-will-you-be', 'untitled-hands', 'dream-without-action', 'not-in-my-nature']
+  .map(id => ARTWORKS.find(a => a.id === id)).filter(Boolean);
+const fyArt = FLYERS[Math.floor(Math.random() * FLYERS.length)] || ARTWORKS.find(a => a.id === 'shedithers-eyes');
+if (fyArt) { const fly = walk.querySelector('.fly'); fly.style.setProperty('--fy-art', `url('${abs(fyArt.src)}')`); fly.classList.add('art-flyer'); fly.insertAdjacentHTML('afterbegin', '<span class="fy-song">♪ follow me to heaven</span><i class="fy-tex" aria-hidden="true"></i><span class="fy-sim" aria-hidden="true"><b>ADMIT ONE</b> into a better simulation · v2.0 · no return</span>'); }
+if ((typeof SHD_CONFIG !== 'undefined' && SHD_CONFIG.soundcloudSong)) { const st = walk.querySelectorAll('.wk-steps span'); if (st[1]) st[1].textContent = 'follow me to heaven.'; walk.classList.add('walk-heaven'); }
 document.body.append(walk); document.body.classList.add('walking');
+/* the warehouse door is a glowing portal. It sits exactly on the door in the picture (worked out from how the
+ * picture is cropped to the screen), swirls, and pumps with the bass. Going in = flying through it. */
+const portal = el('div', 'wk-portal', '<i class="pt-glow"></i><i class="pt-rays"></i><i class="pt-ring"></i><i class="pt-swirl"></i><i class="pt-core"></i><i class="pt-motes"></i>');
+portal.setAttribute('aria-hidden', 'true'); walk.querySelector('.wk-scene').append(portal);
+// door in the source pictures: centre x/y and size, in that picture's pixels
+const DOOR = { wide: { iw: 2400, ih: 1400, x: 1200, y: 760, w: 270, h: 340 }, tall: { iw: 1200, ih: 2000, x: 600, y: 890, w: 240, h: 315 } };
+function placePortal() {
+  const d = matchMedia('(max-aspect-ratio: 5/6)').matches ? DOOR.tall : DOOR.wide, W = walk.clientWidth, H = walk.clientHeight;
+  const k = Math.max(W / d.iw, H / d.ih), ox = (W - d.iw * k) * 0.5, oy = (H - d.ih * k) * 0.56;
+  const st = portal.style; st.left = (ox + d.x * k) + 'px'; st.top = (oy + d.y * k) + 'px'; st.width = (d.w * k * 1.35) + 'px'; st.height = (d.h * k * 1.12) + 'px';
+}
+placePortal(); addEventListener('resize', placePortal);
+/* the simulation is watching: thin tracking boxes lock onto things in the alley, with labels and lines between them,
+ * like a computer counting the crowd (artist's reference: a crowd-tracking clip). Drawn in the site's lime + red. */
+const trk = el('canvas', 'wk-track'); trk.setAttribute('aria-hidden', 'true'); walk.querySelector('.wk-vig').after(trk);
+const TAGS = ['ID ??? · NO IDENTITY', 'SUBJECT: YOU', 'conf .97 · human?', 'ID 0x2F · LOOPING', 'signal: weak', 'GUEST · UNVERIFIED', 'ID 0x00 · REMEMBER TO FORGET', 'conf .41 · ghost'];
+const boxes = Array.from({ length: 8 }, (_, i) => ({ x: .2 + Math.random() * .6, y: .45 + Math.random() * .3, w: .04 + Math.random() * .05, h: .08 + Math.random() * .1, vx: (Math.random() - .5) * .0016, vy: (Math.random() - .5) * .0008, t: TAGS[i], red: i % 3 === 0 }));
+let trT = 0;
+function drawTrack() {
+  if (done || !trk.isConnected) return;
+  const W = trk.width = walk.clientWidth, H = trk.height = walk.clientHeight, x = trk.getContext('2d');
+  x.clearRect(0, 0, W, H); x.lineWidth = 1; x.font = '10px "JetBrains Mono", monospace';
+  boxes.forEach(b => { b.x += b.vx; b.y += b.vy; if (b.x < .12 || b.x > .82) b.vx *= -1; if (b.y < .38 || b.y > .8) b.vy *= -1; });
+  x.strokeStyle = 'rgba(212,255,0,.35)'; x.beginPath();
+  for (let i = 0; i < boxes.length - 1; i += 1) { const a = boxes[i], c = boxes[(i * 3 + 1) % boxes.length]; x.moveTo(a.x * W, a.y * H); x.lineTo(c.x * W, c.y * H); }
+  x.stroke();
+  boxes.forEach(b => {
+    const bx = (b.x - b.w / 2) * W, by = (b.y - b.h / 2) * H, bw = b.w * W, bh = b.h * H, col = b.red ? '#ff3b3b' : '#d4ff00';
+    x.strokeStyle = col; x.strokeRect(bx, by, bw, bh);
+    x.fillStyle = col; x.fillRect(bx, by - 13, x.measureText(b.t).width + 8, 12);
+    x.fillStyle = '#0b0a09'; x.fillText(b.t, bx + 4, by - 3);
+    x.fillStyle = col; x.fillRect(b.x * W - 2, b.y * H - 2, 4, 4);
+  });
+  trT = setTimeout(() => requestAnimationFrame(drawTrack), reduce ? 1000 : 50);
+}
+if (!reduce) requestAnimationFrame(drawTrack); // after the rest of the walk is set up
 let done = false, dist = 0.2;
 const dEl = walk.querySelector('.wk-dist');
 const tick = setInterval(() => { if (!walk.classList.contains("ready")) return; dist = Math.max(0, dist - 0.03); dEl.textContent = dist > 0.01 ? `${dist.toFixed(2)} MI ▸` : 'YOU’RE HERE ★'; }, 600);
@@ -66,6 +124,7 @@ function finish() {
   if (done) return; done = true; clearInterval(tick); clearTimeout(auto); bass.stop();
   try { sessionStorage.setItem('shd.walked', '1'); } catch (_) { }
   walk.classList.add('arrive'); document.body.classList.remove('walking');
+  removeEventListener('resize', placePortal); clearTimeout(trT);
   setTimeout(() => { walk.remove(); const b = document.getElementById('enter'); if (b) b.focus(); }, reduce ? 0 : 1100);
 }
 walk.querySelector('.wk-hold').addEventListener('click', finish);
@@ -76,7 +135,56 @@ let auto = 0;
 /* bass through the walls: "Sorry" (evo & crevo) muffled behind a low-pass filter that opens up as you get closer.
  * A bass analyser drives --b (0..1) so the alley pumps on every kick. Browsers only allow sound after a tap, so if
  * it can't start on its own the chip says "tap for bass" and the first tap anywhere starts it. */
-const bass = (() => {
+/* when a SoundCloud song is set (CFG.soundcloudSong), the alley plays that instead, through SoundCloud's own player.
+ * SoundCloud doesn't hand over the raw sound, so there's no wall muffle or kick detector: it fades up as you walk in
+ * and the alley pumps on a steady beat. The same player keeps going into the song bar after ENTER (window.SHD_SCW). */
+const SCSONG = (typeof SHD_CONFIG !== 'undefined' && SHD_CONFIG.soundcloudSong) || '';
+const bassSC = () => {
+  let on = true; try { on = localStorage.getItem('shd.introSound') !== 'off'; } catch (_) { }
+  let vol = 0.3; try { const v = parseFloat(localStorage.getItem('shd.introVol')); if (v >= 0 && v <= 1) vol = v; } catch (_) { }
+  const btn = el('button', 'wk-snd'); btn.type = 'button'; walk.append(btn);
+  let w = null, ready = null, playing = false, beat = 0, ramp = 0;
+  const paint = () => { btn.textContent = playing ? '♪ bass: on' : (on ? '♪ tap for bass' : '♪ bass: off'); btn.setAttribute('aria-pressed', String(playing)); btn.classList.toggle('ask', on && !playing); };
+  function load() {
+    if (ready) return ready;
+    ready = new Promise(res => {
+      const go = () => {
+        const f = document.createElement('iframe'); f.className = 'sc-hidden'; f.allow = 'autoplay'; f.title = 'SoundCloud player';
+        f.src = 'https://w.soundcloud.com/player/?url=' + encodeURIComponent(SCSONG) + '&auto_play=false&visual=false&show_artwork=false';
+        f.style.cssText = 'position:fixed;left:-9999px;top:0;width:300px;height:166px;border:0'; document.body.append(f);
+        w = window.SC.Widget(f); window.SHD_SCW = { widget: w, url: SCSONG, frame: f };
+        w.bind(window.SC.Widget.Events.READY, () => res(w));
+      };
+      if (window.SC && window.SC.Widget) go(); else { const sc = document.createElement('script'); sc.src = 'https://w.soundcloud.com/player/api.js'; sc.onload = go; sc.onerror = () => res(null); document.head.append(sc); }
+    });
+    return ready;
+  }
+  load();
+  async function start() {
+    if (playing || done || !on) return false;
+    const wd = await load(); if (!wd || done) { paint(); return false; }
+    const started = await new Promise(res => { let ok = false; const E = window.SC.Widget.Events; wd.bind(E.PLAY, () => { ok = true; res(true); }); wd.setVolume(4); wd.play(); setTimeout(() => res(ok), 1500); });
+    if (!started) { wd.pause(); paint(); return false; }
+    playing = true; walk.classList.add('loud');
+    // fades up as you walk closer
+    const loud = Math.round(Math.min(0.7, vol * 1.8) * 100), t0 = performance.now();
+    clearInterval(ramp); ramp = setInterval(() => { const k = Math.min(1, (performance.now() - t0) / 8000); wd.setVolume(Math.round(4 + (loud - 4) * k)); if (k >= 1) clearInterval(ramp); }, 200);
+    // a steady thump for the alley to pump on
+    let ph = 0; clearInterval(beat); beat = setInterval(() => { ph = (ph + 30 / (60000 / 130)) % 1; walk.style.setProperty('--b', Math.max(0, 1 - ph * 3).toFixed(3)); }, 30);
+    paint(); return true;
+  }
+  function stop() { clearInterval(beat); clearInterval(ramp); walk.classList.remove('loud'); walk.style.removeProperty('--b'); if (!playing) return; playing = false; w && w.pause(); }
+  btn.addEventListener('click', async e => {
+    e.stopPropagation();
+    if (playing) { on = false; stop(); } else { on = true; if (await start()) { clearTimeout(auto); auto = setTimeout(finish, reduce ? 999999 : 8200); } }
+    try { localStorage.setItem('shd.introSound', on ? 'on' : 'off'); } catch (_) { }
+    paint();
+  });
+  walk.addEventListener('pointerdown', e => { if (!playing && on && !e.target.closest('button')) start().then(ok => { if (ok) { clearTimeout(auto); auto = setTimeout(finish, reduce ? 999999 : 8200); } }); });
+  paint();
+  return { start, stop };
+};
+const bass = SCSONG ? bassSC() : (() => {
   let on = true; try { on = localStorage.getItem('shd.introSound') !== 'off'; } catch (_) { }
   let vol = 0.3; try { const v = parseFloat(localStorage.getItem('shd.introVol')); if (v >= 0 && v <= 1) vol = v; } catch (_) { }
   const btn = el('button', 'wk-snd'); btn.type = 'button'; walk.append(btn);

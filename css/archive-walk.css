@@ -133,3 +133,84 @@
 @keyframes wkAsk{50%{box-shadow:0 0 0 6px rgba(212,255,0,.25)}}
 .walk.arrive .wk-snd{opacity:0;transition:opacity .25s}
 .walk.still .wk-scene img{animation:none;scale:none}.walk.still .wk-snd.ask{animation:none}
+
+/* ===== v3.2.1: the door at the end of the alley is a glowing portal ===== */
+.wk-portal{position:absolute;z-index:2;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;mix-blend-mode:screen;filter:brightness(calc(1 + var(--b,0) * .5))}
+.wk-portal i{position:absolute;inset:0;border-radius:50%}
+.pt-glow{inset:-60%!important;background:radial-gradient(closest-side,rgba(255,255,255,.55),rgba(212,255,0,.35) 35%,rgba(226,104,42,.22) 60%,transparent 100%);filter:blur(14px);animation:ptBreath 2.6s ease-in-out infinite;scale:calc(1 + var(--b,0) * .25)}
+.pt-ring{background:conic-gradient(from 0deg,#d4ff00,#ffffff,#e2682a,#c3141c,#ff4fa3,#d4ff00);-webkit-mask:radial-gradient(closest-side,transparent 72%,#000 76%,#000 92%,transparent 100%);mask:radial-gradient(closest-side,transparent 72%,#000 76%,#000 92%,transparent 100%);filter:blur(1.5px) drop-shadow(0 0 10px #d4ff00);animation:ptSpin 3.2s linear infinite}
+.pt-swirl{background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.0) 0 14deg,rgba(212,255,0,.55) 18deg,rgba(255,255,255,0) 30deg);-webkit-mask:radial-gradient(closest-side,#000 10%,rgba(0,0,0,.8) 55%,transparent 78%);mask:radial-gradient(closest-side,#000 10%,rgba(0,0,0,.8) 55%,transparent 78%);filter:blur(2px);animation:ptSpin 1.8s linear infinite reverse}
+.pt-core{inset:22%!important;background:radial-gradient(closest-side,#fff,rgba(255,255,255,.85) 30%,rgba(212,255,0,.5) 65%,transparent);filter:blur(4px);animation:ptBreath 1.3s ease-in-out infinite alternate}
+.pt-rays{inset:-30%!important;background:repeating-conic-gradient(from 10deg,rgba(255,255,255,.18) 0 3deg,transparent 3deg 22deg);-webkit-mask:radial-gradient(closest-side,transparent 40%,#000 55%,transparent 100%);mask:radial-gradient(closest-side,transparent 40%,#000 55%,transparent 100%);animation:ptSpin 12s linear infinite}
+@keyframes ptSpin{to{rotate:360deg}}
+@keyframes ptBreath{50%{opacity:.75;scale:1.06}}
+/* going in: you fly through the portal and it swallows the screen in white light */
+.walk.arrive .wk-portal{transition:transform 1s cubic-bezier(.6,0,.4,1),opacity .4s .7s;transform:translate(-50%,-50%) scale(14);opacity:0}
+.walk.arrive .pt-core{background:#fff;filter:none}
+.walk.still .wk-portal i{animation:none}
+
+/* ===== v3.2.2: feels like "follow me to heaven": the portal is soft white + gold light with specks rising into it ===== */
+.walk.walk-heaven .pt-glow{background:radial-gradient(closest-side,rgba(255,255,255,.75),rgba(255,236,190,.45) 35%,rgba(255,190,210,.2) 62%,transparent 100%);filter:blur(18px)}
+.walk.walk-heaven .pt-ring{background:conic-gradient(from 0deg,#fff,#ffe7a8,#ffffff,#ffc9d9,#fff6d8,#fff);filter:blur(2px) drop-shadow(0 0 14px #fff6d8);animation-duration:6s}
+.walk.walk-heaven .pt-swirl{background:repeating-conic-gradient(from 0deg,rgba(255,255,255,0) 0 14deg,rgba(255,244,214,.6) 18deg,rgba(255,255,255,0) 30deg);animation-duration:4s}
+.walk.walk-heaven .pt-rays{inset:-90%!important;background:repeating-conic-gradient(from 10deg,rgba(255,250,235,.22) 0 2deg,transparent 2deg 16deg);animation-duration:40s}
+.pt-motes{inset:-120% -40% 20% -40%!important;border-radius:0!important;background:radial-gradient(circle,rgba(255,255,255,.95) 0 1.5px,transparent 2.5px) 0 0/38px 52px,radial-gradient(circle,rgba(255,240,200,.8) 0 1px,transparent 2px) 17px 23px/29px 41px;-webkit-mask:radial-gradient(ellipse at 50% 100%,#000 10%,transparent 70%);mask:radial-gradient(ellipse at 50% 100%,#000 10%,transparent 70%);animation:ptMotes 5s linear infinite;opacity:0}
+.walk.walk-heaven .pt-motes{opacity:.9}
+@keyframes ptMotes{from{background-position:0 0,17px 23px}to{background-position:6px -208px,10px -141px}}
+.walk.still .pt-motes{animation:none}
+/* the flyer is the artist's own piece, full bleed, with the ticket stub below */
+.fly.art-flyer{background:#0b0a09 var(--fy-art) center/cover no-repeat}
+.fly.art-flyer>:not(.fy-stub):not(.fy-staple):not(.fy-tape):not(.fy-song):not(.fy-tex):not(.fy-sim){visibility:hidden}
+.fly.art-flyer .fy-stub{background:#e9e3d1}
+.fy-song{position:absolute;left:50%;top:-14px;z-index:3;transform:translateX(-50%) rotate(-3deg);padding:3px 10px;background:#fff8e6;color:#0b0a09;font:400 15px/1.2 'Special Elite',monospace;white-space:nowrap;box-shadow:0 0 14px rgba(255,248,230,.8),0 3px 6px rgba(0,0,0,.4)}
+
+/* ===== v3.2.3: heaven, in the site's colours (the gate after the portal) ===== */
+.heaven{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#050404}
+.hv-sky{position:absolute;inset:0;background:radial-gradient(ellipse 70% 45% at 50% 62%,rgba(255,236,190,.55),transparent 60%),linear-gradient(180deg,#050404 0%,#1a0505 28%,#5e0b0e 48%,#c3141c 64%,#e2682a 78%,#f2b234 90%,#2a0606 100%)}
+.hv-cloud{position:absolute;border-radius:50%;filter:blur(26px);background:radial-gradient(closest-side,rgba(233,227,209,.5),rgba(195,20,28,.25) 60%,transparent);animation:hvDrift 26s ease-in-out infinite alternate}
+.hv-cloud.c1{left:-10%;top:12%;width:55%;height:26%}.hv-cloud.c2{right:-12%;top:30%;width:50%;height:22%;animation-duration:32s;animation-direction:alternate-reverse}
+.hv-cloud.c3{left:20%;top:44%;width:60%;height:14%;opacity:.7;animation-duration:20s}.hv-cloud.c4{left:-20%;bottom:-6%;width:140%;height:26%;opacity:.55;background:radial-gradient(closest-side,rgba(233,227,209,.35),rgba(11,10,9,.5) 70%,transparent)}
+@keyframes hvDrift{to{translate:8% -3%}}
+.hv-view{position:absolute;inset:0;perspective:700px;perspective-origin:50% 38%}
+.hv-floor{position:absolute;left:50%;top:58%;width:980px;height:1680px;margin-left:-490px;transform-origin:50% 0;transform:rotateX(80deg);transform-style:preserve-3d}
+.hv-loop{position:absolute;left:0;top:0;width:100%;height:100%;animation:hvRoad 14s linear infinite;transform-style:preserve-3d}
+.hv-loop.two{top:-100%}
+@keyframes hvRoad{to{translate:0 100%}}
+.hv-tile{position:absolute;left:calc(var(--c) * 140px + 14px + var(--j) * 20px);top:calc(var(--r) * 120px + var(--j) * 18px);width:104px;height:78px;background:linear-gradient(135deg,#f2eee2,#c9c2ad 70%,#8d8a78);box-shadow:inset 0 0 0 7px rgba(255,255,255,.18),inset 0 0 0 9px rgba(29,27,22,.25),0 0 18px rgba(255,236,190,.35);animation:hvBob 3.2s ease-in-out infinite;animation-delay:calc(var(--r) * -.42s + var(--c) * -.11s)}
+.hv-tile:nth-child(5n){box-shadow:inset 0 0 0 7px rgba(255,255,255,.18),inset 0 0 0 9px rgba(29,27,22,.25),0 0 22px rgba(212,255,0,.45)}
+@keyframes hvBob{50%{transform:translateZ(26px)}}
+.hv-col{position:absolute;bottom:4%;width:clamp(56px,7vw,110px);height:62%;display:flex;flex-direction:column;align-items:center;animation:hvFloat 6s ease-in-out infinite alternate}
+.hv-col.l{left:7%}.hv-col.r{right:7%;height:74%;bottom:12%;animation-delay:-3s}
+@keyframes hvFloat{to{translate:0 -14px}}
+.hv-cap{width:140%;height:6%;background:linear-gradient(180deg,#f2eee2,#b8b09a);border-radius:3px;box-shadow:0 4px 0 #8d8a78}
+.hv-shaft{flex:1;width:100%;background:repeating-linear-gradient(90deg,#d8d1bd 0 6%,#f2eee2 9%,#a39c86 14%,#d8d1bd 16.66%);box-shadow:inset 0 0 30px rgba(94,11,14,.45)}
+.hv-base{width:150%;height:7%;background:linear-gradient(180deg,#e9e3d1,#8d8a78);border-radius:2px}
+.hv-halo{position:absolute;left:50%;width:240%;height:16%;margin-left:-120%;border-radius:50%;border:3px solid #fff;box-shadow:0 0 12px #fff,0 0 26px #d4ff00,inset 0 0 12px #d4ff00;animation:hvHalo 4s ease-in-out infinite}
+.hv-halo.a{top:18%}.hv-halo.b{top:78%;animation-delay:-2s;border-color:#fff8e6;box-shadow:0 0 12px #fff,0 0 26px #e2682a,inset 0 0 12px #e2682a}
+@keyframes hvHalo{50%{translate:0 -10px;opacity:.75}}
+.hv-grain{position:absolute;inset:0;background:var(--noise,none);opacity:.35;mix-blend-mode:overlay}
+.gate.in-heaven .g-render{opacity:0}
+@media (max-width:760px){.hv-col{width:46px;height:44%}.hv-col.r{height:52%}.hv-floor{width:760px;margin-left:-380px}}
+@media (prefers-reduced-motion:reduce){.heaven *{animation:none!important}}
+
+/* ===== flyer texture: printed, folded, handled. a flyer to a better simulation ===== */
+.fly.art-flyer{box-shadow:0 18px 40px rgba(0,0,0,.6)}
+.fy-tex{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:
+    linear-gradient(90deg,transparent 49.4%,rgba(0,0,0,.32) 49.8%,rgba(255,255,255,.28) 50.3%,transparent 50.8%),
+    linear-gradient(0deg,transparent 33%,rgba(0,0,0,.22) 33.3%,rgba(255,255,255,.22) 33.7%,transparent 34.2%),
+    radial-gradient(circle,rgba(11,10,9,.35) 0 .9px,transparent 1.2px) 0 0/4px 4px,
+    repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px),
+    radial-gradient(ellipse at 80% 15%,rgba(110,70,30,.35),transparent 30%),
+    radial-gradient(ellipse at 10% 90%,rgba(70,45,20,.4),transparent 35%),
+    var(--fiber,none);
+  mix-blend-mode:multiply;box-shadow:inset 0 0 0 2px rgba(233,227,209,.5),inset 0 0 30px rgba(30,18,8,.6)}
+.fy-tex::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.18) 45%,transparent 60%);mix-blend-mode:screen}
+.fy-sim{position:absolute;left:0;right:0;bottom:44px;z-index:3;padding:4px 8px;background:#c3141c;color:#e9e3d1;font:700 9px/1.25 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;text-align:center;transform:rotate(-1.5deg);box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.fy-sim b{color:#d4ff00}
+
+/* ===== v3.2.4: tracking boxes over the alley (the simulation is counting you) ===== */
+.wk-track{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;mix-blend-mode:screen;opacity:.85}
+.walk.arrive .wk-track{opacity:0;transition:opacity .4s}
+.gate>.heaven{position:absolute;inset:0;z-index:0}
+.gate.in-heaven .pg-dots{display:none}
