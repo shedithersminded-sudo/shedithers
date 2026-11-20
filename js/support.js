@@ -21,7 +21,7 @@ function openTip() {
   const art = id => { const w = typeof artById === 'function' && artById(id); return w ? `url('${new URL(w.src, location.href).href}')` : 'none'; };
   $$('.drink', body).forEach((d, i) => d.style.setProperty('--art', art(['i-love-shedithers', 'not-in-my-nature', 'when-you-rain', 'mad-women-and-poets'][i % 4])));
   body.prepend(h('div', { class: 'tip-banner', 'aria-hidden': 'true' }));
-  const md = openModal({ title: 'BUY ME A DRINK', sub: 'no pressure', cls: 'sm', body, foot: h('span', { class: 'note' }, 'SHEDITHERS LOVES YOU ♥') });
+  const md = openModal({ title: 'KEEP ME DREAMING', sub: 'no pressure', cls: 'sm', body, foot: h('span', { class: 'note' }, 'SHEDITHERS LOVES YOU ♥') });
   md.el.style.width = 'min(580px,94vw)'; md.el.classList.add('tip-modal');
   md.el.style.setProperty('--tip-banner', art('no-identity')); md.el.style.setProperty('--tip-guy', `url('${new URL('assets/archive/little-guy.png', location.href).href}')`);
   md.el.prepend(h('i', { class: 'tip-guy', 'aria-hidden': 'true' }));
@@ -97,7 +97,7 @@ function thankYou(rec) {
       h('div', { class: 'ty-quote' }, '“' + quote + '”'),
       h('div', { class: 'ty-sign' }, '— shedithers', h('span', { html: '<svg viewBox="0 0 40 40"><use href="#i-mark"/></svg>' }))),
     h('div', { class: 'badge-heart ty-badge' }, h('span', { html: '<svg viewBox="0 0 24 24"><use href="#i-heart"/></svg>' }), h('div', null, h('s', null, 'Shedithers'), h('b', null, 'LOVES YOU'))));
-  const links = h('div', { class: 'ty-links' }, link(cashtag(), '🍹 BUY ME A DRINK', openTip, 'pink'), link(rbUser(), '★ STICKERS + PRINTS', openShop), link(tiktokUser(), '♪ TIKTOK', openTiktok), link(ytUser(), '▶ YOUTUBE', openYoutube), link(CFG.email, '✉ TELL ME SOMETHING', openSuggest));
+  const links = h('div', { class: 'ty-links' }, link(cashtag(), '♥ KEEP ME DREAMING', openTip, 'pink'), link(rbUser(), '★ STICKERS + PRINTS', openShop), link(tiktokUser(), '♪ TIKTOK', openTiktok), link(ytUser(), '▶ YOUTUBE', openYoutube), link(CFG.email, '✉ TELL ME SOMETHING', openSuggest));
   const md = openModal({ title: 'SAVED. IT’S YOURS NOW', sub: 'SHEDITHERS LOVES YOU', cls: 'sm ty', body: h('div', null, card, h('p', { class: 'ty-pp' }, 'post it, tag me @' + (tiktokUser() || 'shedithers') + ', i wanna see ♥'), links), foot: h('button', { class: 'btn primary', onclick: () => md.close() }, 'MAKE ANOTHER ONE ▸') });
   md.el.classList.add('tip-modal');
   md.el.style.width = 'min(560px,94vw)';

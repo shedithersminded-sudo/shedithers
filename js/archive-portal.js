@@ -51,7 +51,7 @@ window.SHD_PORTAL = function (view, X) {
     ['11/20/26', 'DREAM MODE', ['top right. the site goes quiet and my pieces drift by. tap one to wake up inside it.']],
     ['11/20/26', 'SOUND', ['the site has its own song now. turn it up or down in now playing.']],
     ['11/20/26', 'SHELOOPS', ['my other studio, for music. ', L('https://shedithersminded-sudo.github.io/sheloops/', 'make a song', 1), ', keep every bit of it.']],
-    ['11/20/26', 'THE DECK', ['draw a card. every piece has a riddle.']],
+    ['11/20/26', 'THE DECK', ['draw a card. every one has a reading, upright or reversed.']],
     ['11/07/26', 'SHEDITHERS', ['the archive is open. ', L('#/works', 'THE EDIT'), ' plays everything on loop — ', ARTWORKS.length + ' files', ' and counting.']],
     ['11/07/26', 'NEW', ['new pieces: ', L('#/work/not-lonely', 'I stand alone but I’m not lonely'), ', ', L('#/work/shedithers-eyes', 'SHEDITHERS (eyes)'), ', ', L('#/work/prettier-in-fragments', 'I look prettier in fragments'), '.']],
     ['11/05/26', 'MOTION', ['moving pieces live in ', L('#/col/motion', 'MOTION'), ' — put your headphones on, load your own music (bottom right).']],

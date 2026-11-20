@@ -912,3 +912,86 @@ body.dreaming{overflow:hidden}
 .p-thanks::after{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 60% 70% at 50% 58%,rgba(11,10,9,.88),rgba(11,10,9,.35) 70%,transparent)}
 .ty-body p{text-shadow:0 1px 2px #0b0a09}
 @media (max-width:760px){.ty-rain{opacity:.4}}
+/* v4.2.4: the piece viewer never gets wider than a phone (the top buttons wrap) */
+@media (max-width:600px){
+  .viewer{grid-template-columns:minmax(0,1fr)!important}
+  .v-top{flex-wrap:wrap;row-gap:8px}
+  .v-file{flex:1 1 100%;white-space:nowrap}
+  .v-file br{display:none}
+  .v-actions{flex-wrap:wrap;justify-content:flex-start;gap:6px;max-width:100%}
+  .v-actions .ds-view{flex:1 1 auto}
+}
+
+/* ===== v4.3.0: COLLECTION BOOK remaster. a worn, torn sketchbook in the archive's colours:
+   charcoal paper with stains and burnt edges, ripped page edges, stitched spine, aged prints, red/blue glow ===== */
+body[data-route=col] .col-head{display:grid!important;grid-template-columns:auto 1fr;align-items:end;gap:10px 22px;margin-bottom:22px!important}
+body[data-route=col] .col-head>div{display:flex;flex-direction:column;gap:6px;min-width:0}
+body[data-route=col] .col-code{display:block;font:700 12px 'JetBrains Mono',monospace!important;letter-spacing:.22em;color:#d4ff00!important}
+body[data-route=col] .col-head h2{overflow-wrap:anywhere}
+body[data-route=col] .col-sub{font:500 12px 'JetBrains Mono',monospace!important;letter-spacing:.18em;color:#cfc9b5!important}
+body[data-route=col] .col-head .back{align-self:start}
+body[data-route=col] .layouts{grid-column:1/-1;justify-self:start;margin:4px 0 0!important;border:0!important;gap:8px;flex-wrap:wrap}
+body[data-route=col] .layouts button{min-height:40px!important;padding:0 18px!important;border:2px solid #e9e3d1!important;border-radius:999px!important;background:rgba(11,10,9,.85)!important;color:#e9e3d1!important;font:700 13px 'JetBrains Mono',monospace!important;letter-spacing:.14em}
+body[data-route=col] .layouts button[aria-checked=true]{background:#ff2338!important;border-color:#ff2338!important;color:#fff!important;box-shadow:0 0 16px rgba(255,35,56,.5)}
+body[data-route=col] .layouts button:focus-visible{outline:3px solid #d4ff00;outline-offset:2px}
+
+body[data-route=col] .desk{padding:clamp(14px,3vw,34px)!important;border-radius:14px;background:radial-gradient(ellipse at 20% 0,rgba(255,35,56,.12),transparent 55%),radial-gradient(ellipse at 90% 100%,rgba(47,125,255,.12),transparent 55%),radial-gradient(rgba(233,227,209,.05) 1px,transparent 1.4px) 0 0/6px 6px,#0d0c0b!important;box-shadow:inset 0 0 0 1px rgba(233,227,209,.08),0 0 0 2px rgba(255,35,56,.35),0 0 34px rgba(255,35,56,.18),0 0 60px rgba(47,125,255,.12)!important}
+body[data-route=col] .book{position:relative;filter:drop-shadow(0 26px 34px rgba(0,0,0,.75))!important}
+/* the spine: dark gutter with stitches */
+body[data-route=col] .book:not(:has(.page.single))::after{content:'';position:absolute;left:50%;top:2%;bottom:2%;width:10px;margin-left:-5px;z-index:3;pointer-events:none;background:repeating-linear-gradient(180deg,transparent 0 14px,#b9a98a 14px 22px,transparent 22px 30px);opacity:.55}
+body[data-route=col] .page{color:#e9e3d1!important;background:
+  radial-gradient(circle at 78% 18%,rgba(120,70,30,.22) 0 34px,transparent 36px 40px,rgba(120,70,30,.16) 41px 43px,transparent 44px),
+  radial-gradient(ellipse at 12% 88%,rgba(195,20,28,.16),transparent 30%),
+  radial-gradient(ellipse at 60% 60%,rgba(255,255,255,.035),transparent 60%),
+  linear-gradient(180deg,#1f1c18,#171512)!important}
+body[data-route=col] .page::before{opacity:.5!important;mix-blend-mode:overlay!important}
+body[data-route=col] .page.left{border-radius:0!important;box-shadow:inset -40px 0 50px -24px rgba(0,0,0,.85),inset 0 0 70px rgba(40,18,6,.75)!important;clip-path:polygon(1.5% 0,9% .8%,18% 0,31% 1%,46% .2%,62% 1.2%,78% 0,92% .9%,100% 0,100% 100%,88% 99.2%,71% 100%,55% 98.9%,38% 100%,22% 99%,8% 100%,0 98.8%,.9% 86%,0 71%,1.1% 54%,0 37%,.8% 19%)}
+body[data-route=col] .page.right{border-radius:0!important;box-shadow:inset 40px 0 50px -24px rgba(0,0,0,.85),inset 0 0 70px rgba(40,18,6,.75)!important;clip-path:polygon(0 0,14% .9%,29% 0,45% 1.1%,60% .2%,74% 1%,88% 0,96% 1.4%,98.6% 6%,100% 21%,99.1% 38%,100% 55%,98.9% 72%,100% 86%,97.5% 100%,85% 99%,68% 100%,51% 99.1%,34% 100%,18% 99.2%,0 100%)}
+body[data-route=col] .page.single{border-radius:0!important;box-shadow:inset 0 0 70px rgba(40,18,6,.75)!important;clip-path:polygon(1% 0,20% .6%,44% 0,70% .7%,99% 0,100% 30%,99.2% 66%,100% 99%,72% 99.4%,40% 100%,10% 99.3%,0 100%,.8% 60%,0 24%)}
+/* a torn-off corner on the right page */
+body[data-route=col] .page.right::after,body[data-route=col] .page.single::after{content:'';position:absolute;right:0;bottom:0;width:70px;height:70px;z-index:2;pointer-events:none;background:linear-gradient(135deg,transparent 49%,#0d0c0b 50%);filter:drop-shadow(-3px -3px 3px rgba(0,0,0,.6))}
+body[data-route=col] .page-head{opacity:1!important;color:#cfc9b5;font:500 10px 'JetBrains Mono',monospace!important}
+body[data-route=col] .page-head span:last-child{font:400 15px 'Permanent Marker',cursive!important;color:#ff5a3c!important;letter-spacing:.04em}
+body[data-route=col] .print-hit{background:#e6dcc6!important;padding:11px 11px 14px!important;box-shadow:0 14px 26px rgba(0,0,0,.6),inset 0 0 18px rgba(120,90,40,.25)!important;clip-path:polygon(0 1%,6% 0,40% .6%,72% 0,100% .8%,99.4% 40%,100% 77%,99.2% 100%,60% 99.3%,25% 100%,.6% 99.4%,0 62%)}
+body[data-route=col] .print-hit:hover,body[data-route=col] .print-hit:focus-visible{box-shadow:0 20px 36px rgba(0,0,0,.7),0 0 0 2px #ff2338!important}
+body[data-route=col] .print-hit:focus-visible{outline:3px solid #d4ff00;outline-offset:3px}
+body[data-route=col] .print .tape{background:rgba(207,196,165,.55)!important;box-shadow:none!important;clip-path:polygon(0 12%,6% 0,12% 14%,18% 2%,26% 10%,100% 0,94% 30%,100% 52%,95% 74%,100% 100%,0 92%,5% 60%,0 36%)}
+body[data-route=col] .print .label{background:#0b0a09!important;color:#e9e3d1!important;border-left:4px solid #ff2338;font-family:'Bebas Neue',sans-serif!important;letter-spacing:.06em}
+body[data-route=col] .print-code{color:#a8a294!important;opacity:1!important}
+body[data-route=col] .print .marker{color:#d4ff00!important;font-family:'Patrick Hand',cursive!important;font-size:17px!important;text-shadow:0 1px 0 #0b0a09}
+body[data-route=col] .pager button{border-color:#e9e3d1!important;width:18px!important;height:18px!important}
+body[data-route=col] .pager button.on{background:#ff2338!important;border-color:#ff2338!important;box-shadow:0 0 12px rgba(255,35,56,.6)}
+body[data-route=col] .pager button:focus-visible{outline:2px solid #d4ff00;outline-offset:3px}
+/* contact sheet + reel get the same dark worn look */
+body[data-route=col] .alt-layout.sheet,body[data-route=col] .alt-layout.reel{border-radius:14px;background:#0d0c0b!important;box-shadow:0 0 0 2px rgba(47,125,255,.35),0 0 34px rgba(47,125,255,.15)!important}
+body[data-route=col] .sheet-head{color:#d4ff00!important;font-family:'JetBrains Mono',monospace!important}
+@media (max-width:760px){
+  body[data-route=col] .col-head{grid-template-columns:1fr}
+  body[data-route=col] .page.left,body[data-route=col] .page.right{clip-path:none}
+  body[data-route=col] .page.right::after,body[data-route=col] .page.single::after{width:44px;height:44px}
+  body[data-route=col] .layouts{width:100%}body[data-route=col] .layouts button{flex:1}
+}
+body[data-route=col] .layouts{display:flex!important;flex-direction:row!important;flex-wrap:nowrap;width:max-content;max-width:100%}
+@media (min-width:1101px){body[data-route=col] .col-head{padding-left:clamp(0px,calc(1560px - 100vw),170px)}}
+body[data-route=col] .page{background:
+  repeating-linear-gradient(97deg,transparent 0 38px,rgba(233,227,209,.025) 38px 39px,transparent 39px 91px),
+  radial-gradient(circle at 78% 18%,rgba(140,80,30,.28) 0 34px,transparent 36px 40px,rgba(140,80,30,.2) 41px 43px,transparent 44px),
+  radial-gradient(ellipse at 12% 88%,rgba(195,20,28,.2),transparent 30%),
+  radial-gradient(ellipse at 50% 45%,#332d26,#26211c 60%,#1b1814)!important}
+body[data-route=col] .page.left{clip-path:polygon(3% 0,9% 1.8%,18% .2%,31% 2%,46% .4%,62% 2.2%,78% .2%,92% 1.6%,100% 0,100% 100%,88% 98.2%,71% 100%,55% 97.8%,38% 100%,22% 98%,8% 100%,0 97.6%,2.4% 86%,.2% 71%,2.6% 54%,0 37%,2.2% 19%)}
+body[data-route=col] .page.right{clip-path:polygon(0 0,14% 1.8%,29% .2%,45% 2.2%,60% .4%,74% 2%,88% 0,95% 2.6%,97.4% 7%,100% 21%,97.8% 38%,100% 55%,97.6% 72%,100% 86%,96% 100%,85% 98%,68% 100%,51% 98.2%,34% 100%,18% 98.4%,0 100%)}
+/* v4.3.0: the menu bar always stays above the page while scrolling */
+#bar{z-index:30!important}
+/* v4.3.0: iPad and small laptops. menu words stay on one line, FOUND and DREAM MODE stay off the page titles */
+@media (min-width:761px) and (max-width:1100px){
+  #bar a,#bar button{white-space:nowrap}
+  #bar nav a,#bar .nav a{padding-left:8px!important;padding-right:8px!important;font-size:12px!important}
+  .disc-stamp{left:12px!important;top:auto!important;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 84px)!important}
+  .dream-btn{top:auto;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 190px);right:8px;width:52px;height:52px;min-height:0;padding:0;justify-content:center;border-radius:50%;rotate:0deg}
+  .dream-btn b{display:none}.db-moon{width:38px;height:38px}
+}
+@media (min-width:761px) and (max-width:1100px){
+  .disc-stamp{bottom:calc(max(10px,env(safe-area-inset-bottom)) + 150px)!important}
+  #bar .brand small,#bar .brand-sub,#bar [class*=brand] small{display:none!important}
+}
+@media (min-width:761px) and (max-width:1100px){#bar .brand>span{display:none!important}}

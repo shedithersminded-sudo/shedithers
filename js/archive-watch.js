@@ -151,7 +151,7 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     const stop = mk('ic-stop', '✕', 'Stop the song');
     const restart = mk('ic-restart', '⏮', 'Restart the song');
     const skip = mk('ic-skip', '⏭', 'Skip to the next song');
-    const tipB = mk('ic-tip', '', 'Buy me a drink'); tipB.innerHTML = '<img src="assets/ui/art2/thumbprint.webp" alt="">'; tipB.onclick = e => { e.stopPropagation(); window.SHD_DRINK && window.SHD_DRINK(); };
+    const tipB = mk('ic-tip', '', 'Keep me dreaming'); tipB.innerHTML = '<img src="assets/ui/art2/thumbprint.webp" alt="">'; tipB.onclick = e => { e.stopPropagation(); window.SHD_DRINK && window.SHD_DRINK(); };
     chip.append(restart, pp, skip, mute, slider, tipB, stop);
     const paintPP = () => { const p = a.paused; pp.textContent = p ? '▶' : '❚❚'; pp.setAttribute('aria-label', p ? 'Play the song' : 'Pause the song'); pp.title = pp.getAttribute('aria-label'); chip.classList.toggle('paused', p); };
     const paintVol = () => { const v = fading ? vol : a.volume, m = a.muted || v === 0; mute.textContent = m ? '🔇' : v < 0.4 ? '🔉' : '🔊'; mute.setAttribute('aria-label', m ? 'Unmute the song' : 'Mute the song'); mute.title = mute.getAttribute('aria-label'); slider.value = a.muted ? 0 : Math.round(v * 100); };
