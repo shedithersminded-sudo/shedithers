@@ -1,6 +1,6 @@
 # SHEDITHERS archive: handoff
 
-Written 2026-11-20, after **v3.9.5**. Give this whole file to whoever picks the work up next, human or AI. It replaces the older remaster handoff (the old screenshots in `handoff/shots/` show problems that are now fixed).
+Written 2026-11-20, after **v3.9.6**. Give this whole file to whoever picks the work up next, human or AI. It replaces the older remaster handoff (the old screenshots in `handoff/shots/` show problems that are now fixed).
 
 ---
 
@@ -37,8 +37,8 @@ Clear `sessionStorage` to see the intro again.
 **Test sizes:** PC 1440x900, tablet 1024x768 and 768x1024, phone 375x812. Check: no sideways scroll (`document.documentElement.scrollWidth === innerWidth`), nothing floating over the menu bar, no console errors.
 
 **Release (every time):**
-1. Bump the cache number on every css/js link in both pages: `sed -i 's/?v=395/?v=396/g' index.html archive.html`
-2. Bump `VERSION` in `sw.js` (`shedithers-v3.9.5` becomes `shedithers-v3.9.6`).
+1. Bump the cache number on every css/js link in both pages: `sed -i 's/?v=396/?v=397/g' index.html archive.html`
+2. Bump `VERSION` in `sw.js` (`shedithers-v3.9.6` becomes `shedithers-v3.9.7`).
 3. Add one line to `HANDOFF.md`.
 4. Commit (message ends with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` if an AI made it), push `main`.
 5. Wait until `https://shedithersminded-sudo.github.io/shedithers/sw.js` serves the new VERSION.
@@ -74,7 +74,7 @@ Clear `sessionStorage` to see the intro again.
 - **Intro:** only the drag intro shows (old gate hidden from the first frame). The artist's art keeps morphing in dither behind the HD logo. The logo pulses red/lime rings and shakes every few seconds until grabbed. First press: low bass buzz. Dragging: glitter sparkle sounds and a red/lime dithered trail. Throw it far enough: rising shimmer, the screen dithers shut in that direction, the archive opens, it dithers open. Arrow keys / Enter / skip also work.
 - **Music:** YouTube is gone. `archive-song.js` plays `CFG.siteSong.src` (muffled through a wall during the intro, opening up once inside). Inside, only a tiny handwritten line shows above the round red MUSIC button, which plays/pauses. **See open item 1: the file is held back.** The visitor's own music player is still there (hint bar "MUSIC").
 - **THE WALL (v3.9.5):** a full-width home panel under SHELOOPS (`archive-remaster.js` section 15). The newest pieces (date 2026-11-20) are pinned up as polaroids with coloured pins: drag them anywhere (transform only), tap one to open it, "mess it up" / "line them up" buttons, a "follow on youtube" link. The first id in `CFG.youtubeShorts` is pinned up as a card with its YouTube thumbnail, linking to the short.
-- **New art (v3.9.5):** 20 pictures (byte-exact copies in `assets/archive/`, titles and words taken from the art itself, e.g. THE ENCIRCLED ONE, DOPAMINE, SELF.EXE STILL INSTALLING, SAD ANGELS NEED FRIENDS TOO) and 9 videos (re-encoded to H.264, max 720 wide: WAKE UP THEY ARE TAKING ALL THE COLOR AWAY I + II, AM I BECOMING SOMEONE NEW, HOLD ON, PRESENTED BY SHEDITHERS, and four UNTITLED ones named by what's in them). Untitled names are placeholders: ask the artist for real titles. Duplicates were checked (mkmis.mov was already there).
+- **New art (v3.9.5):** 20 pictures (byte-exact copies in `assets/archive/`, titles and words taken from the art itself, e.g. THE ENCIRCLED ONE, DOPAMINE, SELF.EXE STILL INSTALLING, SAD ANGELS NEED FRIENDS TOO) and 9 videos (re-encoded to H.264, max 720 wide: WAKE UP THEY ARE TAKING ALL THE COLOR AWAY I + II, AM I BECOMING SOMEONE NEW, HOLD ON, PRESENTED BY SHEDITHERS, and four UNTITLED ones named by what's in them). Titled by the artist in v3.9.6: WURRISUM, CONLOVED, I TELL YOU, YOU HAVE TO DO IT (words read off the video, confirm), ME, YOU, WE, FAIRY DUST HATES DUST BUNNIES, SHE, NOT ME I + II (one double card on THE WALL). Riddles for them are in RIDDLES. Duplicates were checked (mkmis.mov was already there).
 - **Top bar (v3.9.4):** the artist's logo stays; dark glass bar with a thin red/blue glow line, plain lowercase mono links with a lime underline, active page in red, the lab as a lime outlined pill.
 - **NOW PLAYING (v3.9.4):** the "sound system" speaker is gone; in its place a volume control for the site song (play/pause + a slider, starts at 40%, a little below medium, so nobody jumps, remembered in `localStorage shd.songVol`). The spinning seal has the artist's red logo in the middle and "doing it scared is just being brave ✶ shedithers ✶" around it. The little buy me a drink sticker next to NEW ART is hidden. Built in `archive-remaster.js` section 14 (it re-dresses the panel from `archive-pop.js`).
 - **Collab form:** the LET'S MAKE SOMETHING title fits its card now.

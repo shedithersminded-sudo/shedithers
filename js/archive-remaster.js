@@ -309,7 +309,9 @@ function wallPanel() {
   const P = document.querySelector('.portal'); if (!P || P.querySelector('.p-wallpin') || typeof ARTWORKS === 'undefined') return;
   const after = P.querySelector('.p-loops') || P.querySelector('.p-lab'); if (!after) return;
   const CFG = typeof SHD_CONFIG !== 'undefined' ? SHD_CONFIG : {};
-  const pieces = ARTWORKS.filter(a => a.type !== 'video' && a.date >= '2026-11-20').slice(-14);
+  // SHE, NOT ME I + II hang together as one double card
+  const pieces = ARTWORKS.filter(a => a.type !== 'video' && a.date >= '2026-11-20' && a.id !== 'self-portrait-grey').slice(-14);
+  const twin = ARTWORKS.find(a => a.id === 'self-portrait-grey');
   const yt = (CFG.youtubeShorts || [])[0], ytUser = String(CFG.youtube || '').replace(/^@/, '');
   const sec = document.createElement('section'); sec.className = 'p-mod p-wallpin';
   sec.innerHTML = `<div class="p-head"><small>ウォール</small><b>THE WALL</b><span>NEW PIECES, PINNED UP LOOSE · DRAG THEM AROUND · TAP ONE TO LOOK CLOSER</span></div>
@@ -321,7 +323,9 @@ function wallPanel() {
   const cards = pieces.map((a, i) => {
     const c = document.createElement('button'); c.type = 'button'; c.className = 'wp-card'; c.dataset.id = a.id;
     c.setAttribute('aria-label', `${a.title}. Drag to move, tap to look closer`);
-    c.innerHTML = `<i class="wp-pin" aria-hidden="true"></i><span class="wp-img" style="background-image:url('${abs(a.src)}')"></span><span class="wp-cap">${a.title.toLowerCase()}</span>`;
+    if (a.id === 'self-portrait-green' && twin) { c.classList.add('wp-pair'); c.setAttribute('aria-label', 'She, not me. Drag to move, tap to look closer');
+      c.innerHTML = `<i class="wp-pin" aria-hidden="true"></i><span class="wp-two"><span class="wp-img" style="background-image:url('${abs(a.src)}')"></span><span class="wp-img" style="background-image:url('${abs(twin.src)}')"></span></span><span class="wp-cap">she, not me</span>`; }
+    else c.innerHTML = `<i class="wp-pin" aria-hidden="true"></i><span class="wp-img" style="background-image:url('${abs(a.src)}')"></span><span class="wp-cap">${a.title.toLowerCase()}</span>`;
     board.append(c); return c;
   });
   if (yt) {

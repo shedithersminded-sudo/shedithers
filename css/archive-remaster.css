@@ -633,3 +633,8 @@ body.night .bar{background:linear-gradient(180deg,rgba(14,16,40,.94),rgba(14,16,
 @media (max-width:1100px){.portal>.p-wallpin{grid-column:1/-1!important;grid-row:auto!important;order:9!important}}
 @media (max-width:760px){.wp-board{height:520px}.wp-card{width:110px}}
 @media (prefers-reduced-motion:reduce){.wp-card{transition:none}}
+
+/* SHE, NOT ME: the two portraits as one double card on THE WALL */
+.wp-card.wp-pair{width:clamp(200px,22vw,300px)}
+.wp-two{display:grid;grid-template-columns:1fr 1fr;gap:4px;pointer-events:none}
+.wp-pair .wp-img{aspect-ratio:3/4;background-size:200% auto}

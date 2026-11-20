@@ -15,6 +15,12 @@ const STEP = 360 / N;
 const INKS = ['red', 'black', 'paper', 'teal', 'mustard', 'plum'];
 // readings: a riddle made from each piece, and its answer. pieces without one get a "finish the line" from their own words
 const RIDDLES = {
+  'untitled-spiral': ['i spin you around until you can\u2019t tell if you\u2019re lost or loved. what am i?', 'conloved. confused and loved at the same time.'],
+  'untitled-red-sun': ['he burns all day about things that never happen. who is he?', 'wurrisum. a dude named worrisome.'],
+  'untitled-map': ['i start as two and end as one, and i\u2019m drawn all over your head. what am i?', 'me, you, we.'],
+  'untitled-wings': ['she sparkles and she hates the corners of your room. who is she?', 'fairy dust. she hates dust bunnies.'],
+  'self-portrait-green': ['two faces, same glasses, only one of them is me. which one?', 'she, not me.'],
+  'self-portrait-grey': ['same face with the color taken out. who\u2019s looking back?', 'she, not me.'],
   'i-dont-want-a-face': ['everyone looks at me first and still can\u2019t tell you who i am. what am i?', 'a face. you don\u2019t need one to be seen.'],
   'doing-it-scared': ['your hands shake and you do it anyway. what is that called?', 'brave. it was always just scared, still moving.'],
   'sky-lights': ['i burn every evening and nobody calls for help. what am i?', 'the sky. the lights below are just copying it.'],
