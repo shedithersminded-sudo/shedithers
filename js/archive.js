@@ -242,12 +242,12 @@ function viewAbout() {
         ticket(tt, '♪ tiktok', '@' + tt, `https://www.tiktok.com/@${tt}`, 'red'),
         ticket(yt, '▶ youtube', '@' + yt, `https://www.youtube.com/@${yt}`),
         ticket(mail, '✉ email', mail, `mailto:${mail}`),
-        ticket(cash, 'tip jar', 'buy me a drink', '#/tip', 'red', false),
+        ticket(cash, 'dream jar', 'keep me dreaming', '#/tip', 'red', false),
         ticket(rb, '★ stickers + prints', 'redbubble', `https://www.redbubble.com/people/${rb}/shop`),
         ticket(true, '▣ the dither lab', 'make your own', 'index.html', 'paper', false)),
       h('div', { class: 'ab-tip' },
-        h('div', null, h('h3', { class: 'ab-h' }, 'tip jar'), h('p', null, CFG.tipLine || 'buy me a drink ♥')),
-        h('button', { type: 'button', class: 'ab-tip-btn', onclick: () => window.SHD_DRINK && window.SHD_DRINK() }, '🍹 buy me a drink')),
+        h('div', null, h('h3', { class: 'ab-h' }, 'dream jar'), h('p', null, CFG.tipLine || 'buy me a drink ♥')),
+        h('button', { type: 'button', class: 'ab-tip-btn', onclick: () => window.SHD_DRINK && window.SHD_DRINK() }, 'keep me dreaming ▸')),
       mail ? h('div', { class: 'sbox' }, h('h3', { class: 'ab-h' }, 'suggestion box', h('small', null, 'straight to me. i read every one')), honey, kinds, msg, h('div', { class: 'sb-row' }, who, reply), h('div', { class: 'sb-row' }, sbStatus, sendBtn)) : null,
       h('p', { class: 'rights' }, 'all art © shedithers. look as long as u want. just don’t download it, edit it, sell it, or feed it to AI. it’s mine ♥'))));
 }

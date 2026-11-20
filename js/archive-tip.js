@@ -27,7 +27,7 @@ function key(e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } }
 
 function open(e) {
   if (e && e.preventDefault) e.preventDefault(); if (modal) return;
-  modal = el('div', 'tp'); modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true'); modal.setAttribute('aria-label', 'Buy me a drink');
+  modal = el('div', 'tp'); modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true'); modal.setAttribute('aria-label', 'Keep me dreaming');
   modal.innerHTML = `
   <div class="tp-sky" aria-hidden="true"><i style="background-image:url('${A('sky.webp')}')"></i></div>
   <div class="tp-fall" aria-hidden="true"></div>
@@ -40,8 +40,8 @@ function open(e) {
       <img class="tp-branch" src="${A('leaves.webp')}" alt="" draggable="false">
     </figure>
     <div class="tp-main">
-      <small class="tp-kana">チップ・ジャー</small>
-      <h3 class="tp-title" aria-label="buy me a drink">${(() => { let i = 0; return 'buy me a drink'.split(' ').map(w => `<span class="tw" aria-hidden="true">${[...w].map(c => `<span style="--i:${i++}">${c}</span>`).join('')}</span>`).join(' '); })()}</h3>
+      <small class="tp-kana">ドリーム・ジャー</small>
+      <h3 class="tp-title" aria-label="keep me dreaming">${(() => { let i = 0; return 'keep me dreaming'.split(' ').map(w => `<span class="tw" aria-hidden="true">${[...w].map(c => `<span style="--i:${i++}">${c}</span>`).join('')}</span>`).join(' '); })()}</h3>
       <div class="tp-note"></div>
       <div class="tp-menu"></div>
       <div class="tp-pay">

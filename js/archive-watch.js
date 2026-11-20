@@ -318,11 +318,11 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     const row = document.querySelector('.p-pop .pp-row'); // home: a slushy sticker next to the spinning CD
     if (row && !row.querySelector('.ds-slushy')) row.append(mini('ds-slushy', '<img class="ds-art" src="assets/ui/art2/thumbprint.webp" alt=""><span>buy me<br>a drink</span>'));
     const foot = document.querySelector('.p-foot'); // home footer links
-    if (foot && !foot.querySelector('.ds-foot')) { const a = mini('ds-foot pf-badge', '✦ buy me a drink'); const pf = foot.querySelector('.pf-badge.dim'); pf ? pf.before(a) : foot.append(a); }
+    if (foot && !foot.querySelector('.ds-foot')) { const a = mini('ds-foot pf-badge', '✦ keep me dreaming'); const pf = foot.querySelector('.pf-badge.dim'); pf ? pf.before(a) : foot.append(a); }
     const ctrl = document.querySelector('.p-deck .d3-ctrl'); // the deck: a tip button with the cards
-    if (ctrl && !ctrl.querySelector('.ds-deck')) ctrl.append(mini('ds-deck d3-btn', '<img class="ds-art" src="assets/ui/art2/no-face.webp" alt=""> tip the artist'));
+    if (ctrl && !ctrl.querySelector('.ds-deck')) ctrl.append(mini('ds-deck d3-btn', '<img class="ds-art" src="assets/ui/art2/no-face.webp" alt=""> keep me dreaming'));
     const va = document.querySelector('.v-actions'); // the viewer: "liked this one?"
-    if (va && !va.querySelector('.ds-view')) va.append(mini('ds-view v-btn', '✦ liked this one?', 'Liked this piece? Buy me a drink'));
+    if (va && !va.querySelector('.ds-view')) va.append(mini('ds-view v-btn', '✦ liked this one?', 'Liked this piece? Keep me dreaming'));
     const about = document.querySelector('.about-card .rights'); // about page: a bottle sticker by the rights line
     if (about && !document.querySelector('.ds-about')) about.before(mini('ds-about', '<img class="ds-art" src="assets/ui/art2/sky.webp" alt=""><span>keep the lights on?</span>'));
   };

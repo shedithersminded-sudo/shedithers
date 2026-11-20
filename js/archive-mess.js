@@ -76,10 +76,10 @@ function poke(el) {
 }
 
 /* ---------- MAKE A MESS ---------- */
-let mess = false; const stamps = LS.get('shd.mess', []);
+let mess = false; const stamps = []; // v4.2.0: make a mess is retired
 const messBtn = h('button', { class: 'mess-btn', 'aria-pressed': 'false', title: 'Make a mess' }, h('span', { html: '<svg viewBox="0 0 24 24"><path d="M9 7h6v3H9zM8 10h8v11H8zM11 3h2v4h-2zM17 5l3-1M18 8l3 1M17 2l2-1" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>' }), h('b', null, 'MAKE A MESS'));
 const cleanBtn = h('button', { class: 'clean-btn', title: 'Clean up your mess' }, 'CLEAN UP');
-document.body.append(messBtn, cleanBtn);
+// v4.2.0: the MAKE A MESS button is retired (a new top right toy comes later)
 const STAMP_KINDS = ['splat', 'splat', 'heart', 'star', 'tag', 'tape', 'scrib'];
 const TAGS = ['♥ wuz here', 'SHEDITHERS', 'x x x', 'not ordinary', 'me too', '!!!', 'lol', '☆'];
 function setMess(on) { mess = on; document.body.classList.toggle('messing', on); messBtn.setAttribute('aria-pressed', on); messBtn.querySelector('b').textContent = on ? 'TAP ANYWHERE · DONE' : 'MAKE A MESS'; }

@@ -14,40 +14,126 @@ const PICK = ARTWORKS.filter(a => a.type !== 'video' && a.w && a.h && !DECK_SKIP
 const N = PICK.length; if (N < 3) return;
 const STEP = 360 / N;
 const INKS = ['red', 'black', 'paper', 'teal', 'mustard', 'plum'];
-// readings: a riddle made from each piece, and its answer. pieces without one get a "finish the line" from their own words
-const RIDDLES = {
-  'its-all-in-your-head': ['i sit somewhere between dreams and reality and never answer. where am i?', 'it’s all in your head. repair before you replace.'],
-  'distance': ['i turn your memories into strangers, but they keep their eyes. what am i?', 'distance. strangers with familiar eyes.'],
-  'circle-of-becoming': ['what loves, becomes. what becomes, must change. what happens to what changes?', 'it gets devoured. the circle of becoming.'],
-  'inner-world': ['i wear the persona and hold the ego, but i’m bigger than both. what am i?', 'the self. the inner world.'],
-  'sky-2': ['i’m never the same twice and i’m always above you. what am i?', 'the sky. i took this one myself.'],
-  'untitled-faces': ['the words go round and round your head and never come out straight. what are they?', 'warped words. understanding me is understanding we.'],
-  'untitled-spiral': ['i spin you around until you can\u2019t tell if you\u2019re lost or loved. what am i?', 'conloved. confused and loved at the same time.'],
-  'untitled-red-sun': ['he burns all day about things that never happen. who is he?', 'wurrisum. a dude named worrisome.'],
-  'untitled-map': ['i start as two and end as one, and i\u2019m drawn all over your head. what am i?', 'me, you, we.'],
-  'untitled-wings': ['she sparkles and she hates the corners of your room. who is she?', 'fairy dust. she hates dust bunnies.'],
-  'self-portrait-green': ['two faces, same glasses, only one of them is me. which one?', 'she, not me.'],
-  'self-portrait-grey': ['same face with the color taken out. who\u2019s looking back?', 'she, not me.'],
-  'i-dont-want-a-face': ['everyone looks at me first and still can\u2019t tell you who i am. what am i?', 'a face. you don\u2019t need one to be seen.'],
-  'doing-it-scared': ['your hands shake and you do it anyway. what is that called?', 'brave. it was always just scared, still moving.'],
-  'sky-lights': ['i burn every evening and nobody calls for help. what am i?', 'the sky. the lights below are just copying it.'],
-  'nothing-hates-you': ['you swear it\u2019s watching you. it isn\u2019t even looking. what is it?', 'the thing you\u2019re scared of. nothing hates you.'],
-  'when-you-rain': ['i don\u2019t drizzle. once i start i don\u2019t stop. what am i?', 'you, when you finally feel it. when you rain you pour.'],
-  'im-sorry-again': ['the more you say me, the less i mean. what am i?', 'sorry. say it once and mean it.'],
-  'i-stand-alone': ['there\u2019s only one of me in the room and i\u2019m not missing anyone. what am i?', 'alone. not lonely.'],
-  'gold': ['i don\u2019t rust and i don\u2019t fade, and i was in the dirt the whole time. what am i?', 'gold. you, before anyone noticed.'],
-  'the-end': ['i look like the last page but i\u2019m wearing a question mark. what am i?', 'the end? not yet.'],
-  'dream-without-action': ['you see it every night with your eyes closed and never touch it. what is it?', 'a dream with no action. that\u2019s just hallucination.'],
-  'not-lonely': ['i\u2019m by myself and i\u2019m fine. why does that scare you?', 'because you thought alone meant lonely.'],
-  's-gems': ['i\u2019m one letter, covered in shine. what do i start?', 'shedithers.'],
+// readings: like a tarot pull. a card name (never the title), a cryptic verse from what’s in the piece,
+// then turned over: what it means upright and reversed. the piece’s real title only shows at the very end.
+const READ = {
+ "its-all-in-your-head": [
+  "the mender",
+  "a status you never set. two chairs pulling one body in opposite directions. the box asks if you’re real and you hesitate.",
+  "you hurt yourself first, so you’re the one who knows where to stitch. fix it before you throw it out.",
+  "you keep proving you’re human to things that never asked nicely. stop checking the box."
+ ],
+ "distance": [
+  "the stranger",
+  "a receipt from a store that closed. a galaxy folded in the corner. something keeps asking, in another language, if you’re a robot.",
+  "someone you lost still knows your face. let them be a memory, not a wound.",
+  "you’re the stranger. you came back and the room still has your eyes."
+ ],
+ "circle-of-becoming": [
+  "the wheel that eats",
+  "four doors, one hallway. the angel holds the banner and won’t say which way is forward. everyone holds hands and nobody leads.",
+  "you’re changing because you loved something. that’s the cost, and it’s worth it.",
+  "you’re scared of the part where it devours. it already started. you’re still here."
+ ],
+ "inner-world": [
+  "the mask",
+  "a map of you, drawn by someone else. you stood in front of it so nobody could read the labels.",
+  "the mask isn’t a lie. it’s the part of you that gets you through the door.",
+  "you’ve worn the costume so long the face underneath forgot its lines."
+ ],
+ "sky-2": [
+  "the open",
+  "no words here. just light leaving. look up long enough and it stops being the sky.",
+  "nothing is asked of you right now. breathe. it doesn’t need you to be anything.",
+  "you’ve been looking at pictures of this instead of the thing itself. go outside."
+ ],
+ "i-dont-want-a-face": [
+  "the unnamed",
+  "a thumbprint left the room. the face stayed but got painted over. it’s still signed.",
+  "you don’t owe anyone a version of you that’s easy to read.",
+  "you erased yourself so they’d stop looking. they’re still looking. look back."
+ ],
+ "doing-it-scared": [
+  "the small bird",
+  "a bird waits on a plastic plant next to a note someone had to write down to believe. the smiley is crossed out and still smiling.",
+  "the fear doesn’t leave first. you move, then it follows you out.",
+  "you’re waiting to feel ready. that feeling isn’t coming. go anyway."
+ ],
+ "sky-lights": [
+  "the parking lot",
+  "the sun goes down behind the store lights. they switch on like they’re trying to help. it’s blurry because you were moving.",
+  "something ordinary is being beautiful at you right now. you almost missed it.",
+  "you copied the light instead of standing in it. turn the lamp off and watch."
+ ],
+ "the-encircled-one": [
+  "the axis",
+  "rings inside rings and she’s still in the middle. two angels hold the edges. a shadow reaches in and can’t find the door.",
+  "you don’t need the answer to be the center. everything is already turning around you.",
+  "someone wants you to explain yourself. you were never the puzzle. you’re the hinge."
+ ],
+ "i-sold-my-wings": [
+  "the tray",
+  "a hand holds you up like a dish being served. money falls and nobody bends down for it. it’s quiet. too quiet.",
+  "you know what silence costs now. you won’t pay it twice.",
+  "someone is carrying you and calling it support. check whose hand it is."
+ ],
+ "offline-is-the-new-luxury": [
+  "the three buttons",
+  "every button says ok. a fish sleeps in two open hands. a note asks if you swallow it or spit it out.",
+  "logging off is the one choice that isn’t on the menu. take it.",
+  "you keep clicking ok because the window won’t close. there’s always a corner. find the x."
+ ],
+ "sorry-i-disappeared": [
+  "the echo",
+  "321 of 699. a message rewritten until it said nothing. the tv holds its head while branches grow over the screen.",
+  "leaving the familiar thing isn’t betrayal. it’s how you get found again.",
+  "you left to figure it out and you’re still explaining why. you don’t have to."
+ ],
+ "untitled-faces": [
+  "the chorus",
+  "every face is saying the same word in a different shape. none of them agree on what it means.",
+  "what you meant and what they heard can both be true.",
+  "you keep translating yourself. some people need to learn the language."
+ ],
+ "untitled-spiral": [
+  "the drain",
+  "a spiral that could be pulling in or letting out. you can’t tell from here.",
+  "being lost and being loved can feel the same at first. stay and find out which.",
+  "you’ve been circling the same thought. it isn’t a road, it’s a loop."
+ ],
+ "untitled-red-sun": [
+  "the worried sun",
+  "it rises over things that haven’t happened yet and burns them anyway.",
+  "the worry is just love with nowhere to go. give it somewhere.",
+  "you’re living tomorrow’s fire today. it’s still dark out. sleep."
+ ],
+ "untitled-map": [
+  "the crossing",
+  "two roads drawn on one head. they meet where it hurts.",
+  "the line between you and them is thinner than you think. cross it.",
+  "you lost yourself in the we. walk back to the me first."
+ ],
+ "untitled-wings": [
+  "the sweeper",
+  "glitter in the corners where the dust should be. something soft is cleaning up after you.",
+  "small magic counts. let it in.",
+  "you keep sweeping the sparkle out with the dirt."
+ ],
+ "self-portrait-green": [
+  "the double",
+  "same glasses, different color, both looking at you. only one of them blinked.",
+  "the version people describe isn’t you. it’s her. let her go.",
+  "you’ve been arguing with a copy of yourself. the original is tired."
+ ],
+ "self-portrait-grey": [
+  "the double",
+  "the color drained out, the outline stayed. she still looks like she’s about to say something.",
+  "the version people describe isn’t you. it’s her. let her go.",
+  "you’ve been arguing with a copy of yourself. the original is tired."
+ ]
 };
-function riddleFor(a) {
-  if (RIDDLES[a.id]) return RIDDLES[a.id];
-  const w = String(a.words || '').split(' \u00b7 ')[0].trim();
-  const parts = w.split(/\s+/);
-  if (parts.length >= 4) { const k = Math.ceil(parts.length / 2); return [`finish the line: \u201c${parts.slice(0, k).join(' ')} \u2026\u201d`, w.toLowerCase()]; }
-  return ['no words on this one. what is it saying anyway?', 'whatever you heard. that\u2019s your reading.'];
-}
+const READ_ANY = ["the witness", "something is pinned here that isn’t written down. look at the edges, not the middle.", "what you notice first is what you needed.", "what you looked past is the part that was looking at you."];
+const readFor = a => READ[a.id] || READ_ANY;
 // every line of words in the art, for the paper slips
 
 function build() {
@@ -93,20 +179,26 @@ function build() {
   let slip = null;
   function pull(card, a) {
     if (slip) { const old = slip; old.classList.add('gone'); setTimeout(() => old.remove(), 350); }
-    const [q, ans] = riddleFor(a), n = PICK.indexOf(a) + 1;
+    const [name, verse, up, down] = readFor(a), n = PICK.indexOf(a) + 1, rev = Math.random() < .42;
     card.classList.remove('spin'); void card.offsetWidth; card.classList.add('spin');
     setTimeout(() => card.classList.remove('spin'), 1000);
     const close = h('button', { type: 'button', class: 'd3-slip-x', 'aria-label': 'Close the reading', onclick: e => { e.stopPropagation(); away(); } }, '\u2715');
-    const answer = h('p', { class: 'd3-ans', hidden: true }, ans);
-    const qEl = h('p', { class: 'd3-q', 'aria-label': q }, ...[...q].map((c, k) => h('span', { style: `--k:${k}`, 'aria-hidden': 'true' }, c)));
+    const qEl = h('p', { class: 'd3-q', 'aria-label': verse }, ...[...verse].map((c, k) => h('span', { style: `--k:${k}`, 'aria-hidden': 'true' }, c)));
+    const answer = h('div', { class: 'd3-ans d3-turned', hidden: true },
+      h('small', { class: 'd3-way' }, rev ? 'you drew it reversed' : 'you drew it upright'),
+      h('p', { class: 'd3-mean' }, rev ? down : up),
+      h('p', { class: 'd3-other' }, h('i', null, rev ? 'upright: ' : 'reversed: '), rev ? up : down),
+      h('p', { class: 'd3-piece' }, h('i', null, 'the piece \u00b7 '), a.title.toLowerCase()));
     const glyphs = h('i', { class: 'd3-glyphs', 'aria-hidden': 'true' }, ...'shedithers'.split('').map((c, k) => h('b', { style: `--k:${k};--x:${(k * 37 + 11) % 100}%` }, c)));
     const reveal = h('button', { type: 'button', class: 'd3-reveal', onclick: e => { e.stopPropagation(); answer.hidden = false; reveal.remove(); slip && slip.classList.add('told'); } }, 'turn it over \u25b8');
-    slip = h('div', { class: 'd3-read', role: 'status', style: `--ra:url('${abs(a.src)}')` },
+    slip = h('div', { class: 'd3-read' + (rev ? ' rev' : ''), role: 'status', style: `--ra:url('${abs(a.src)}')` },
       close,
-      h('div', { class: 'd3-read-top' }, h('small', null, '\u30ea\u30fc\u30c7\u30a3\u30f3\u30b0'), h('span', null, `reading \u00b7 card ${String(n).padStart(2, '0')}`)),
-      h('b', { class: 'd3-read-t' }, a.title.toLowerCase()),
+      h('div', { class: 'd3-read-t' + '' , 'aria-hidden': 'false' }),
       qEl, reveal, answer, glyphs, h('i', { class: 'd3-scan', 'aria-hidden': 'true' }),
       h('a', { href: `#/work/${a.id}`, class: 'd3-slip-from' }, 'look closer \u25b8'));
+    const top = h('div', { class: 'd3-read-top' }, h('small', null, '\u30ea\u30fc\u30c7\u30a3\u30f3\u30b0'), h('span', null, `reading \u00b7 card ${String(n).padStart(2, '0')}`));
+    const nm = h('b', { class: 'd3-read-t' }, name, rev ? h('em', { class: 'd3-rv', 'aria-label': 'reversed' }, ' \u21c5') : null);
+    slip.querySelector('div.d3-read-t').replaceWith(top, nm);
     setTimeout(() => { if (slip) stage.append(slip); }, 420);
     window.shdCount && window.shdCount('deck-reading', 'Got a reading from the deck');
   }

@@ -68,7 +68,7 @@ const STOPS = [
   { k: 'pinterest', label: 'PINTEREST', sub: pin ? pin.replace(/^https?:\/\/(www\.)?pinterest\.[a-z.]+\//, '').replace(/\/$/, '') : 'shedithers', word: 'scroll the fragments', href: pin || 'https://www.pinterest.com/search/pins/?q=shedithers', art: 'i-stand-alone-orange' },
   { k: 'here', label: 'THE ARCHIVE', sub: 'u are here', word: 'every file, view only', href: '#/', art: 'no-identity', here: true },
   { k: 'lab', label: 'DITHER LAB', sub: 'make ur own', word: 'remember to forget', href: 'index.html', art: 'who-will-you-be' },
-  cash && { k: 'tip', label: 'TIP JAR', sub: 'scan or tap', word: 'keep the lights on', href: '#', art: 'mad-women-and-poets', tip: true },
+  cash && { k: 'tip', label: 'DREAM JAR', sub: 'scan or tap', word: 'keep me dreaming', href: '#', art: 'mad-women-and-poets', tip: true },
 ].filter(Boolean);
 function build() {
   const title = 'WANNA COLLAB?'.split('').map((c, i) => c === ' ' ? h('i', { class: 'sp' }) : h('span', { style: `--i:${i}` }, c));

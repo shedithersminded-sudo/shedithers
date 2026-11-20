@@ -803,3 +803,64 @@ body.messing .mess-tip.on{top:calc(var(--bar,56px) + 160px)}
 /* v4.1.1: the artist's own sky photo, soft behind OTHER THINGS I MADE */
 .mk-sky{position:absolute;inset:0;z-index:-2;pointer-events:none;background:center 30%/cover no-repeat;opacity:.45;filter:saturate(1.1)}
 .portal>.p-made{background:linear-gradient(rgba(11,10,9,.78),rgba(11,10,9,.92))!important}
+/* ===== v4.2.0: deck readings are tarot pulls (card name, verse, upright / reversed, the piece last) ===== */
+.d3-read-t{text-transform:uppercase;font-size:28px;letter-spacing:.02em}
+.d3-rv{font-style:normal;color:#7fb2ff;margin-left:4px}
+.d3-read.rev .d3-read-t{color:#7fb2ff}
+.d3-q{font-size:19px!important;line-height:1.35!important}
+.d3-turned{font:400 16px/1.4 var(--rm-body)!important;display:grid;gap:6px}
+.d3-way{font:700 10px 'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#c3141c}
+.d3-read.rev .d3-way{color:#2f5fbf}
+.d3-mean{margin:0;font:400 19px/1.3 'Permanent Marker',cursive}
+.d3-other{margin:0;font-size:14px;opacity:.72}
+.d3-other i,.d3-piece i{font-style:normal;font-weight:700}
+.d3-piece{margin:2px 0 0;padding-top:6px;border-top:1px dashed rgba(29,27,22,.35);font:500 12px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase}
+/* v4.2.0: NOW PLAYING sits above the deck, so the volume is right there when the music starts */
+@media (min-width:1101px){
+  .portal>.p-pop {grid-column:1/9!important;grid-row:2!important}
+  .portal>.p-deck{grid-column:1/13!important;grid-row:3!important}
+}
+@media (max-width:1100px){.p-pop{order:2!important}.p-news{order:3!important}.p-deck{order:4!important}}
+/* ===== v4.2.0: THE DARKROOM (was THE WALL) ===== */
+.dr-board{position:relative;margin-top:8px;padding:34px 18px 54px;border-radius:10px;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at 50% 0,#3a0607,#120203 70%);touch-action:pan-y;cursor:none}
+.dr-row{position:relative;display:flex;justify-content:space-around;gap:10px;padding:0 10px 26px}
+.dr-row+.dr-row{margin-top:8px}
+.dr-line{position:absolute;left:-20px;right:-20px;top:4px;height:2px;background:#8a7a68;border-radius:2px;rotate:calc(var(--ri) * .6deg - .3deg);box-shadow:0 2px 3px rgba(0,0,0,.6)}
+.dr-print{position:relative;flex:0 1 150px;min-width:0;padding:7px 7px 26px;border:0;background:#f1ece0;cursor:none;rotate:var(--tilt);transform-origin:50% 0;box-shadow:0 10px 18px rgba(0,0,0,.55);transition:rotate .5s cubic-bezier(.2,1.5,.4,1)}
+.dr-print:hover{rotate:0deg}
+.dr-print:focus-visible{outline:3px solid #ffb199;outline-offset:3px}
+.dr-clip{position:absolute;left:50%;top:-12px;width:16px;height:22px;margin-left:-8px;border-radius:3px;background:linear-gradient(#cfc7b5,#7d7464);box-shadow:0 2px 3px rgba(0,0,0,.5)}
+.dr-img{display:block;aspect-ratio:4/5;background:center/cover no-repeat #0b0a09;filter:invert(1) grayscale(1) contrast(1.4) brightness(.55);transition:filter 1.8s ease}
+.dr-cap{position:absolute;left:6px;right:6px;bottom:5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:400 13px 'Patrick Hand',cursive;color:#1d1b16;opacity:0;transition:opacity .8s .9s}
+.dr-print.dev{z-index:4}
+.dr-print.dev .dr-img{filter:none}
+.dr-print.dev .dr-cap{opacity:1}
+.dr-print.dev::after{content:'';position:absolute;inset:-6px;z-index:-1;border-radius:4px;box-shadow:0 0 30px rgba(255,140,90,.45);animation:drGlow 2.2s ease-out both}
+@keyframes drGlow{0%{opacity:0}30%{opacity:1}100%{opacity:.35}}
+.dr-light{position:absolute;left:0;top:0;z-index:3;width:3200px;height:3200px;margin:-1600px 0 0 -1600px;pointer-events:none;will-change:transform;background:radial-gradient(circle at 50% 50%,rgba(255,170,120,.06) 0 70px,rgba(30,2,4,.35) 140px,rgba(20,1,3,.9) 260px,rgba(14,1,2,.96) 420px)}
+.dr-board.lit .dr-light{opacity:0;transition:opacity 1.2s}
+.dr-grain{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:.18;background:radial-gradient(rgba(255,255,255,.5) .5px,transparent .9px) 0 0/3px 3px}
+.dr-count{position:absolute;left:50%;bottom:14px;z-index:6;translate:-50% 0;padding:4px 12px;border:1px solid rgba(255,120,90,.5);background:rgba(18,2,3,.8);font:700 11px 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#ffb199;white-space:nowrap}
+@media (hover:none){.dr-board,.dr-print{cursor:pointer}}
+@media (max-width:760px){.dr-board{padding:28px 8px 50px}.dr-row{flex-wrap:wrap;justify-content:center;row-gap:30px;padding-bottom:20px}.dr-print{flex:0 0 calc(33% - 10px)}.dr-cap{font-size:11px}}
+@media (prefers-reduced-motion:reduce){.dr-img,.dr-print{transition:none}.dr-print.dev::after{animation:none}}
+
+/* ===== v4.2.0: THANK YOU ===== */
+@media (min-width:1101px){.portal>.p-thanks{grid-column:1/13!important;grid-row:14!important}.portal>.p-foot{grid-row:15!important}}
+@media (max-width:1100px){.p-thanks{order:98!important}}
+.p-thanks{position:relative;overflow:hidden;isolation:isolate}
+.ty-body{position:relative;z-index:1;max-width:64ch;margin:4px auto 6px;text-align:center}
+.ty-body p{margin:0 0 10px;font:400 16px/1.6 var(--rm-body);color:#e9e3d1}
+.ty-body .ty-big{font:400 clamp(30px,4vw,48px)/1.05 'Permanent Marker',cursive;color:#ff5a3c;text-shadow:3px 3px 0 #0b0a09;margin-bottom:14px}
+.ty-body .ty-sign{font:400 22px 'Patrick Hand',cursive;color:#d4ff00;margin-top:6px}
+.ty-art img{position:absolute;z-index:0;width:110px;height:auto;opacity:.85;pointer-events:none;filter:drop-shadow(0 8px 10px rgba(0,0,0,.5));animation:tyFloat 7s ease-in-out infinite}
+.ty-a1{left:3%;top:22%;rotate:-10deg}.ty-a2{right:4%;top:14%;width:80px!important;rotate:12deg;animation-delay:-2.5s!important}.ty-a3{right:12%;bottom:-20px;width:70px!important;rotate:-6deg;animation-delay:-4s!important}
+@keyframes tyFloat{50%{translate:0 -10px}}
+@media (max-width:760px){.ty-art img{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.ty-art img{animation:none}}
+.dr-board{background:radial-gradient(ellipse at 50% -10%,#7a0b10,#2a0306 55%,#120103 100%)}
+.dr-board::before{content:'';position:absolute;left:50%;top:-40px;z-index:6;width:220px;height:80px;margin-left:-110px;border-radius:50%;background:radial-gradient(#ff2a2a,rgba(255,30,30,.35) 40%,transparent 70%);pointer-events:none;animation:drLamp 4s ease-in-out infinite}
+@keyframes drLamp{50%{opacity:.7}}
+.dr-light{background:radial-gradient(circle at 50% 50%,rgba(255,190,140,.08) 0 80px,rgba(60,4,8,.35) 150px,rgba(48,3,7,.86) 270px,rgba(30,2,5,.93) 420px)}
+@media (prefers-reduced-motion:reduce){.dr-board::before{animation:none}}
+@media (max-width:760px){.dr-line{display:none}}

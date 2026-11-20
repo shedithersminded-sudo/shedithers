@@ -101,13 +101,13 @@ const SHD_CONFIG = {
   tipLines: [
     ['marker', 'all of this is free.'],
     ['hand', 'doing it scared is just being brave.'],
-    ['type', 'if something here stayed with u, u can buy me a drink.'],
+    ['type', 'if something here stayed with u, u can keep me dreaming.'],
     ['small', 'no pressure. looking is enough.'],
   ],
-  tipLine: 'no paywall, no catch. stay as long as u want. if u liked looking at my art, or made something cool in the editor, maybe buy me a drink. it keeps the lights on and the weird stuff coming ♥',
+  tipLine: 'no paywall, no catch. stay as long as u want. if u liked looking at my art, or made something cool in the editor, maybe keep me dreaming. it keeps the lights on and the weird stuff coming ♥',
   // each drink wears one of the artist's pieces (file in assets/ui/art2/). fit 'cover' fills the square.
   drinks: [
-    { label: 'what has no face but still leaves a mark?', art: 'thumbprint.webp', amount: 3 },
+    { label: 'what grows out of a scribble and still smiles at you?', art: 'bloom.webp', amount: 3 },
     { label: 'what shakes and does it anyway?', art: 'brave.webp', fit: 'cover', amount: 5 },
     { label: 'who gets looked at and never seen?', art: 'no-face.webp', amount: 10 },
     { label: 'what burns every night and keeps the lights on?', art: 'sky.webp', fit: 'cover', amount: 25 },

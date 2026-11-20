@@ -1,6 +1,6 @@
 # SHEDITHERS: handoff
 
-**This is the only handoff.** Written 2026-11-20 at **v4.1.1** (the finished site). Give this file to whoever picks the work up next, human or AI: paste it, or say "read C:\CODE\shedithers\HANDOFF.md". Add one line to the version log at the bottom on every release.
+**This is the only handoff.** Written 2026-11-20 at **v4.2.0** (the finished site). Give this file to whoever picks the work up next, human or AI: paste it, or say "read C:\CODE\shedithers\HANDOFF.md". Add one line to the version log at the bottom on every release.
 
 ---
 
@@ -34,8 +34,8 @@
 **Test sizes:** 1440x900, 1024x768, 768x1024, 375x812. Check: no sideways scroll (`document.documentElement.scrollWidth === innerWidth`), nothing over the menu bar, no console errors, no broken images/videos, on home, `#/works`, `#/col/<id>`, `#/about`, and the viewer `#/work/<id>`.
 
 **Release (every time):**
-1. `sed -i 's/?v=411/?v=412/g' index.html archive.html` (bump the cache number on every css/js link in both pages)
-2. Bump `VERSION` in `sw.js` (`shedithers-v4.1.1` becomes `shedithers-v4.1.2`)
+1. `sed -i 's/?v=420/?v=421/g' index.html archive.html` (bump the cache number on every css/js link in both pages)
+2. Bump `VERSION` in `sw.js` (`shedithers-v4.2.0` becomes `shedithers-v4.2.1`)
 3. Add one line to the version log at the bottom of this file
 4. Commit (end the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` if an AI made it), push `main`
 5. Wait until `https://shedithersminded-sudo.github.io/shedithers/sw.js` serves the new VERSION
@@ -66,7 +66,7 @@
 | `assets/ui/art2/` | UI-ready cuts of the artist's art: `no-face`, `thumbprint`, `leaves`, `leaf0-2`, `brave`, `sky`, videos `dreams.mp4`, `understand.mp4` |
 | `assets/ui/site-song.mp3` | "somewhere in between" (leyline hex), 96 kbps, 17 MB, 24 min. The artist confirmed they can use it |
 
-## 5. What's on the site (v4.1.1)
+## 5. What's on the site (v4.2.0)
 
 - **Intro:** only the drag intro. The artist's art morphs in dither behind the HD logo; the logo pulses red/lime rings and shakes until grabbed. First press: low bass buzz and the song starts muffled. Dragging: glitter sparkle sounds + a red/lime dither trail. Throw it: rising shimmer, the screen dithers shut along the throw, the archive opens and dithers open, the song opens up clear. Arrow keys / Enter / skip work too. A timer makes sure it always opens.
 - **Music:** starts at 22%, soft in the background (the artist asked twice for quieter; saved as `shd.songVol2`, a new key so old saved 40% values are ignored). Without the intro (same visit) it starts on the first tap anywhere. Inside: a tiny handwritten "now playing" line above the round red MUSIC button (play/pause), and a play button + quiet/loud slider in NOW PLAYING. The volume and a "paused" choice are remembered (`shd.songVol2`, `shd.songOff`). The visitor's own file player still exists (hint bar MUSIC) and pauses the song when used.
@@ -76,6 +76,13 @@
 - **Fonts:** titles Syne 800, reading text Space Grotesk, labels JetBrains Mono, handwriting Patrick Hand (`--rm-title` / `--rm-body` in `archive-remaster.css` swap them).
 - **THE DECK:** the 12 newest pictures except the ids in `DECK_SKIP` in `archive-deck.js` (PLAY ONLINE? is skipped at the artist's request). Pieces that aren't card-shaped (wider than 0.92 or taller than 0.6 width/height) show whole on a blurred copy of themselves (`.d3-fit`) instead of being cropped. Big 3D cards, light holo foil, a light sweep on the front card, cards sway, the ring leans to the mouse. Tap the front card or "draw a card" for a reading: a riddle made from the piece, the answer behind "turn it over".
 - **NEWS:** newest first, in `archive-portal.js` (the list of `[date, tag, [text and links]]`). 11/20/26 entries: new pieces, THE WALL, the site song, SHELOOPS, the deck riddles. Add a line there when something new lands.
+- **v4.2.0 changes (newest wins over anything older below):**
+  - **Deck readings** are tarot pulls (`READ` in `archive-deck.js`): a card name that is NOT the title, a cryptic verse from what's in the piece, then "turn it over" shows upright or reversed (random) plus the other meaning, and the real title last. The artist asked that the first words never give the answer away. Write one for each new deck piece.
+  - **NOW PLAYING** sits above THE DECK (desktop: beside NEWS; phone: right after the logo) so the volume is right there when the music starts.
+  - **THE DARKROOM** replaced THE WALL (section 15, class `.p-wallpin.p-dark`): prints on lines under a red safelight, the cursor/finger is the light, tap a print to develop it, tap again to open it. Uses the 11/20 pieces that aren't in the deck. The YouTube polaroid is gone.
+  - **THANK YOU** panel above the footer (section 15b).
+  - **The tip window is now "keep me dreaming"** (dream jar) everywhere: top bar, news, collab card, about ticket, deck button. The $3 riddle uses the flower (`assets/ui/art2/bloom.webp`). The Cash App name still stays hidden behind its button.
+  - **MAKE A MESS is removed** (button, stickers and saved stamps). The artist wants a new interactive toy in its place; options were offered, nothing chosen yet. Section 17-18 code for stickers is gone; the `mess-btn` slot top right is free.
 - **FILE DIRECTORY:** an old hacker screen (`archive-remaster.js` section 17, CSS under "v4.1.0: FILE DIRECTORY"). Green phosphor, a typed `dir` command, a preview box of the selected file (small copies from `assets/ui/intro-art/` first, the full piece if none), a glitch tear every few seconds while on screen, ACCESS GRANTED before a file opens. The list itself is still built in `archive-nfo.js`.
 - **MAKE A MESS** (top right button): tapping or dragging anywhere sticks the artist's art ON TOP of the page: cutouts (`assets/ui/stickers/`, made from their own art), little taped prints (intro-art), words on paper. Saved per page in `shd.mess2`; CLEAN UP peels them off. Section 18. The old stamps (behind the panels, so nobody saw them) are retired.
 - **OTHER THINGS I MADE:** one section with both free studios, Dither Lab (index.html) and SHELOOPS (section 11). Replaced the separate DITHER LAB and SHELOOPS panels. INSTANT-PHOTO now sits beside the directory as a 4x4 grid.
@@ -131,3 +138,4 @@ The drag intro and the blob screen, the deck, the comment section concept, NOW P
 - v4.0.4 (2026-11-20): the dead netlify address under the home logo is now the real live link (github.io).
 - v4.1.0 (2026-11-20): hacker-screen file directory, MAKE A MESS sticks the artist's art on top of the page, OTHER THINGS I MADE section (Dither Lab + SHELOOPS).
 - v4.1.1 (2026-11-20): 5 new pieces (IT'S ALL IN YOUR HEAD, STRANGERS WITH FAMILIAR EYES, THE CIRCLE OF BECOMING, INNER WORLD, UNTITLED (SKY II)) + 2 moving (LET THE LIGHT IN, WAKE UP ... III). Titles taken from the words in each piece; the artist can rename them in `artworks.js`. They lead the deck with riddles, join the mess stickers, the sky photo sits behind OTHER THINGS I MADE, and there's a news line. Every image piece now has a small copy in `assets/ui/intro-art/` (used by the directory preview and stickers); make one for each new piece.
+- v4.2.0 (2026-11-20): tarot deck readings, NOW PLAYING above the deck, THE DARKROOM, thank you panel, tip window renamed keep me dreaming, make a mess removed.

@@ -313,79 +313,79 @@ function dressPop() {
 if (view) new MutationObserver(dressPop).observe(view, { childList: true, subtree: true });
 dressPop();
 
-/* ---------- 15. THE WALL: the newest pieces pinned up loose. drag them anywhere, tap to look closer,
-   "mess it up" throws them around, "line them up" puts them in rows. A YouTube short is pinned up too ---------- */
+/* ---------- 15. THE DARKROOM (was THE WALL): prints hang on lines under a red safelight. your cursor (or finger)
+   is the only light. tap a print to develop it, it stays lit. tap a developed print to look closer ---------- */
 function wallPanel() {
   const P = document.querySelector('.portal'); if (!P || P.querySelector('.p-wallpin') || typeof ARTWORKS === 'undefined') return;
   const after = P.querySelector('.p-made') || P.querySelector('.p-lab'); if (!after) return;
-  const CFG = typeof SHD_CONFIG !== 'undefined' ? SHD_CONFIG : {};
-  // SHE, NOT ME I + II hang together as one double card
-  const pieces = ARTWORKS.filter(a => a.type !== 'video' && a.date >= '2026-11-20' && a.id !== 'self-portrait-grey').slice(-14);
-  const twin = ARTWORKS.find(a => a.id === 'self-portrait-grey');
-  const yt = (CFG.youtubeShorts || [])[0], ytUser = String(CFG.youtube || '').replace(/^@/, '');
-  const sec = document.createElement('section'); sec.className = 'p-mod p-wallpin';
-  sec.innerHTML = `<div class="p-head"><small>ウォール</small><b>THE WALL</b><span>NEW PIECES, PINNED UP LOOSE · DRAG THEM AROUND · TAP ONE TO LOOK CLOSER</span></div>
-    <div class="wp-board" role="group" aria-label="The wall: new pieces you can move around"></div>
-    <div class="wp-ctrl"><button type="button" class="wp-btn" data-k="mess">✦ mess it up</button><button type="button" class="wp-btn" data-k="rows">line them up</button>
-    ${ytUser ? `<a class="wp-btn red" href="https://www.youtube.com/@${ytUser}" target="_blank" rel="noopener">follow on youtube ▸</a>` : ''}</div>`;
+  const all = ARTWORKS.filter(a => a.type !== 'video' && a.w && a.h && a.id !== 'play-online');
+  const deck = new Set(all.slice().sort((x, y) => String(y.date).localeCompare(String(x.date))).slice(0, 12).map(a => a.id));
+  const pieces = all.filter(a => a.date >= '2026-11-20' && !deck.has(a.id)).slice(0, 12);
+  if (pieces.length < 6) return;
+  const small = a => new URL('assets/ui/intro-art/' + a.id + '.jpg', location.href).href;
+  const half = Math.ceil(pieces.length / 2), rows = [pieces.slice(0, half), pieces.slice(half)];
+  const sec = document.createElement('section'); sec.className = 'p-mod p-wallpin p-dark';
+  sec.innerHTML = `<div class="p-head"><small>ダークルーム</small><b>THE DARKROOM</b><span>YOU ARE THE ONLY LIGHT · MOVE AROUND · TAP A PRINT TO DEVELOP IT</span></div>
+    <div class="dr-board" role="group" aria-label="The darkroom: prints you can develop. Tap a print to develop it, tap again to look closer.">
+      ${rows.map((r, ri) => `<div class="dr-row" style="--ri:${ri}"><i class="dr-line" aria-hidden="true"></i>${r.map((a, k) => `
+        <button type="button" class="dr-print" data-id="${a.id}" style="--k:${k};--tilt:${[-3, 2, -1, 3, -2, 1, -4][(k + ri * 3) % 7]}deg" aria-label="${a.title.replace(/"/g, '')}. Tap to develop.">
+          <i class="dr-clip" aria-hidden="true"></i>
+          <span class="dr-img" style="background-image:url('${small(a)}')"></span>
+          <span class="dr-cap">${a.title.toLowerCase()}</span>
+        </button>`).join('')}</div>`).join('')}
+      <i class="dr-light" aria-hidden="true"></i><i class="dr-grain" aria-hidden="true"></i>
+      <span class="dr-count" aria-live="polite">0 / ${pieces.length} developed</span>
+    </div>
+    <div class="wp-ctrl"><button type="button" class="wp-btn" data-k="all">✦ lights on</button><button type="button" class="wp-btn" data-k="off">lights off</button></div>`;
   after.after(sec); edges();
-  const board = sec.querySelector('.wp-board'), abs = u => new URL(u, location.href).href;
-  const cards = pieces.map((a, i) => {
-    const c = document.createElement('button'); c.type = 'button'; c.className = 'wp-card'; c.dataset.id = a.id;
-    c.setAttribute('aria-label', `${a.title}. Drag to move, tap to look closer`);
-    if (a.id === 'self-portrait-green' && twin) { c.classList.add('wp-pair'); c.setAttribute('aria-label', 'She, not me. Drag to move, tap to look closer');
-      c.innerHTML = `<i class="wp-pin" aria-hidden="true"></i><span class="wp-two"><span class="wp-img" style="background-image:url('${abs(a.src)}')"></span><span class="wp-img" style="background-image:url('${abs(twin.src)}')"></span></span><span class="wp-cap">she, not me</span>`; }
-    else c.innerHTML = `<i class="wp-pin" aria-hidden="true"></i><span class="wp-img" style="background-image:url('${abs(a.src)}')"></span><span class="wp-cap">${a.title.toLowerCase()}</span>`;
-    board.append(c); return c;
-  });
-  if (yt) {
-    const c = document.createElement('a'); c.className = 'wp-card wp-yt'; c.href = `https://youtube.com/shorts/${yt}`; c.target = '_blank'; c.rel = 'noopener';
-    c.setAttribute('aria-label', 'Watch on YouTube');
-    c.innerHTML = `<i class="wp-pin" aria-hidden="true"></i><span class="wp-img" style="background-image:url('https://i.ytimg.com/vi/${yt}/hqdefault.jpg')"><b class="wp-play" aria-hidden="true">▶</b></span><span class="wp-cap">watch on youtube ▸</span>`;
-    board.append(c); cards.push(c);
+  const board = sec.querySelector('.dr-board'), light = sec.querySelector('.dr-light'), count = sec.querySelector('.dr-count');
+  const prints = [...sec.querySelectorAll('.dr-print')];
+  const tally = () => { const n = prints.filter(p => p.classList.contains('dev')).length; count.textContent = n === prints.length ? 'all developed. thank you for looking.' : `${n} / ${prints.length} developed`; board.classList.toggle('lit', n === prints.length); };
+  function develop(p) { if (p.classList.contains('dev')) return; p.classList.add('dev'); p.setAttribute('aria-label', p.getAttribute('aria-label').replace('Tap to develop.', 'Tap to look closer.')); tally(); }
+  prints.forEach(p => p.addEventListener('click', () => { if (p.classList.contains('dev')) location.hash = `#/work/${p.dataset.id}`; else develop(p); }));
+  sec.querySelector('[data-k=all]').onclick = () => prints.forEach((p, i) => setTimeout(() => develop(p), reduce ? 0 : i * 70));
+  sec.querySelector('[data-k=off]').onclick = () => { prints.forEach(p => { p.classList.remove('dev'); p.setAttribute('aria-label', p.getAttribute('aria-label').replace('Tap to look closer.', 'Tap to develop.')); }); tally(); };
+  // the light: follows the pointer; when nobody is pointing it drifts slowly on its own (only while on screen)
+  let x = 0, y = 0, tx = 0, ty = 0, idle = 0, on = false, raf = 0, t0 = 0;
+  const size = () => { const r = board.getBoundingClientRect(); return [r.width, r.height]; };
+  function frame(t) {
+    raf = 0; if (!on || document.hidden) return;
+    if (performance.now() - idle > 1800 && !reduce) { const [w, h] = size(), s = t / 1000; tx = w * (.5 + .36 * Math.sin(s * .45)); ty = h * (.5 + .3 * Math.sin(s * .71 + 1)); }
+    x += (tx - x) * .14; y += (ty - y) * .14;
+    light.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
+    raf = requestAnimationFrame(frame);
   }
-  let z = 10;
-  const place = mode => {
-    const W = board.clientWidth, H = board.clientHeight, cw = cards[0] ? cards[0].offsetWidth : 140, ch = cards[0] ? cards[0].offsetHeight : 170;
-    const cols = Math.max(2, Math.floor(W / (cw + 18)));
-    cards.forEach((c, i) => {
-      let x, y, r;
-      if (mode === 'rows') { const col = i % cols, row = (i / cols) | 0, gap = (W - cols * cw) / (cols + 1); x = gap + col * (cw + gap); y = 14 + row * (ch * .62); r = (i % 2 ? 1.5 : -1.5); }
-      else { x = Math.random() * Math.max(10, W - cw); y = Math.random() * Math.max(10, H - ch); r = Math.random() * 24 - 12; }
-      c.style.transform = `translate(${x | 0}px,${y | 0}px) rotate(${r.toFixed(1)}deg)`; c.dataset.x = x; c.dataset.y = y; c.dataset.r = r;
-    });
-  };
-  // dragging: pointer moves the card with transform only (cheap); a short tap opens the piece
-  let drag = null;
-  board.addEventListener('pointerdown', e => {
-    const c = e.target.closest('.wp-card'); if (!c) return;
-    drag = { c, sx: e.clientX, sy: e.clientY, x: +c.dataset.x || 0, y: +c.dataset.y || 0, moved: false };
-    c.style.zIndex = ++z; c.classList.add('lift'); c.setPointerCapture(e.pointerId);
-  });
-  board.addEventListener('pointermove', e => {
-    if (!drag) return; const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy; if (Math.abs(dx) + Math.abs(dy) > 5) drag.moved = true; if (!drag.moved) return;
-    const W = board.clientWidth, H = board.clientHeight, c = drag.c;
-    const x = Math.max(-20, Math.min(W - c.offsetWidth + 20, drag.x + dx)), y = Math.max(-10, Math.min(H - c.offsetHeight + 10, drag.y + dy));
-    c.dataset.x = x; c.dataset.y = y; c.style.transform = `translate(${x | 0}px,${y | 0}px) rotate(${(dx * .04).toFixed(1)}deg) scale(1.06)`;
-  });
-  const end = e => {
-    if (!drag) return; const { c, moved } = drag; drag = null; c.classList.remove('lift');
-    c.style.transform = `translate(${+c.dataset.x | 0}px,${+c.dataset.y | 0}px) rotate(${(+c.dataset.r || 0).toFixed(1)}deg)`;
-    if (moved) { c.dataset.dragged = '1'; setTimeout(() => delete c.dataset.dragged, 50); }
-  };
-  board.addEventListener('pointerup', end); board.addEventListener('pointercancel', end);
-  board.addEventListener('click', e => {
-    const c = e.target.closest('.wp-card'); if (!c) return;
-    if (c.dataset.dragged) { e.preventDefault(); return; }
-    if (c.dataset.id) location.hash = `#/work/${c.dataset.id}`;
-  });
-  sec.querySelector('[data-k=mess]').onclick = () => place('mess');
-  sec.querySelector('[data-k=rows]').onclick = () => place('rows');
-  requestAnimationFrame(() => place('mess'));
-  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => sec.isConnected && place('mess'), 300); });
+  const go = () => { if (!raf && on) raf = requestAnimationFrame(frame); };
+  board.addEventListener('pointermove', e => { const r = board.getBoundingClientRect(); tx = e.clientX - r.left; ty = e.clientY - r.top; idle = performance.now(); go(); });
+  board.addEventListener('pointerdown', e => { const r = board.getBoundingClientRect(); tx = e.clientX - r.left; ty = e.clientY - r.top; idle = performance.now(); go(); });
+  { const [w, h] = size(); x = tx = w / 2; y = ty = h / 2; light.style.transform = `translate3d(${x}px,${y}px,0)`; }
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => { on = es[0].isIntersecting; if (on) go(); }, { rootMargin: '60px' }).observe(board);
+  else { on = true; go(); }
+  document.addEventListener('visibilitychange', go);
 }
 if (view) new MutationObserver(wallPanel).observe(view, { childList: true, subtree: true });
 wallPanel();
+
+/* ---------- 15b. THANK YOU: a note near the bottom of the home page ---------- */
+function thanksPanel() {
+  const P = document.querySelector('.portal'); if (!P || P.querySelector('.p-thanks')) return;
+  const foot = P.querySelector('.p-foot'); if (!foot) return;
+  const st = f => new URL('assets/ui/stickers/' + f + '.webp', location.href).href;
+  const sec = document.createElement('section'); sec.className = 'p-mod p-thanks';
+  sec.innerHTML = `<div class="ty-art" aria-hidden="true">
+      <img src="${st('bloom')}" alt="" draggable="false" class="ty-a1"><img src="${st('thumbprint')}" alt="" draggable="false" class="ty-a2"><img src="${st('flower')}" alt="" draggable="false" class="ty-a3">
+    </div>
+    <div class="p-head"><small>ありがとう</small><b>THANK YOU</b><span>FOR BEING HERE</span></div>
+    <div class="ty-body">
+      <p class="ty-big">if you looked, thank you.</p>
+      <p>if you liked something, saved it, reposted it, sent it to a friend, left a comment, or just stayed on one piece a little longer than you meant to: i see that, and i really appreciate it.</p>
+      <p>every person who stops to look keeps me making things.</p>
+      <p class="ty-sign">with love, shedithers <span aria-hidden="true">♥</span></p>
+    </div>`;
+  foot.before(sec); edges();
+}
+if (view) new MutationObserver(thanksPanel).observe(view, { childList: true, subtree: true });
+thanksPanel();
 
 /* ---------- 16. a few words about the work, in the NO IDENTITY block ---------- */
 function styleNote() {
@@ -451,61 +451,7 @@ function hackDir() {
 if (view) new MutationObserver(hackDir).observe(view, { childList: true, subtree: true });
 hackDir();
 
-/* ---------- 18. MAKE A MESS: tap (or drag) anywhere and the artist's art sticks to the page, on top of everything.
-   cutouts, little prints with tape, words on paper. saved per page; CLEAN UP takes it all off ---------- */
-(() => {
-  const STK = ['bloom', 'flower', 'gold', 'leaves', 'logo', 'no-face', 'thumbprint'];
-  const CHIP = ['are-we-alive-yet', 'not-in-my-nature', 'no-identity', 'prettier-in-fragments', 'who-will-you-be', 'when-you-rain', 'she-knows-the-night', 'click-to-be-saved', 'i-love-shedithers', 'shedithers-eyes', 'so-free', 'stop-asking', 'all-signs-yellow', 'bloom', 'its-all-in-your-head', 'distance', 'circle-of-becoming', 'inner-world', 'sky-2'];
-  const WORDS = ['shedithers wuz here', 'not ordinary', 'me too', 'doing it scared', 'no identity', 'x x x', 'are we alive yet?', 'still installing', 'understanding me is understanding we', 'i look prettier in fragments', 'who will you be?', 'stay a little strange', 'it’s all in your head', 'repair before you replace', 'strangers with familiar eyes', 'let the light in'];
-  const KEY = 'shd.mess2', U = p => new URL(p, location.href).href;
-  let all = []; try { all = JSON.parse(localStorage.getItem(KEY)) || []; } catch (_) { }
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(all.slice(-120))); } catch (_) { } };
-  const page = () => (location.hash.replace(/^#\/?/, '').split('/').slice(0, 2).join('/') || 'home');
-  const layer = document.createElement('div'); layer.className = 'mess-top'; layer.setAttribute('aria-hidden', 'true'); document.body.append(layer);
-  const pick = a => a[Math.floor(Math.random() * a.length)];
-  function el(s) {
-    let e;
-    if (s.k === 'cut') { e = document.createElement('img'); e.src = U('assets/ui/stickers/' + s.v + '.webp'); e.draggable = false; e.alt = ''; e.className = 'ms ms-cut'; e.style.width = s.w + 'px'; }
-    else if (s.k === 'chip') { e = document.createElement('span'); e.className = 'ms ms-chip'; e.style.width = s.w + 'px'; const i = document.createElement('img'); i.src = U('assets/ui/intro-art/' + s.v + '.jpg'); i.alt = ''; i.draggable = false; e.append(i); }
-    else { e = document.createElement('span'); e.className = 'ms ms-word' + (s.w > 130 ? ' red' : ''); e.textContent = s.v; }
-    e.style.left = `calc(50% + ${s.cx}px)`; e.style.top = s.y + 'px'; e.style.setProperty('--r', s.r + 'deg');
-    return e;
-  }
-  function draw() { layer.textContent = ''; layer.style.height = document.documentElement.scrollHeight + 'px'; const p = page(); all.filter(s => s.p === p).forEach(s => layer.append(el(s))); }
-  let ac = null;
-  function thwip() {
-    try {
-      ac = ac || new (window.AudioContext || window.webkitAudioContext)(); const t = ac.currentTime, o = ac.createOscillator(), g = ac.createGain();
-      o.type = 'triangle'; o.frequency.setValueAtTime(520 + Math.random() * 300, t); o.frequency.exponentialRampToValueAtTime(140, t + .09);
-      g.gain.setValueAtTime(.05, t); g.gain.exponentialRampToValueAtTime(.0001, t + .12); o.connect(g).connect(ac.destination); o.start(t); o.stop(t + .13);
-    } catch (_) { }
-  }
-  function slap(x, y) {
-    const r = Math.random(), k = r < .45 ? 'cut' : r < .75 ? 'chip' : 'word';
-    const v = k === 'cut' ? pick(STK) : k === 'chip' ? pick(CHIP) : pick(WORDS);
-    const w = k === 'cut' ? 80 + Math.random() * 80 : k === 'chip' ? 70 + Math.random() * 50 : Math.random() * 200;
-    const s = { p: page(), k, v, w: Math.round(w), cx: Math.round(x - innerWidth / 2), y: Math.round(y), r: Math.round((Math.random() - .5) * 40) };
-    all.push(s); save();
-    if (layer.offsetHeight < document.documentElement.scrollHeight) layer.style.height = document.documentElement.scrollHeight + 'px';
-    const e = el(s); if (!reduce) e.classList.add('slap'); layer.append(e); thwip();
-  }
-  const skip = t => t.closest('.mess-btn, .clean-btn, #bar, .bar, .mess-tip');
-  const messing = () => document.body.classList.contains('messing');
-  let held = null;
-  addEventListener('pointerdown', e => {
-    if (!messing() || e.button > 0 || skip(e.target)) return;
-    e.preventDefault(); e.stopPropagation(); slap(e.pageX, e.pageY); held = [e.pageX, e.pageY];
-  }, true);
-  addEventListener('pointermove', e => { if (!held || !messing()) return; if (Math.hypot(e.pageX - held[0], e.pageY - held[1]) > 110) { slap(e.pageX, e.pageY); held = [e.pageX, e.pageY]; } }, { passive: true });
-  addEventListener('pointerup', () => { held = null; }); addEventListener('pointercancel', () => { held = null; });
-  // while messing, taps never open links or buttons under them
-  addEventListener('click', e => { if (messing() && !skip(e.target)) { e.preventDefault(); e.stopPropagation(); } }, true);
-  // a short note the first time mess mode turns on
-  const tip = document.createElement('div'); tip.className = 'mess-tip'; tip.textContent = 'tap or drag anywhere. my art sticks to the page.'; document.body.append(tip);
-  let tt = 0; new MutationObserver(() => { const on = messing(); tip.classList.toggle('on', on); clearTimeout(tt); if (on) tt = setTimeout(() => tip.classList.remove('on'), 3200); }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
-  document.addEventListener('click', e => { if (e.target.closest('.clean-btn')) { all = []; save(); layer.querySelectorAll('.ms').forEach(m => { m.classList.add('peel'); setTimeout(() => m.remove(), 380); }); } });
-  addEventListener('hashchange', () => setTimeout(draw, 250));
-  let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(draw, 250); });
-  setTimeout(draw, 600);
-})();
+/* ---------- 18. (v4.2.0) make a mess is retired; clear what it saved ---------- */
+try { localStorage.removeItem('shd.mess2'); localStorage.removeItem('shd.mess'); } catch (_) { }
+
 })();
