@@ -496,3 +496,51 @@ body.rm-scrolling .rm-edge::before{animation-play-state:paused}
 .drink-tab.dt2 small{writing-mode:vertical-rl;rotate:180deg;font:500 8px 'JetBrains Mono',monospace!important;letter-spacing:.2em!important;text-transform:uppercase;color:#c3141c!important;opacity:1!important;display:block!important}
 .drink-tab.dt2 .dt-fig,.drink-tab.dt2 .dt-tape,.drink-tab.dt2 .dt-drip{display:none!important}
 @media (max-width:760px){.drink-tab.dt2{width:38px!important;padding-top:40px!important}.drink-tab.dt2 b{font-size:14px!important}.drink-tab.dt2 small{display:none!important}}
+
+/* ===== v3.9.3: THE EDIT remastered in the home page's look ===== */
+.rm-bgw{position:fixed;inset:0;z-index:-2;pointer-events:none;background:#070605;opacity:0;transition:opacity .6s}
+body:is([data-route=works],[data-route=col],[data-route=about]) .rm-bgw{opacity:1}
+.rm-bgw i{position:absolute;inset:-4%;background:center/cover no-repeat;opacity:0;transition:opacity 2.6s ease;filter:grayscale(1) contrast(1.5) brightness(.42) sepia(.55) saturate(2.2) hue-rotate(-28deg)}
+.rm-bgw i.on{opacity:1}
+.rm-bgw::after{content:'';position:absolute;inset:0;background:radial-gradient(rgba(7,6,5,.75) 34%,transparent 36%) 0 0/4px 4px,radial-gradient(ellipse at 50% 35%,transparent 20%,rgba(7,6,5,.9) 80%)}
+/* the title, like the home panels */
+body[data-route=works] .works-head{position:relative;padding:18px 0 4px;margin-left:clamp(0px,9vw,140px);text-align:left}
+.works-head .wh-kana{display:block;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.3em;color:#f2b234}
+body[data-route=works] .works-head h2{display:inline-block;margin:2px 0 6px;padding:0 14px;font:800 clamp(40px,6vw,84px)/.95 'Syne',sans-serif!important;letter-spacing:-.02em!important;color:#ff5a3c!important;
+  text-shadow:3px 3px 0 #0b0a09!important;background:linear-gradient(transparent 55%,rgba(226,104,38,.85) 55%,rgba(226,104,38,.85) 88%,transparent 88%);transform:rotate(-1deg)}
+body[data-route=works] .works-head p{font:500 12px 'JetBrains Mono',monospace!important;letter-spacing:.12em;color:rgba(233,227,209,.8)!important;text-transform:lowercase}
+body[data-route=works] .works-modes button,body[data-route=works] .chips a{border-radius:999px!important;background:rgba(11,10,9,.85)!important;color:#e9e3d1!important;border:0!important;
+  box-shadow:0 0 0 1px rgba(233,227,209,.3)!important;font:500 11px 'JetBrains Mono',monospace!important;letter-spacing:.14em!important;padding:9px 14px!important;transform:none!important;transition:box-shadow .2s,color .2s}
+body[data-route=works] .chips a:hover,body[data-route=works] .works-modes button:hover{color:#d4ff00!important;box-shadow:0 0 0 1px #d4ff00,0 0 12px rgba(212,255,0,.3)!important}
+body[data-route=works] .chips a.on,body[data-route=works] .works-modes button[aria-checked=true]{background:#c3141c!important;color:#fff!important;box-shadow:0 0 0 1px #ff5a5f,0 0 16px rgba(255,35,56,.5)!important}
+body[data-route=works] .chips{gap:8px!important;justify-content:center}
+/* the screen: a dark glass panel with the glowing edge, the leaves hanging over its corner */
+body[data-route=works] .edit-screen{position:relative;border-radius:14px!important;overflow:visible!important;background:linear-gradient(180deg,rgba(18,16,14,.9),rgba(8,7,6,.94))!important;border:0!important;
+  box-shadow:0 0 0 1px rgba(255,35,56,.7),0 0 18px rgba(255,35,56,.4),0 0 50px rgba(47,125,255,.18),0 26px 60px rgba(0,0,0,.6)!important}
+body[data-route=works] .edit-screen>.rm-edge{border-radius:14px}
+body[data-route=works] .edit-stage{border-radius:10px;overflow:hidden}
+.es-branch{position:absolute;right:-60px;top:-70px;width:240px;z-index:6;pointer-events:none;transform-origin:85% 0;animation:tpBranch 6s ease-in-out infinite;filter:drop-shadow(0 8px 10px rgba(0,0,0,.5));scale:-1 1}
+body[data-route=works] .edit-hud{font-family:'JetBrains Mono',monospace!important;letter-spacing:.18em!important;color:rgba(233,227,209,.75)!important}
+body[data-route=works] .edit-hud .rec{color:#ff2338!important}
+body[data-route=works] .edit-cap b{font:800 clamp(20px,2.4vw,32px)/1 'Syne',sans-serif!important;letter-spacing:-.01em!important;color:#efe8d2!important;text-shadow:2px 2px 0 #c3141c!important}
+body[data-route=works] .edit-cap .marker,body[data-route=works] .edit-cap span{font:400 clamp(17px,1.7vw,22px)/1.3 'Patrick Hand',cursive!important;color:#d4ff00!important;text-shadow:0 1px 0 #000!important}
+body[data-route=works] .edit-btn{border-radius:999px!important;background:rgba(11,10,9,.85)!important;color:#e9e3d1!important;box-shadow:0 0 0 1px rgba(233,227,209,.35)!important}
+body[data-route=works] .edit-btn:hover{box-shadow:0 0 0 1px #d4ff00,0 0 12px rgba(212,255,0,.35)!important;color:#d4ff00!important}
+body[data-route=works] .edit-dots i.on{background:#ff2338!important;box-shadow:0 0 8px #ff2338}
+body[data-route=works] .edit-flash{display:none!important}
+/* the drifting rows: taped polaroids, a little crooked */
+body[data-route=works] .edit-tile{background:#fbfaf6!important;padding:7px 7px 26px!important;border-radius:2px!important;box-shadow:0 10px 22px rgba(0,0,0,.5)!important;rotate:-2deg;position:relative;transition:rotate .3s,translate .3s}
+body[data-route=works] .edit-tile:nth-child(even){rotate:2deg}
+body[data-route=works] .edit-tile:nth-child(3n){rotate:-.5deg}
+body[data-route=works] .edit-tile::before{content:'';position:absolute;left:50%;top:-8px;width:54px;height:16px;margin-left:-27px;z-index:2;background:rgba(233,227,209,.72);rotate:-4deg;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+body[data-route=works] .edit-tile:hover{rotate:0deg;translate:0 -6px;box-shadow:0 0 0 2px #d4ff00,0 16px 30px rgba(0,0,0,.55)!important}
+body[data-route=works] .et-cap{position:absolute;left:6px;right:6px;bottom:4px;font:400 15px/1.1 'Patrick Hand',cursive!important;color:#1d1b16!important;text-transform:lowercase;letter-spacing:0!important;background:none!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body[data-route=works] .et-win img,body[data-route=works] .et-win video{filter:contrast(1.05)}
+body[data-route=works] .edit-rows{padding-top:16px}
+/* floating stickers don't sit on the title here */
+body[data-route=works] .lab-float{display:none!important}
+@media (max-width:760px){.es-branch{width:150px;right:-30px;top:-46px}body[data-route=works] .works-head{margin-left:0;text-align:center}}
+@media (prefers-reduced-motion:reduce){.rm-bgw i{transition:none}.es-branch{animation:none}}
+body[data-route=works] .works-head{display:flex!important;flex-direction:column;align-items:center;margin:0 auto!important;text-align:center!important;gap:2px}
+body[data-route=works] .works-head p{position:static!important;display:block!important;margin:4px 0 10px!important;max-width:none!important}
+body[data-route=works] .works-head h2{transform:rotate(-1deg)!important}

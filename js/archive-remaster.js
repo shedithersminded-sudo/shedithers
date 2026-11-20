@@ -243,4 +243,33 @@ function keepBelowBar() {
   document.querySelectorAll('.tv, .art-player').forEach(el => { const r = el.getBoundingClientRect(); if (r.height && r.top < top && getComputedStyle(el).position === 'fixed') el.style.top = top + 'px'; });
 }
 setInterval(keepBelowBar, 1500); addEventListener('resize', keepBelowBar);
+
+/* ---------- 13. THE EDIT (and the other inside pages) wear the home page's look ---------- */
+function routeName() { const h = location.hash; return /^#\/work\//.test(h) ? null : /^#\/works/.test(h) ? 'works' : /^#\/col\//.test(h) ? 'col' : /^#\/about/.test(h) ? 'about' : 'home'; }
+function setRoute() { const r = routeName(); if (r) document.body.dataset.route = r; }
+addEventListener('hashchange', setRoute); setRoute();
+// a slow, dithered backdrop of the artist's pieces for the inside pages (opacity crossfade only: cheap)
+const bgw = document.createElement('div'); bgw.className = 'rm-bgw'; bgw.setAttribute('aria-hidden', 'true');
+const BGW = ['i-dont-want-a-face', 'doing-it-scared', 'sky-lights', 'not-in-my-nature', 'when-you-rain'].map(id => typeof ARTWORKS !== 'undefined' && ARTWORKS.find(a => a.id === id)).filter(Boolean);
+BGW.forEach((a, i) => { const L = document.createElement('i'); if (i === 0) L.className = 'on'; L.style.backgroundImage = `url('${new URL(a.src, location.href).href}')`; bgw.append(L); });
+document.body.prepend(bgw);
+let bgi = 0; setInterval(() => { if (document.hidden || document.body.dataset.route === 'home') return; const L = bgw.children; if (!L.length) return; L[bgi].classList.remove('on'); bgi = (bgi + 1) % L.length; L[bgi].classList.add('on'); }, 11000);
+function dressEdit() {
+  const head = document.querySelector('#view .works-head'); if (head && !head.dataset.rm) {
+    head.dataset.rm = '1'; const k = document.createElement('small'); k.className = 'wh-kana'; k.textContent = document.body.dataset.route === 'works' ? 'エディット' : 'アーカイブ'; head.prepend(k);
+  }
+  const scr = document.querySelector('#view .edit-screen'); if (scr && !scr.dataset.rm) {
+    scr.dataset.rm = '1';
+    const e = document.createElement('i'); e.className = 'rm-edge'; e.setAttribute('aria-hidden', 'true'); e.style.setProperty('--c1', '#ff2338'); e.style.setProperty('--c2', '#7fb2ff'); e.style.setProperty('--spd', '12s'); scr.append(e); if (edgeRO) edgeRO.observe(scr);
+    const br = document.createElement('img'); br.className = 'es-branch'; br.src = new URL('assets/ui/art2/leaves.webp', location.href).href; br.alt = ''; br.setAttribute('aria-hidden', 'true'); br.draggable = false; scr.append(br);
+  }
+  // the drifting rows: videos stay still (first frame) and only play while hovered. Many big videos at once was the lag
+  document.querySelectorAll('#view .edit-rows video:not([data-rm])').forEach(v => {
+    v.dataset.rm = '1'; v.autoplay = false; v.removeAttribute('autoplay'); v.pause();
+    v.addEventListener('play', () => { if (!v.matches(':hover') && !v.closest('.edit-tile:hover')) v.pause(); });
+    const t = v.closest('.edit-tile'); if (t) { t.addEventListener('mouseenter', () => v.play().catch(() => { })); t.addEventListener('mouseleave', () => v.pause()); }
+  });
+}
+if (view) new MutationObserver(dressEdit).observe(view, { childList: true, subtree: true });
+dressEdit();
 })();
