@@ -6,59 +6,54 @@
 'use strict';
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ---------- 1. code rain ---------- */
-const WORD = 'shedithers';
-const cv = document.createElement('canvas'); cv.className = 'rm-rain'; cv.setAttribute('aria-hidden', 'true');
-// the background art lives inside #view (as its first layer), so the rain sits right above it, still under every panel
-function placeRain() {
-  const v = document.getElementById('view'); if (!v) { if (!cv.isConnected) document.body.append(cv); return; }
-  const pr = v.querySelector(':scope > .p-render');
-  if (pr) { if (cv.previousElementSibling !== pr) pr.after(cv); }
-  else if (cv.parentElement !== v) v.prepend(cv);
-}
-placeRain();
-const g = cv.getContext('2d');
-let W = 0, H = 0, cols = [], fs = 15, dpr = 1, last = 0;
-function size() {
-  dpr = 1; // the rain is soft and faint: full device resolution only cost speed W = innerWidth; H = innerHeight;
-  cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
-  g.setTransform(dpr, 0, 0, dpr, 0, 0);
-  fs = W < 760 ? 13 : 15; for (const k in glyphs) delete glyphs[k]; const step = Math.round(fs * 1.35), n = Math.ceil(W / step);
-  cols = Array.from({ length: n }, (_, i) => ({ x: i * step + 4, y: Math.random() * H * 1.5 - H * .5, v: 90 + Math.random() * 80, len: 8 + (Math.random() * 14 | 0), off: Math.random() * 10 | 0, on: Math.random() < .55 }));
-}
-const glyphs = {};
-function glyph(ch, head) {
-  const k = ch + (head ? 1 : 0); if (glyphs[k]) return glyphs[k];
-  const c = document.createElement('canvas'), x = c.getContext('2d'); c.width = Math.ceil(fs * .8); c.height = Math.ceil(fs * 1.25);
-  x.font = `500 ${fs}px "JetBrains Mono", monospace`; x.textBaseline = 'top'; x.fillStyle = head ? 'rgb(233,255,170)' : 'rgb(212,255,0)'; x.fillText(ch, 0, 0);
-  return (glyphs[k] = c);
-}
-function draw(t) {
-  if (!reduce && t - last < 32) { raf = requestAnimationFrame(draw); return; } // ~30 fps is plenty for falling letters
-  const dt = Math.min(.08, (t - last) / 1000 || 0); last = t;
-  g.clearRect(0, 0, W, H); g.font = `500 ${fs}px "JetBrains Mono", monospace`; g.textBaseline = 'top';
-  const lh = fs * 1.2;
-  for (const c of cols) {
-    if (!c.on) { if (Math.random() < .004) c.on = true; continue; }
-    c.y += c.v * dt; // smooth, sub-pixel fall (no row snapping)
-    for (let k = 0; k < c.len; k++) {
-      const y = c.y - k * lh; if (y < -lh || y > H) continue;
-      // each trail carries its own letters, so it always reads s-h-e-d-i-t-h-e-r-s top to bottom
-      const ch = WORD[((c.off - k) % 10 + 10) % 10];
-      const a = k === 0 ? 1 : (1 - k / c.len) * .7;
-      g.globalAlpha = k === 0 ? a : a * .75; g.drawImage(glyph(ch, k === 0), c.x, y);
-    }
-    if (c.y - c.len * lh > H) { c.len = 8 + (Math.random() * 14 | 0); c.y = -Math.random() * H * .4; c.v = 90 + Math.random() * 80; c.on = Math.random() < .75; }
+/* ---------- 1. code rain (v4.2.3): "SHEDITHERS" falls inside the THANK YOU panel, soft grey-white.
+   it used to sit behind the whole page, so faint nobody saw it. now it lives in one panel, runs every frame
+   (smooth, no stepping) and only while that panel is on screen ---------- */
+const WORD = 'SHEDITHERS';
+function placeRain() { } // kept so older callers don't break
+function rainIn(host) {
+  const cv = document.createElement('canvas'); cv.className = 'ty-rain'; cv.setAttribute('aria-hidden', 'true'); host.prepend(cv);
+  const g = cv.getContext('2d'); const glyphs = {};
+  let W = 0, H = 0, fs = 16, lh = 20, cols = [], raf = 0, last = 0, on = false;
+  const glyph = (ch, head) => {
+    const k = ch + (head ? 1 : 0); if (glyphs[k]) return glyphs[k];
+    const c = document.createElement('canvas'), x = c.getContext('2d'), d = Math.min(2, devicePixelRatio || 1);
+    c.width = Math.ceil(fs * .9 * d); c.height = Math.ceil(fs * 1.3 * d); x.scale(d, d);
+    x.font = `700 ${fs}px "JetBrains Mono", monospace`; x.textBaseline = 'top';
+    if (head) { x.shadowColor = 'rgba(255,255,255,.7)'; x.shadowBlur = 6; }
+    x.fillStyle = head ? '#f4f1ea' : '#cfcac0'; x.fillText(ch, 0, 1);
+    c._w = c.width / d; c._h = c.height / d; return (glyphs[k] = c);
+  };
+  const drop = (c, top) => { c.len = 10 + (Math.random() * 12 | 0); c.v = 70 + Math.random() * 60; c.y = top ? Math.random() * (H + c.len * lh) : -Math.random() * H * .6; c.off = Math.random() * 10 | 0; };
+  function size() {
+    const r = host.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
+    W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
+    cv.width = W * d; cv.height = H * d; cv.style.width = W + 'px'; cv.style.height = H + 'px'; g.setTransform(d, 0, 0, d, 0, 0);
+    fs = W < 600 ? 13 : 16; lh = Math.round(fs * 1.25); for (const k in glyphs) delete glyphs[k];
+    const step = Math.round(fs * 1.5), n = Math.ceil(W / step);
+    cols = Array.from({ length: n }, (_, i) => { const c = { x: i * step + 3 }; drop(c, true); return c; });
+    if (!on || reduce) paint(0);
   }
-  g.globalAlpha = 1;
-  if (!reduce) raf = requestAnimationFrame(draw);
-}
-let raf = 0;
-size(); addEventListener('resize', () => { size(); if (reduce) draw(0); });
-if (reduce) { cols.forEach(c => { c.y = Math.random() * H; }); draw(0); }
-else {
-  raf = requestAnimationFrame(draw);
-  document.addEventListener('visibilitychange', () => { cancelAnimationFrame(raf); if (!document.hidden) { last = performance.now(); raf = requestAnimationFrame(draw); } });
+  function paint(dt) {
+    g.clearRect(0, 0, W, H);
+    for (const c of cols) {
+      c.y += c.v * dt;
+      for (let k = 0; k < c.len; k++) {
+        const y = c.y - k * lh; if (y < -lh || y > H) continue;
+        const ch = WORD[((c.off - k) % 10 + 10) % 10], gl = glyph(ch, k === 0);
+        g.globalAlpha = k === 0 ? .95 : .62 * (1 - k / c.len) + .06;
+        g.drawImage(gl, c.x, y, gl._w, gl._h);
+      }
+      if (c.y - c.len * lh > H) drop(c, false);
+    }
+    g.globalAlpha = 1;
+  }
+  function frame(t) { raf = 0; if (!on || document.hidden) return; const dt = last ? Math.min(.05, (t - last) / 1000) : 0; last = t; paint(dt); raf = requestAnimationFrame(frame); }
+  const go = () => { if (!raf && on && !reduce && !document.hidden) { last = 0; raf = requestAnimationFrame(frame); } };
+  if ('ResizeObserver' in window) new ResizeObserver(() => size()).observe(host); size();
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => { on = es[0].isIntersecting; go(); }, { rootMargin: '80px 0px' }).observe(host); else { on = true; go(); }
+  document.addEventListener('visibilitychange', go);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const k in glyphs) delete glyphs[k]; });
 }
 
 /* ---------- 2. glowing panel edges ---------- */
@@ -372,16 +367,14 @@ function thanksPanel() {
   const foot = P.querySelector('.p-foot'); if (!foot) return;
   const st = f => new URL('assets/ui/stickers/' + f + '.webp', location.href).href;
   const sec = document.createElement('section'); sec.className = 'p-mod p-thanks';
-  sec.innerHTML = `<div class="ty-art" aria-hidden="true">
-      <img src="${st('no-face')}" alt="" draggable="false" class="ty-a1"><img src="${st('gold')}" alt="" draggable="false" class="ty-a2"><img src="${st('leaves')}" alt="" draggable="false" class="ty-a3">
-    </div>
-    <div class="p-head"><small>ありがとう</small><b>THANK YOU</b><span>FOR BEING HERE</span></div>
+  sec.innerHTML = `<div class="p-head"><small>ありがとう</small><b>THANK YOU</b><span>FOR BEING HERE</span></div>
     <div class="ty-body">
-      <p class="ty-big">If you looked, thank you.</p>
-      <p>Whether you liked something, saved it, reposted it, sent it to a friend, left a comment, or just stayed on one piece a little longer than you meant to, I see it, and I really appreciate it.</p>
-      <p>Every person who stops to look keeps me making things.</p>
+      <p class="ty-big">Thank you for looking.</p>
+      <p>If you liked something, saved it, reposted it, sent it to a friend, left a comment, or stayed on one piece a little longer than you meant to, I noticed. It means more than you know.</p>
+      <p>Every person who stops to look is the reason I keep making things.</p>
       <p class="ty-sign">With love, SHEDITHERS <span aria-hidden="true">♥</span></p>
     </div>`;
+  rainIn(sec);
   foot.before(sec); edges();
 }
 if (view) new MutationObserver(thanksPanel).observe(view, { childList: true, subtree: true });

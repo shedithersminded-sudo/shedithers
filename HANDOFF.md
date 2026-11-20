@@ -1,6 +1,6 @@
 # SHEDITHERS: handoff
 
-**This is the only handoff.** Written 2026-11-20 at **v4.2.2** (the finished site). Give this file to whoever picks the work up next, human or AI: paste it, or say "read C:\CODE\shedithers\HANDOFF.md". Add one line to the version log at the bottom on every release.
+**This is the only handoff.** Written 2026-11-20 at **v4.2.3** (the finished site). Give this file to whoever picks the work up next, human or AI: paste it, or say "read C:\CODE\shedithers\HANDOFF.md". Add one line to the version log at the bottom on every release.
 
 ---
 
@@ -34,8 +34,8 @@
 **Test sizes:** 1440x900, 1024x768, 768x1024, 375x812. Check: no sideways scroll (`document.documentElement.scrollWidth === innerWidth`), nothing over the menu bar, no console errors, no broken images/videos, on home, `#/works`, `#/col/<id>`, `#/about`, and the viewer `#/work/<id>`.
 
 **Release (every time):**
-1. `sed -i 's/?v=422/?v=423/g' index.html archive.html` (bump the cache number on every css/js link in both pages)
-2. Bump `VERSION` in `sw.js` (`shedithers-v4.2.2` becomes `shedithers-v4.2.3`)
+1. `sed -i 's/?v=423/?v=424/g' index.html archive.html` (bump the cache number on every css/js link in both pages)
+2. Bump `VERSION` in `sw.js` (`shedithers-v4.2.3` becomes `shedithers-v4.2.4`)
 3. Add one line to the version log at the bottom of this file
 4. Commit (end the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` if an AI made it), push `main`
 5. Wait until `https://shedithersminded-sudo.github.io/shedithers/sw.js` serves the new VERSION
@@ -66,7 +66,7 @@
 | `assets/ui/art2/` | UI-ready cuts of the artist's art: `no-face`, `thumbprint`, `leaves`, `leaf0-2`, `brave`, `sky`, videos `dreams.mp4`, `understand.mp4` |
 | `assets/ui/site-song.mp3` | "somewhere in between" (leyline hex), 96 kbps, 17 MB, 24 min. The artist confirmed they can use it |
 
-## 5. What's on the site (v4.2.2)
+## 5. What's on the site (v4.2.3)
 
 - **Intro:** only the drag intro. The artist's art morphs in dither behind the HD logo; the logo pulses red/lime rings and shakes until grabbed. First press: low bass buzz and the song starts muffled. Dragging: glitter sparkle sounds + a red/lime dither trail. Throw it: rising shimmer, the screen dithers shut along the throw, the archive opens and dithers open, the song opens up clear. Arrow keys / Enter / skip work too. A timer makes sure it always opens.
 - **Music:** starts at 22%, soft in the background (the artist asked twice for quieter; saved as `shd.songVol2`, a new key so old saved 40% values are ignored). Without the intro (same visit) it starts on the first tap anywhere. Inside: a tiny handwritten "now playing" line above the round red MUSIC button (play/pause), and a play button + quiet/loud slider in NOW PLAYING. The volume and a "paused" choice are remembered (`shd.songVol2`, `shd.songOff`). The visitor's own file player still exists (hint bar MUSIC) and pauses the song when used.
@@ -80,7 +80,7 @@
   - **Deck readings** are tarot pulls (`READ` in `archive-deck.js`): a card name that is NOT the title, a cryptic verse from what's in the piece, then "turn it over" shows upright or reversed (random) plus the other meaning, and the real title last. The artist asked that the first words never give the answer away. Write one for each new deck piece.
   - **NOW PLAYING** sits above THE DECK (desktop: beside NEWS; phone: right after the logo) so the volume is right there when the music starts.
   - **THE DARKROOM** replaced THE WALL (section 15, class `.p-wallpin.p-dark`): prints on lines under a red safelight, the cursor/finger is the light, tap a print to develop it, tap again to open it. Uses the 11/20 pieces that aren't in the deck. The YouTube polaroid is gone.
-  - **THANK YOU** panel above the footer (section 15b). Written in proper sentence case with a capital I (the artist asked for correct grammar here). Side art: no-face, gold, leaves (the artist didn't want the flowers or thumbprint repeated).
+  - **THANK YOU** panel above the footer (section 15b). Written in proper sentence case with a capital I (the artist asked for correct grammar here). No side art any more (v4.2.3): the SHEDITHERS code rain falls behind the words instead (`rainIn()` in section 1), soft grey-white, every frame (not capped at 30fps, that read as skipping), only while the panel is on screen. The old page-wide background rain is retired (the artist couldn't see it).
   - **The tip window is now "keep me dreaming"** (dream jar) everywhere: top bar, news, collab card, about ticket, deck button. The $3 riddle uses the flower (`assets/ui/art2/bloom.webp`). The Cash App name still stays hidden behind its button.
   - **MAKE A MESS is removed** (button, stickers and saved stamps).
   - **DREAM MODE** (v4.2.1, the artist's pick) sits where MAKE A MESS was (`.dream-btn`, top right; round button bottom right on phones). Section 19 of `archive-remaster.js`. Full-screen: the sky-2 photo slowly zooming, up to 11 pieces (small intro-art copies) drifting across like an old screensaver with a gentle bob, one of the artist's lines fading in the middle every 7s, the song title at the top. It starts the song unless the visitor turned it off. Tap a piece to open it, tap anywhere else / esc / wake up to leave. The page behind pauses its animations (`body.dreaming`).
@@ -142,3 +142,4 @@ The drag intro and the blob screen, the deck, the comment section concept, NOW P
 - v4.2.0 (2026-11-20): tarot deck readings, NOW PLAYING above the deck, THE DARKROOM, thank you panel, tip window renamed keep me dreaming, make a mess removed.
 - v4.2.1 (2026-11-20): DREAM MODE in the top right (the artist chose it over signal jam / radio dial); news lines for the darkroom and dream mode.
 - v4.2.2 (2026-11-20): thank you note polished (capital I, sentence case), side art changed to no-face, gold and leaves.
+- v4.2.3 (2026-11-20): SHEDITHERS code rain moved into the THANK YOU panel (grey-white, smooth), page background rain retired, thank you words rewritten.
