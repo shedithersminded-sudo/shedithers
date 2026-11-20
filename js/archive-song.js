@@ -46,7 +46,7 @@ function pause() {
   gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(gain.gain.value, t); gain.gain.linearRampToValueAtTime(0, t + .35);
   setTimeout(() => au.pause(), 380);
 }
-function toggle() { playing ? pause() : play(.6); }
+function toggle() { if (playing) { pause(); try { localStorage.setItem('shd.songOff', '1'); } catch (_) { } } else { try { localStorage.removeItem('shd.songOff'); } catch (_) { } play(.6); } }
 function openWall() {
   if (!lp) return; const t = ctx.currentTime, d = reduce ? .2 : 2.8;
   lp.frequency.cancelScheduledValues(t); lp.frequency.setValueAtTime(lp.frequency.value, t); lp.frequency.exponentialRampToValueAtTime(OPEN, t + d);
@@ -72,6 +72,13 @@ if (intro) {
   const off = () => { document.removeEventListener('pointerdown', first, true); document.removeEventListener('keydown', first, true); };
   const first = e => { if (!document.querySelector('.dg')) return off(); off(); play(1.5); };
   document.addEventListener('pointerdown', first, true); document.addEventListener('keydown', first, true);
+}
+// already inside (intro skipped this visit): the first tap anywhere starts it, quietly. browsers need that tap.
+let off2 = false; try { off2 = localStorage.getItem('shd.songOff') === '1'; } catch (_) { }
+if (!intro && !off2) {
+  const firstIn = e => { if (e.target.closest && e.target.closest('.rm-music, .pp-vol, .sgw, #player, input, textarea')) return; stop(); if (!playing) play(1.5); };
+  const stop = () => { document.removeEventListener('pointerdown', firstIn, true); document.removeEventListener('keydown', firstIn, true); };
+  document.addEventListener('pointerdown', firstIn, true); document.addEventListener('keydown', firstIn, true);
 }
 // once inside: the wall opens and the words show up
 new MutationObserver(() => { if (inside()) { openWall(); paint(); } }).observe(document.body, { attributes: true, attributeFilter: ['class'] });

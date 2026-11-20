@@ -376,4 +376,16 @@ function wallPanel() {
 }
 if (view) new MutationObserver(wallPanel).observe(view, { childList: true, subtree: true });
 wallPanel();
+
+/* ---------- 16. a few words about the work, in the NO IDENTITY block ---------- */
+function styleNote() {
+  const L = document.querySelector('.portal > .p-logo'); if (!L || L.querySelector('.pl-style')) return;
+  const d = document.createElement('div'); d.className = 'pl-style';
+  d.innerHTML = `<small>スタイル · the work</small>
+    <p>collage, drawing, signal and moving image. i take found photos, old computer windows, torn paper and my own handwriting, cut them up and put them back together wrong on purpose, then push them through dither and glitch until they feel like a memory with bad reception.</p>
+    <p class="pl-style-b">it\u2019s about identity. becoming and unbecoming, feeling things out loud, staying a little strange.</p>`;
+  L.append(d);
+}
+if (view) new MutationObserver(styleNote).observe(view, { childList: true, subtree: true });
+styleNote();
 })();

@@ -1,6 +1,6 @@
 # SHEDITHERS archive: handoff
 
-Written 2026-11-20, after **v3.9.7**. Give this whole file to whoever picks the work up next, human or AI. It replaces the older remaster handoff (the old screenshots in `handoff/shots/` show problems that are now fixed).
+Written 2026-11-20, after **v3.9.8**. Give this whole file to whoever picks the work up next, human or AI. It replaces the older remaster handoff (the old screenshots in `handoff/shots/` show problems that are now fixed).
 
 ---
 
@@ -37,8 +37,8 @@ Clear `sessionStorage` to see the intro again.
 **Test sizes:** PC 1440x900, tablet 1024x768 and 768x1024, phone 375x812. Check: no sideways scroll (`document.documentElement.scrollWidth === innerWidth`), nothing floating over the menu bar, no console errors.
 
 **Release (every time):**
-1. Bump the cache number on every css/js link in both pages: `sed -i 's/?v=397/?v=398/g' index.html archive.html`
-2. Bump `VERSION` in `sw.js` (`shedithers-v3.9.7` becomes `shedithers-v3.9.8`).
+1. Bump the cache number on every css/js link in both pages: `sed -i 's/?v=398/?v=399/g' index.html archive.html`
+2. Bump `VERSION` in `sw.js` (`shedithers-v3.9.8` becomes `shedithers-v3.9.9`).
 3. Add one line to `HANDOFF.md`.
 4. Commit (message ends with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` if an AI made it), push `main`.
 5. Wait until `https://shedithersminded-sudo.github.io/shedithers/sw.js` serves the new VERSION.
@@ -69,10 +69,14 @@ Clear `sessionStorage` to see the intro again.
 | `assets/ui/art2/` | the artist's newest art prepared for the UI: cutouts (`no-face`, `thumbprint`, `leaves`, `leaf0-2`), `brave`, `sky`, videos `dreams.mp4`, `understand.mp4` |
 | `HANDOFF.md` | version history |
 
-## 5. What is on the site now (v3.5.0 to v3.9.5)
+## 5. What is on the site now (v3.5.0 to v3.9.8)
 
 - **Intro:** only the drag intro shows (old gate hidden from the first frame). The artist's art keeps morphing in dither behind the HD logo. The logo pulses red/lime rings and shakes every few seconds until grabbed. First press: low bass buzz. Dragging: glitter sparkle sounds and a red/lime dithered trail. Throw it far enough: rising shimmer, the screen dithers shut in that direction, the archive opens, it dithers open. Arrow keys / Enter / skip also work.
 - **Music:** YouTube is gone. `archive-song.js` plays `CFG.siteSong.src` (muffled through a wall during the intro, opening up once inside). Inside, only a tiny handwritten line shows above the round red MUSIC button, which plays/pauses. **See open item 1: the file is held back.** The visitor's own music player is still there (hint bar "MUSIC").
+- **Site check (v3.9.8):** every page (home, THE EDIT, each collection, about, the viewer with a picture and a video) loads with no console errors, no broken pictures or videos, no sideways scroll at 1440 or 375 wide.
+- **The work (v3.9.8):** a short description of the artist's style sits in the NO IDENTITY block on the home page (`archive-remaster.js` section 16, `.pl-style`). Written from the art and the about page; the artist may want to edit the words.
+- **Music start (v3.9.8):** with the intro, it starts on the first press of the logo (muffled) and opens up inside. Without the intro (same visit), it starts on the first tap anywhere, at 40%. If the visitor paused it, it stays off (`localStorage shd.songOff`). Still needs the file to be published (open item 1).
+- **Collections / about (v3.9.8):** same title font and pill buttons as THE EDIT; the floating Dither Lab sticker hides under 1280px wide and the FOUND stamp gets smaller under 1100px so they stop covering panels.
 - **THE WALL (v3.9.5):** a full-width home panel under SHELOOPS (`archive-remaster.js` section 15). The newest pieces (date 2026-11-20) are pinned up as polaroids with coloured pins: drag them anywhere (transform only), tap one to open it, "mess it up" / "line them up" buttons, a "follow on youtube" link. The first id in `CFG.youtubeShorts` is pinned up as a card with its YouTube thumbnail, linking to the short.
 - **New art (v3.9.5):** 20 pictures (byte-exact copies in `assets/archive/`, titles and words taken from the art itself, e.g. THE ENCIRCLED ONE, DOPAMINE, SELF.EXE STILL INSTALLING, SAD ANGELS NEED FRIENDS TOO) and 9 videos (re-encoded to H.264, max 720 wide: WAKE UP THEY ARE TAKING ALL THE COLOR AWAY I + II, AM I BECOMING SOMEONE NEW, HOLD ON, PRESENTED BY SHEDITHERS, and four UNTITLED ones named by what's in them). Titled by the artist in v3.9.6: WURRISUM, CONLOVED, WARPED WORDS ("understanding me is understanding we."), ME, YOU, WE, FAIRY DUST HATES DUST BUNNIES, SHE, NOT ME I + II (one double card on THE WALL). Riddles for them are in RIDDLES. Duplicates were checked (mkmis.mov was already there).
 - **Top bar (v3.9.4):** the artist's logo stays; dark glass bar with a thin red/blue glow line, plain lowercase mono links with a lime underline, active page in red, the lab as a lime outlined pill.
@@ -107,7 +111,8 @@ Clear `sessionStorage` to see the intro again.
 4. **Pinterest inspiration:** the artist said they'd send Pinterest pictures for more UI ideas (inspiration only, build with their art).
 5. **Phones:** several floating buttons crowd the right edge (TV, make a mess, Z, the drink tag, Dither Lab sticker). Worth a tidy pass.
 6. **Dither Lab page (`index.html`)** still has its own opening animation; the artist hasn't asked to change it. Confirm if they meant that one when talking about "another intro".
-7. **Collections / about pages** get the new backdrop but not a full remaster yet; the artist may want them to match THE EDIT.
+7. **Collections / about pages** match the new look (titles, pills, backdrop) but their layouts (the book spread, the paper about card) are the older design; a deeper remaster is possible.
+8. **The about page line** "i don’t want ordinary. ~~it’s not~~ it was never in my nature." is crossed out on purpose. Don't "fix" it.
 
 ## 8. Don't break (the artist likes these)
 
