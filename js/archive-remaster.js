@@ -137,4 +137,36 @@ function peekDefault() {
 function homeBits() { showcase(); peekDefault(); }
 if (view) new MutationObserver(homeBits).observe(view, { childList: true, subtree: true });
 homeBits();
+
+/* ---------- 6. WANNA COLLAB: the letters break by word, never mid-word ---------- */
+function collabTitle() {
+  const t = document.querySelector('.p-collab .cl-title'); if (!t || t.dataset.rm) return; t.dataset.rm = '1';
+  const kids = [...t.childNodes]; t.textContent = ''; let w = null;
+  for (const k of kids) {
+    const sp = k.nodeType === 1 && (k.classList.contains('sp') || !k.textContent.trim());
+    if (sp) { w = null; t.append(k); continue; }
+    if (!w) { w = document.createElement('span'); w.className = 'cl-word'; t.append(w); }
+    w.append(k);
+  }
+}
+
+/* ---------- 7. music: the player stays tucked away by default, behind one clear music button ---------- */
+function musicBtn() {
+  const pl = document.getElementById('player'); if (!pl || !pl.dataset.tuck) return;
+  const tab = [...document.querySelectorAll('.tuck-tab')].find(b => /music/i.test(b.getAttribute('aria-label') || '')); if (!tab || tab.dataset.rm) return;
+  tab.dataset.rm = '1'; tab.classList.add('rm-music');
+  tab.innerHTML = '<span class="rmm-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><b>music</b>';
+  tab.setAttribute('aria-label', 'Open the music player'); tab.title = 'music';
+  // first visit: start tucked (after that, the visitor's own choice is remembered by tuck.js)
+  let first = false; try { first = !localStorage.getItem('shd.rm.music'); localStorage.setItem('shd.rm.music', '1'); } catch (_) { }
+  if (first && !pl.classList.contains('is-tucked')) { const x = pl.querySelector(':scope > .tuck-x'); if (x) x.click(); }
+  // the ♪ MUSIC shortcut in the hint bar brings the player back too
+  document.addEventListener('click', e => { const b = e.target.closest('#hint *'); if (b && /music/i.test(b.textContent) && pl.classList.contains('is-tucked')) tab.click(); }, true);
+  // the bars move while something is playing
+  const P = window.SHD_ARCHIVE && window.SHD_ARCHIVE.player, a = P && P.audio;
+  if (a) { const on = () => tab.classList.toggle('playing', !a.paused); a.addEventListener('play', on); a.addEventListener('pause', on); a.addEventListener('ended', on); on(); }
+}
+function bits2() { collabTitle(); musicBtn(); }
+if (view) new MutationObserver(bits2).observe(view, { childList: true, subtree: true });
+bits2(); setTimeout(bits2, 600); setTimeout(bits2, 2000);
 })();

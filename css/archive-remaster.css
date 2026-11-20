@@ -163,3 +163,25 @@ body.entered{font-family:var(--rm-body)}
 .portal .p-collab .cl-title{font-size:clamp(34px,3.3vw,50px)!important;letter-spacing:-.02em!important;line-height:.95!important}
 @media (max-width:520px){.portal .p-head b{font-size:clamp(20px,6.2vw,28px)!important;white-space:normal}}
 .portal .p-voices .p-head b{font-size:clamp(22px,2.1vw,30px)!important;letter-spacing:0!important}
+
+/* ===== v3.6.1 ===== */
+/* WANNA COLLAB: sized to its box, wraps between words only */
+.p-collab .cl-poster{container-type:inline-size}
+.portal .p-collab .cl-title{font-size:clamp(34px,15cqi,74px)!important;column-gap:.25em;row-gap:0}
+.p-collab .cl-title .cl-word{display:inline-flex;white-space:nowrap}
+.p-collab .cl-title .sp{display:none}
+
+/* the music button: one round red button bottom right, the player hides behind it */
+.tuck-tab.rm-music{position:fixed;right:18px;bottom:18px;left:auto;top:auto;z-index:40;width:64px;height:64px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  border:2px solid #0b0a09;border-radius:50%;background:#c3141c;color:#e9e3d1;animation:none;
+  box-shadow:0 0 0 1px rgba(255,35,56,.7),0 0 16px rgba(255,35,56,.55),0 0 36px rgba(255,35,56,.3),0 6px 16px rgba(0,0,0,.5);transition:transform .25s cubic-bezier(.3,1.6,.5,1),box-shadow .25s,background .25s}
+.tuck-tab.rm-music:hover,.tuck-tab.rm-music:focus-visible{padding:0;background:#0b0a09;transform:scale(1.08);outline:none;box-shadow:0 0 0 1.5px #ff2338,0 0 22px rgba(255,35,56,.8),0 0 50px rgba(255,35,56,.4)}
+.tuck-tab.rm-music b{display:block!important;font:600 9px 'JetBrains Mono',monospace;letter-spacing:.18em}
+.rmm-eq{display:flex;align-items:flex-end;gap:2px;height:16px}
+.rmm-eq i{width:3px;height:40%;background:#e9e3d1;border-radius:1px}
+.rmm-eq i:nth-child(2){height:75%}.rmm-eq i:nth-child(3){height:55%}.rmm-eq i:nth-child(4){height:90%}
+.rm-music.playing .rmm-eq i{animation:rmmEq .8s ease-in-out infinite alternate}
+.rm-music.playing .rmm-eq i:nth-child(2){animation-delay:-.3s}.rm-music.playing .rmm-eq i:nth-child(3){animation-delay:-.55s}.rm-music.playing .rmm-eq i:nth-child(4){animation-delay:-.15s}
+@keyframes rmmEq{from{height:20%}to{height:100%}}
+@media (max-width:760px){.tuck-tab.rm-music{width:54px;height:54px;right:12px;bottom:calc(max(12px,env(safe-area-inset-bottom)))}}
+@media (prefers-reduced-motion:reduce){.rm-music.playing .rmm-eq i{animation:none}}
