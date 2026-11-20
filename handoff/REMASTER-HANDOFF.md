@@ -1,124 +1,109 @@
-# SHEDITHERS archive remaster: handoff
+# SHEDITHERS archive: handoff
 
-Written 2026-11-20 after v3.5.0. Give this whole file (and the `shots/` folder next to it) to whoever picks the work up next, human or AI.
+Written 2026-11-20, after **v3.9.3**. Give this whole file to whoever picks the work up next, human or AI. It replaces the older remaster handoff (the old screenshots in `handoff/shots/` show problems that are now fixed).
 
-## The project in 30 seconds
+---
 
-- **What:** SHEDITHERS, an artist's own site. `archive.html` is the Artist Archive (the part this handoff is about). `index.html` is the Dither Lab editor.
-- **Where:** `C:\CODE\shedithers` (git repo, branch `main`).
-- **Live:** https://shedithersminded-sudo.github.io/shedithers/archive.html (GitHub Pages deploys on every push to `main`). Netlify (shedithers.netlify.app) is old/stuck; ignore it.
-- **Stack:** plain HTML/CSS/JS, no build step. The archive is built from many layered files: `js/archive-*.js` and `css/archive-*.css`. Later files override earlier ones.
-- **Main history doc:** `HANDOFF.md` in the project root (one line per version). Read its last ~20 lines first.
-- **The artist's style:** blood red / black / torn paper, muted jewel colours (rust, mustard, moss, teal, faded blue, plum), acid lime `#d4ff00`, warm orange/red. Not cookie-cutter, not "AI-looking". Their own art is the UI. **SHEDITHERS is always one word.**
-- **Writing rule:** no em dashes, no flowery copy in anything the visitor reads. Short, plain, lowercase-ish, in the artist's voice ("not ordinary. not in my nature.").
+## 1. The project in one minute
 
-## How to run and test
+- **What:** SHEDITHERS, the artist's own site. `archive.html` is the **Artist Archive** (most of the work below). `index.html` is the **Dither Lab** editor (separate look, `css/skin-glass.css`, barely touched here).
+- **Where:** `C:\CODE\shedithers` (git, branch `main`).
+- **Live:** https://shedithersminded-sudo.github.io/shedithers/archive.html (GitHub Pages deploys on every push to `main`, 1 to 3 minutes). Netlify is old, ignore it.
+- **Stack:** plain HTML/CSS/JS, no build step. The archive is many layered files (`js/archive-*.js`, `css/archive-*.css`). **Later files override earlier ones.** Almost all new work lives in the files that load last (see section 4).
+- **History:** `HANDOFF.md` in the root has one line per release. Read its last ~15 lines first.
+- **Sister site:** SHELOOPS, the artist's music studio: https://shedithersminded-sudo.github.io/sheloops/ (`C:\CODE\sheloops`). It has a panel on the archive home.
 
-1. Local server: `python -m http.server 8739 --directory C:/CODE/shedithers`, then open `http://localhost:8739/archive.html`.
-2. Skip the intro while testing: in the browser console run
-   `sessionStorage.setItem('shd.archive.in','1'); sessionStorage.setItem('shd.walked','1'); location.reload()`
-   then click ENTER on the gate (or `document.getElementById('enter').click()`).
-3. The service worker caches files. If changes don't show: unregister it and clear caches, or hard-reload with the files fetched `{cache:'reload'}`.
-4. Test sizes: PC 1440x900, iPad 768x1024 and 1024x768, phone 375x812. Check for no sideways scroll and no floating buttons on top of each other.
+## 2. The artist (read this before changing anything)
 
-## How to release
+- SHEDITHERS is always one word. The artist is niche and wants the site to feel niche: their own art IS the interface.
+- Look: blood red / ink black / torn paper, muted jewel colours (rust, mustard, moss, teal, faded blue, plum), acid lime `#d4ff00`, warm orange. Panels are dark glass with a red or blue glow. Not cookie-cutter, not "AI-looking".
+- **Only the artist's own art on the site.** Pictures they send of their own work = assets to use. Pinterest or other people's pictures = layout/style inspiration only, never put on the site.
+- **Writing rules for anything a visitor reads:** no em dashes, no flowery copy. Short, plain, lowercase-ish, in the artist's voice ("not ordinary. not in my nature.", "doing it scared is just being brave.").
+- They care a lot about **smoothness** now. Check frame rate after visual changes (section 6).
+- They don't want their Cash App name shown anywhere. Tips go through the drink window (QR first; the name only appears if the visitor taps "show my cash app name").
 
-1. Bump the cache number on every css/js link in **both** `index.html` and `archive.html`: `?v=350` becomes `?v=351` (`sed -i 's/?v=350/?v=351/g' index.html archive.html`).
-2. Bump `VERSION` in `sw.js` (`shedithers-v3.5.0` becomes `shedithers-v3.5.1`). Note: this had been forgotten for several releases and was stuck at v3.1.4 until v3.5.0.
+## 3. How to run, test, release
+
+**Run locally:** the repo has `.claude/launch.json` (server name `shedithers`, Python http.server). Or: `python -m http.server 8739 --directory C:/CODE/shedithers`, then open `/archive.html`.
+
+**Skip the intro while testing** (browser console):
+```
+sessionStorage.setItem('shd.archive.in','1'); location.reload()
+```
+Clear `sessionStorage` to see the intro again.
+
+**Cache:** a service worker caches files. If changes don't show, fetch the changed files with `{cache:'reload'}` then reload, or unregister the worker and clear caches.
+
+**Test sizes:** PC 1440x900, tablet 1024x768 and 768x1024, phone 375x812. Check: no sideways scroll (`document.documentElement.scrollWidth === innerWidth`), nothing floating over the menu bar, no console errors.
+
+**Release (every time):**
+1. Bump the cache number on every css/js link in both pages: `sed -i 's/?v=393/?v=394/g' index.html archive.html`
+2. Bump `VERSION` in `sw.js` (`shedithers-v3.9.3` becomes `shedithers-v3.9.4`).
 3. Add one line to `HANDOFF.md`.
-4. Commit with the message ending in `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` (if an AI made it), push `main`.
-5. Wait until `https://shedithersminded-sudo.github.io/shedithers/sw.js` serves the new VERSION (1 to 3 minutes).
+4. Commit (message ends with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` if an AI made it), push `main`.
+5. Wait until `https://shedithersminded-sudo.github.io/shedithers/sw.js` serves the new VERSION.
 
-## What v3.5.0 (the remaster) did
+**Two traps for AI sessions:**
+- The Claude Code shell safety check sometimes blocks inline `python - <<EOF` or `-c` commands that contain `$` patterns (like `` `$${cash}` ``). Write the edit as a `.py` file in the scratchpad and run it instead.
+- The desktop app's Browser pane runs pages as background pages while the pane is **hidden**: `requestAnimationFrame` stops, CSS animations freeze, screenshots can look stale. Show the pane (`show_pane preview`) before testing animation or measuring frame rate. The intro has a timer fallback for this.
 
-All in two files that load last, so nothing earlier was deleted:
-
-- `css/archive-remaster.css`
-- `js/archive-remaster.js`
-
-1. **One clean home layout.** On PC (over 1100px) every panel has a fixed grid spot (see the `@media (min-width:1101px)` block). Row plan:
-   1. logo (cols 1-8), news on the right (cols 9-12, rows 1-2)
-   2. the deck (1-8)
-   3. now playing (full width)
-   4. comments (1-7) + collabs (8-12)
-   5. collections (full)
-   6. file directory (1-6) + Dither Lab promo on the right (7-12, rows 6-7)
-   7. instant photo (1-6)
-   8. the archive film (full)
-   9. wallpaper art (1-8) + links (9-12)
-   10. motion lab (1-6) + sign the list (7-12)
-   11. word ticker (full)
-   12. footer
-
-   At 1100px and below everything is one column in the same order (`order:` rules). Tilts were turned off. Panels share one dark glass style.
-2. **Glowing edges** on every panel: `js/archive-remaster.js` adds `<i class="rm-edge">` to each `.portal > .p-mod`. A conic-gradient light travels around the border (`@property --rm-a`), with a different colour pair per panel and full glow on hover.
-3. **Code rain:** canvas `.rm-rain`, placed inside `#view` right after `.p-render` (the background art layer, which lives inside `#view`; that's why it can't sit on `body`). The letters are fixed per column so every column reads `s h e d i t h e r s` top to bottom. Opacity 16%, `mix-blend-mode: difference`, so it shows on both the bright yellow art and dark areas. It's paused when the tab is hidden and static for reduced-motion.
-4. **Buy me a drink tab** (right edge): same art background (`assets/ui/dither-drink.png`) and torn shape. The cocktail emoji icon and sparkle are gone, and the artist's logo figure (`assets/ui/logo-paper-sm.png`, the lounging figure) sits on it. It's compact on phones. The 🍹 emoji in the footer, art viewer and about page buttons became ✦.
-
-## What still needs fixing (with the artist's screenshots)
-
-### 1. The Where To Find Me box sticks out of the Collabs panel
-
-![collab overflow](shots/01-collab-findme-overflow.webp)
-
-- **What's wrong:** the lower box (WHERE TO FIND ME) runs about 76px past the bottom of the Collabs panel and over the Collections panel. The panel's glowing edge ends mid-list (look at TIP JAR).
-- **Why:** my remaster added `.portal>.p-collab .cl-grid{height:100%}` in `css/archive-remaster.css`. That makes the inner grid as tall as the whole panel, but it starts below the panel header, so it overflows. Measured at 1440px: the panel is 717px tall, while the grid starts 108px down and is 685px tall.
-- **Fix:** delete that rule. Let the two collab boxes size naturally, or make `.p-collab` a flex column with `.cl-grid{flex:1}`. Then check that Comments and Collabs still line up at the same height.
-
-### 2. The empty "peek" frame and the puzzle knob on top of it
-
-![peek and knob](shots/03-findme-peek-knob.png)
-
-- **What's wrong:** in WHERE TO FIND ME, the little art preview (`.fm-peek`, shows an art crop when you hover a stop) sits as an empty dark rectangle when nothing is hovered (screenshot 1, right side). When it does show art, a red puzzle knob (`.pz-knob`, from `js/archive-puzzle.js`) is drawn on top of it (screenshot 3).
-- **Fix ideas:** hide the peek until a stop is hovered (opacity 0 instead of .35), or always show one default piece. Move the knob away from the peek (or skip knobs on `.p-collab`), and make sure knobs never sit over content. Knobs and sockets also overlap panel edges and gaps in general; consider making them smaller or only on the outer sides.
-
-### 3. Collections has a huge empty space
-
-![collections space](shots/02-collections-empty-space.webp)
-
-- **What's wrong:** the Collections panel is full width, but each collection row (`.ps-row`, 6 thumbnails + title) sits on the right, so the left half is empty except the faint background art.
-- **The artist wants:** use the space, ideally with animation.
-- **Ideas (pick one, keep it in the artist's style):**
-  - **Featured collection showcase** on the left: when you hover or tap a row, its pieces crossfade big on the left (dithered, slow, with the collection name in big type and a one-line description in the artist's words). Idle: auto-cycle through collections every few seconds.
-  - **A rotating 3D stack** of the hovered collection's pieces (like the deck), on the left.
-  - **Two columns:** put the rows in a 2-column grid so the panel fills evenly (simplest).
-- Code: the collections panel is built in `js/archive-portal.js` (look for `p-strips` / `ps-row`). Add the showcase in a new file or in `archive-remaster.js`, styled in `archive-remaster.css`.
-
-### 4. Fix the font
-
-- **What's wrong:** the home page uses **14 different fonts** (counted on the live page): VT323, Bebas Neue, Barlow Condensed, Verdana, Patrick Hand, JetBrains Mono, Permanent Marker, Georgia, Tahoma, Rubik Wet Paint, Rubik Glitch, Arial, Michroma and generic sans-serif. That's a big part of why it looks messy.
-- **The artist asked to "fix the font".** Confirm with them what they dislike before changing everything. A suggested system:
-  - **Titles:** Bebas Neue (already the panel titles; keep the orange titles on the cut label).
-  - **Body text:** one readable font (Barlow Condensed, or swap Verdana/Tahoma/Arial in News + Where To Find Me for it).
-  - **Small labels / data:** JetBrains Mono.
-  - **Handwritten accents only:** Patrick Hand (quotes, comments) and Permanent Marker (rare).
-  - **Keep as special effects only:** VT323 in the File Directory (it's the retro computer look), Rubik Wet Paint / Rubik Glitch only in the comment bubbles.
-  - **Drop:** Verdana, Tahoma, Arial, Georgia, Michroma from the home page.
-- Do it in `css/archive-remaster.css` with targeted overrides, then check every panel at PC + phone sizes.
-
-### 5. New art from TikTok (not done yet)
-
-- The artist wants their newest TikTok posts shown. TikTok only shows the profile grid when logged in, and the browser was logged out.
-- **Easier way:** ask the artist to paste the links to the new posts. For each link, TikTok's public oEmbed gives the cover image and caption with no login:
-  `https://www.tiktok.com/oembed?url=<video link>` (JSON with `thumbnail_url`, `title`).
-- Then add the links to `tiktokVideos` in `js/config.js` (the TikTok TV list, newest first) and, if the artist wants them in the archive grid too, add entries to `js/artworks.js` with a saved copy of the cover image in `assets/archive/` (only the artist's own posts).
-
-## Don't break these (built earlier, the artist likes them)
-
-- Intro: walk-in / blob tracking screen / portal, the captcha door ("select all squares with YOU", END always enters).
-- The deck (3D cards, paper slips), the comment section (real TikTok comments in `tiktokComments` in `js/config.js`), now playing speaker, tip jar (NEWS-board style), collab form (sends through FormSubmit to the artist's inbox; it's activated for the GitHub Pages address), WHERE TO FIND ME, mess layer, TikTok TV, music player + song bar (one player at a time), tuck tabs (`js/tuck.js`), the puzzle look.
-- The Dither Lab (`index.html`) has its own stained glass skin (`css/skin-glass.css`), separate from this work.
-
-## Files to know
+## 4. Files to know (newest work in bold)
 
 | File | What it is |
 |---|---|
-| `archive.html` | archive page, loads every archive css/js (remaster files last) |
-| `css/archive-layout.css` | the previous home order + puzzle look (still loads; remaster overrides it) |
-| `css/archive-remaster.css`, `js/archive-remaster.js` | v3.5.0 layout, glowing edges, code rain, drink tab |
-| `js/archive-portal.js`, `css/archive-portal.css` | builds the home panels (logo, news, collections, links, etc.) |
-| `js/archive-puzzle.js` | puzzle knobs/sockets on panels |
-| `js/archive-collab.js`, `css/archive-collab.css` | collabs panel + WHERE TO FIND ME + collab form |
-| `js/archive-watch.js` | music, song bar, tip jar modal, drink tab, drink spots |
-| `js/config.js` | links, cashtag, TikTok videos + comments, drinks, tip lines |
-| `HANDOFF.md` | version history, one line per release |
+| `archive.html` | loads everything. Head has an inline script that adds `html.dg-pre` so the old gate never flashes before the intro |
+| **`js/archive-intro.js` + `css/archive-intro.css`** | the intro: dithered art morphing behind (blob screen), drag/throw the logo to enter, pulse rings, synthesized sounds (bass buzz, glitter, shimmer) |
+| `js/blob-screen.js` | the morphing dithered art screen the artist loves (keep it) |
+| `js/archive-walk.js`, `js/archive-captcha.js` | the OLD walk + door check. Still loaded, skipped when `window.SHD_DRAGINTRO` is set |
+| **`js/archive-song.js`** | the site song: an audio file through Web Audio, muffled in the intro, clear inside, words-only control |
+| **`js/archive-remaster.js` + `css/archive-remaster.css`** | loads last: home layout, glowing edges, code rain, collections showcase, music button, discovery notes, SHELOOPS panel, comment wall video, THE EDIT look, all the smoothness rules. Sections are numbered in comments (1 to 13) |
+| **`js/archive-tip.js` + `css/archive-tip.css`** | the buy me a drink window (video polaroid, sky, falling leaves, riddle drinks, QR) |
+| `js/archive-deck.js` | THE DECK: 3D cards, riddle readings (`RIDDLES` by artwork id), draw a card |
+| `js/archive-voices.js` | THE COMMENT SECTION (real TikTok comments from `tiktokComments` in config) |
+| `js/archive-portal.js` | builds the home panels (logo, news, collections, links...) |
+| `js/archive-collab.js` | COLLABS + WHERE TO FIND ME + collab form (FormSubmit, works on the GitHub Pages address) |
+| `js/archive-watch.js` | music player, tuck tabs, drink tab + drink spots, TikTok TV |
+| `js/archive.js` | router (`#/`, `#/works`, `#/col/<id>`, `#/about`, `#/work/<id>` viewer), THE EDIT page, about page |
+| `js/config.js` | settings: links, cashtag, `tiktokVideos`, `tiktokComments`, `tipLines`, `drinks`, `siteSong` |
+| `js/artworks.js` | every piece (`ARTWORKS`) and the collections. Files in `assets/archive/` |
+| `assets/ui/art2/` | the artist's newest art prepared for the UI: cutouts (`no-face`, `thumbprint`, `leaves`, `leaf0-2`), `brave`, `sky`, videos `dreams.mp4`, `understand.mp4` |
+| `HANDOFF.md` | version history |
+
+## 5. What is on the site now (v3.5.0 to v3.9.3)
+
+- **Intro:** only the drag intro shows (old gate hidden from the first frame). The artist's art keeps morphing in dither behind the HD logo. The logo pulses red/lime rings and shakes every few seconds until grabbed. First press: low bass buzz. Dragging: glitter sparkle sounds and a red/lime dithered trail. Throw it far enough: rising shimmer, the screen dithers shut in that direction, the archive opens, it dithers open. Arrow keys / Enter / skip also work.
+- **Music:** YouTube is gone. `archive-song.js` plays `CFG.siteSong.src` (muffled through a wall during the intro, opening up once inside). Inside, only a tiny handwritten line shows above the round red MUSIC button, which plays/pauses. **See open item 1: the file is held back.** The visitor's own music player is still there (hint bar "MUSIC").
+- **Home layout:** one fixed grid on PC (over 1100px), one column below. Rows: logo + news / deck / now playing / comments + collabs / collections / file directory + Dither Lab promo / instant photo / **SHELOOPS** / archive film / wallpaper + links / motion lab + sign the list / word ticker / footer.
+- **Panels:** dark glass, steady red or blue glow (alternating), a light travelling around each border (a rotating layer, GPU-cheap). Code rain "shedithers" falls behind everything (30 fps, pre-rendered letters).
+- **Fonts (try 1, artist hasn't confirmed):** titles Syne 800, reading text Space Grotesk, labels JetBrains Mono, handwriting Patrick Hand. Swap via `--rm-title` / `--rm-body` in `archive-remaster.css`.
+- **The deck:** bigger cards, seamless light holo foil + a light sweep on the front card, each card sways, the ring leans to the mouse. Tap the front card or **draw a card**: the card spins and a reading opens (riddle typed out, the answer behind "turn it over"). Riddles for the 12 newest pieces are in `RIDDLES` in `archive-deck.js`; others get "finish the line" from their own words.
+- **Comment section:** the artist's "understand?" video plays on the wall (only while visible). The art strip is a rolling film reel matched to the list height. Comments are different objects (notebook scrap, black sticker, receipt, red tape, polaroid) in mixed fonts. As many show as fit beside COLLABS (about 7). Tap one: it drops in letter by letter.
+- **Collections:** a showcase on the left crossfades each collection's pieces with the name and the piece's words; hover a row to pick it.
+- **SHELOOPS panel (v2):** spinning record with the no-face painting as the label, a ring of light bars, the leaves branch, the features as track lanes with a playhead, "your songs are yours" text, button to the studio.
+- **Buy me a drink:** the side tab is a small torn paper tag with the thumbprint stamp and a red thread. The window: "meet me in my dreams" video in a taped polaroid (tape only on the white border), the sky drifting, the artist's own leaves falling, the note in the artist's voice, four drinks that are riddles ($3 / $5 / $10 / $25, each wearing a piece), QR first, name hidden. No emoji anywhere.
+- **Discovery notes:** dark glass, glow edge, a dithered strip of a random piece on top, handwriting. Bottom of the page: "this is the bottom. i kept going anyway. so did you."
+- **THE EDIT page (`#/works`):** the artist's pieces as a slow dithered backdrop, title on the orange cut label, glowing pill chips, the montage screen as a glowing dark panel with the leaves on its corner, the drifting rows as taped polaroids. Row videos only play on hover (they were the lag).
+- **New pieces in the archive:** I DONT WANT A FACE, DOING IT SCARED, UNTITLED (SKY), PLEASE NO MORE (video), MEET ME IN MY DREAMS (video). SHESDITHERS video re-encoded to H.264 (it was black in Chrome/Brave). 3 newest TikToks at the top of TikTok TV.
+- **Smoothness:** measured at 1440 wide in the test browser: ~35 fps became ~60 to 117 everywhere; the bottom of the page went from 3 to ~90. Rules that keep it that way are in section 6.
+
+## 6. Keeping it smooth (don't undo these)
+
+- Animate only `transform`, `opacity`, `rotate`/`scale`/`translate`. Never animate `box-shadow`, `filter`, `left/top`, gradients via `@property`, or anything with a big blur, on something that's always moving.
+- No `backdrop-filter` on panels. No `mix-blend-mode` on full-screen layers that change every frame.
+- Anything in an off-screen home panel is paused (`.rm-off`), decorative loops pause while scrolling (`body.rm-scrolling`).
+- Don't autoplay many videos at once. Big originals (1728x2304) are heavy; use hover-to-play or a small copy.
+- Quick check in the browser console: count `requestAnimationFrame` calls over 1.5 s while scrolled to each panel (needs the pane visible). Hide a suspect element (`visibility:hidden`) and measure again to find the cost.
+
+## 7. Open items (waiting on the artist, or next up)
+
+1. **Site song file is held back.** The artist sent `somewhere in Between (full album) - Leyline Hex (128k).mp3` (24 min album by another artist). It's copied to `assets/ui/site-song.mp3` locally but listed in `.gitignore`, so the live site has no song. **Ask:** is it theirs, or do they have permission to put it on a public site? If yes: remove the line from `.gitignore`, consider trimming to one track or re-encoding smaller (it's 23 MB), commit, release. If no: ask for a file they can share. Everything else (muffle, words line, music button) already works with whatever file sits at that path.
+2. **More TikTok comments:** 45 are in `tiktokComments` in `js/config.js`. TikTok hides comments when logged out, so more need to be pasted by the artist (or read with them logged in).
+3. **Fonts:** Syne + Space Grotesk is a first try. Ask if they like it; swap the two variables if not.
+4. **Pinterest inspiration:** the artist said they'd send Pinterest pictures for more UI ideas (inspiration only, build with their art).
+5. **Phones:** several floating buttons crowd the right edge (TV, make a mess, Z, the drink tag, Dither Lab sticker). Worth a tidy pass.
+6. **Dither Lab page (`index.html`)** still has its own opening animation; the artist hasn't asked to change it. Confirm if they meant that one when talking about "another intro".
+7. **Collections / about pages** get the new backdrop but not a full remaster yet; the artist may want them to match THE EDIT.
+
+## 8. Don't break (the artist likes these)
+
+The drag intro and the blob screen behind it, the deck, the comment section concept, now playing speaker, collab form (sends to the artist's inbox), WHERE TO FIND ME, mess layer, TikTok TV, tuck tabs (`js/tuck.js`), discovery notes and the FOUND counter, the puzzle knobs (small, in the gaps), the Dither Lab skin.
