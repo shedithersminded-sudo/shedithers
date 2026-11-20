@@ -15,6 +15,8 @@ const SHD_CONFIG = {
   pinterest: '',
   // Your YouTube handle (without @)
   youtube: 'shedithersminded',
+  // YouTube shorts to pin on THE WALL (video ids), newest first
+  youtubeShorts: ['FYv69bgtwtc'],
   // evo on SoundCloud (his songs play on the site), the part after soundcloud.com/
   soundcloud: 'evosrevenge',
   // A song to point people to (full SoundCloud link). Empty = hidden.

@@ -302,4 +302,74 @@ function dressPop() {
 }
 if (view) new MutationObserver(dressPop).observe(view, { childList: true, subtree: true });
 dressPop();
+
+/* ---------- 15. THE WALL: the newest pieces pinned up loose. drag them anywhere, tap to look closer,
+   "mess it up" throws them around, "line them up" puts them in rows. A YouTube short is pinned up too ---------- */
+function wallPanel() {
+  const P = document.querySelector('.portal'); if (!P || P.querySelector('.p-wallpin') || typeof ARTWORKS === 'undefined') return;
+  const after = P.querySelector('.p-loops') || P.querySelector('.p-lab'); if (!after) return;
+  const CFG = typeof SHD_CONFIG !== 'undefined' ? SHD_CONFIG : {};
+  const pieces = ARTWORKS.filter(a => a.type !== 'video' && a.date >= '2026-11-20').slice(-14);
+  const yt = (CFG.youtubeShorts || [])[0], ytUser = String(CFG.youtube || '').replace(/^@/, '');
+  const sec = document.createElement('section'); sec.className = 'p-mod p-wallpin';
+  sec.innerHTML = `<div class="p-head"><small>ウォール</small><b>THE WALL</b><span>NEW PIECES, PINNED UP LOOSE · DRAG THEM AROUND · TAP ONE TO LOOK CLOSER</span></div>
+    <div class="wp-board" role="group" aria-label="The wall: new pieces you can move around"></div>
+    <div class="wp-ctrl"><button type="button" class="wp-btn" data-k="mess">✦ mess it up</button><button type="button" class="wp-btn" data-k="rows">line them up</button>
+    ${ytUser ? `<a class="wp-btn red" href="https://www.youtube.com/@${ytUser}" target="_blank" rel="noopener">follow on youtube ▸</a>` : ''}</div>`;
+  after.after(sec); edges();
+  const board = sec.querySelector('.wp-board'), abs = u => new URL(u, location.href).href;
+  const cards = pieces.map((a, i) => {
+    const c = document.createElement('button'); c.type = 'button'; c.className = 'wp-card'; c.dataset.id = a.id;
+    c.setAttribute('aria-label', `${a.title}. Drag to move, tap to look closer`);
+    c.innerHTML = `<i class="wp-pin" aria-hidden="true"></i><span class="wp-img" style="background-image:url('${abs(a.src)}')"></span><span class="wp-cap">${a.title.toLowerCase()}</span>`;
+    board.append(c); return c;
+  });
+  if (yt) {
+    const c = document.createElement('a'); c.className = 'wp-card wp-yt'; c.href = `https://youtube.com/shorts/${yt}`; c.target = '_blank'; c.rel = 'noopener';
+    c.setAttribute('aria-label', 'Watch on YouTube');
+    c.innerHTML = `<i class="wp-pin" aria-hidden="true"></i><span class="wp-img" style="background-image:url('https://i.ytimg.com/vi/${yt}/hqdefault.jpg')"><b class="wp-play" aria-hidden="true">▶</b></span><span class="wp-cap">watch on youtube ▸</span>`;
+    board.append(c); cards.push(c);
+  }
+  let z = 10;
+  const place = mode => {
+    const W = board.clientWidth, H = board.clientHeight, cw = cards[0] ? cards[0].offsetWidth : 140, ch = cards[0] ? cards[0].offsetHeight : 170;
+    const cols = Math.max(2, Math.floor(W / (cw + 18)));
+    cards.forEach((c, i) => {
+      let x, y, r;
+      if (mode === 'rows') { const col = i % cols, row = (i / cols) | 0, gap = (W - cols * cw) / (cols + 1); x = gap + col * (cw + gap); y = 14 + row * (ch * .62); r = (i % 2 ? 1.5 : -1.5); }
+      else { x = Math.random() * Math.max(10, W - cw); y = Math.random() * Math.max(10, H - ch); r = Math.random() * 24 - 12; }
+      c.style.transform = `translate(${x | 0}px,${y | 0}px) rotate(${r.toFixed(1)}deg)`; c.dataset.x = x; c.dataset.y = y; c.dataset.r = r;
+    });
+  };
+  // dragging: pointer moves the card with transform only (cheap); a short tap opens the piece
+  let drag = null;
+  board.addEventListener('pointerdown', e => {
+    const c = e.target.closest('.wp-card'); if (!c) return;
+    drag = { c, sx: e.clientX, sy: e.clientY, x: +c.dataset.x || 0, y: +c.dataset.y || 0, moved: false };
+    c.style.zIndex = ++z; c.classList.add('lift'); c.setPointerCapture(e.pointerId);
+  });
+  board.addEventListener('pointermove', e => {
+    if (!drag) return; const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy; if (Math.abs(dx) + Math.abs(dy) > 5) drag.moved = true; if (!drag.moved) return;
+    const W = board.clientWidth, H = board.clientHeight, c = drag.c;
+    const x = Math.max(-20, Math.min(W - c.offsetWidth + 20, drag.x + dx)), y = Math.max(-10, Math.min(H - c.offsetHeight + 10, drag.y + dy));
+    c.dataset.x = x; c.dataset.y = y; c.style.transform = `translate(${x | 0}px,${y | 0}px) rotate(${(dx * .04).toFixed(1)}deg) scale(1.06)`;
+  });
+  const end = e => {
+    if (!drag) return; const { c, moved } = drag; drag = null; c.classList.remove('lift');
+    c.style.transform = `translate(${+c.dataset.x | 0}px,${+c.dataset.y | 0}px) rotate(${(+c.dataset.r || 0).toFixed(1)}deg)`;
+    if (moved) { c.dataset.dragged = '1'; setTimeout(() => delete c.dataset.dragged, 50); }
+  };
+  board.addEventListener('pointerup', end); board.addEventListener('pointercancel', end);
+  board.addEventListener('click', e => {
+    const c = e.target.closest('.wp-card'); if (!c) return;
+    if (c.dataset.dragged) { e.preventDefault(); return; }
+    if (c.dataset.id) location.hash = `#/work/${c.dataset.id}`;
+  });
+  sec.querySelector('[data-k=mess]').onclick = () => place('mess');
+  sec.querySelector('[data-k=rows]').onclick = () => place('rows');
+  requestAnimationFrame(() => place('mess'));
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => sec.isConnected && place('mess'), 300); });
+}
+if (view) new MutationObserver(wallPanel).observe(view, { childList: true, subtree: true });
+wallPanel();
 })();

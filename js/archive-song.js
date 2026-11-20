@@ -9,7 +9,7 @@ const S = CFG.siteSong || {}; const src = String(S.src || '').trim(); if (!src) 
 const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const MUFFLE = 320, OPEN = 20000;
-let VOL = .35; try { const v = parseFloat(localStorage.getItem('shd.songVol')); if (v >= 0 && v <= 1) VOL = v; } catch (_) { } // starts quiet so nobody jumps
+let VOL = .4; try { const v = parseFloat(localStorage.getItem('shd.songVol')); if (v >= 0 && v <= 1) VOL = v; } catch (_) { } // starts a little below medium so nobody jumps
 let ctx = null, au = null, lp = null, gain = null, ok = null, playing = false;
 const inside = () => document.body.classList.contains('entered');
 function esc(t) { return String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }

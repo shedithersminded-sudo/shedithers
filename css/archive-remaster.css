@@ -600,3 +600,36 @@ body.night .bar{background:linear-gradient(180deg,rgba(14,16,40,.94),rgba(14,16,
 .pp-pix img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 1px 0 rgba(0,0,0,.25))}
 .pp-pix{width:56%!important;height:56%!important}
 @media (max-width:760px){.pp-vol{min-width:0;width:100%}.pv-slide input{width:120px}}
+
+/* ===== v3.9.5: THE WALL ===== */
+.wp-board{position:relative;height:clamp(420px,46vw,620px);margin-top:8px;border-radius:10px;overflow:hidden;touch-action:none;
+  background:radial-gradient(rgba(11,10,9,.55) 30%,transparent 32%) 0 0/4px 4px,linear-gradient(160deg,#2a1d16,#120d0b 60%,#1a0f0e);box-shadow:inset 0 0 0 1px rgba(233,227,209,.1),inset 0 0 60px rgba(0,0,0,.6)}
+.wp-board::before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 120px,rgba(233,227,209,.04) 120px 121px),repeating-linear-gradient(0deg,transparent 0 120px,rgba(233,227,209,.04) 120px 121px)}
+.wp-card{position:absolute;left:0;top:0;width:clamp(110px,12vw,160px);padding:7px 7px 30px;border:0;background:#fbfaf6;color:#1d1b16;cursor:grab;text-decoration:none;
+  box-shadow:0 10px 20px rgba(0,0,0,.55);transition:transform .45s cubic-bezier(.2,1.2,.4,1),box-shadow .2s;will-change:transform;user-select:none;-webkit-user-select:none}
+.wp-card.lift{cursor:grabbing;transition:box-shadow .2s;box-shadow:0 24px 40px rgba(0,0,0,.6),0 0 0 2px #d4ff00}
+.wp-card:hover{box-shadow:0 14px 26px rgba(0,0,0,.6),0 0 0 2px #d4ff00}
+.wp-card:focus-visible{outline:2px solid #d4ff00;outline-offset:2px}
+.wp-img{display:block;aspect-ratio:4/5;background:center/cover no-repeat #111;pointer-events:none}
+.wp-cap{position:absolute;left:7px;right:7px;bottom:6px;font:400 14px/1.1 'Patrick Hand',cursive;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.wp-pin{position:absolute;left:50%;top:-6px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff7a7f,#c3141c 60%,#5a0a0e);box-shadow:0 3px 4px rgba(0,0,0,.5);z-index:2;pointer-events:none}
+.wp-card:nth-child(3n) .wp-pin{background:radial-gradient(circle at 35% 35%,#f0ff80,#a8c400 60%,#4a5600)}
+.wp-card:nth-child(4n+1) .wp-pin{background:radial-gradient(circle at 35% 35%,#9cc2ff,#2f7dff 60%,#0d2a66)}
+.wp-yt .wp-img{aspect-ratio:9/12;position:relative}
+.wp-play{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px;border-radius:50%;display:grid;place-items:center;background:#c3141c;color:#fff;font-size:18px;box-shadow:0 0 0 2px #fff,0 0 18px rgba(255,35,56,.6)}
+.wp-yt .wp-cap{color:#c3141c;font-weight:400}
+.wp-ctrl{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center}
+.wp-btn{padding:9px 14px;border:0;border-radius:999px;background:rgba(11,10,9,.85);color:#e9e3d1;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;box-shadow:0 0 0 1px rgba(233,227,209,.35);cursor:pointer}
+.wp-btn:hover{color:#d4ff00;box-shadow:0 0 0 1px #d4ff00,0 0 12px rgba(212,255,0,.3)}
+.wp-btn.red{background:#c3141c;color:#fff}
+@media (min-width:1101px){
+  .portal>.p-wallpin{grid-column:1/13!important;grid-row:9!important}
+  .portal>.p-traffic{grid-row:10!important}
+  .portal>.p-wall,.portal>.p-links{grid-row:11!important}
+  .portal>.p-flash,.portal>.p-mail{grid-row:12!important}
+  .portal>.p-speed{grid-row:13!important}
+  .portal>.p-foot{grid-row:14!important}
+}
+@media (max-width:1100px){.portal>.p-wallpin{grid-column:1/-1!important;grid-row:auto!important;order:9!important}}
+@media (max-width:760px){.wp-board{height:520px}.wp-card{width:110px}}
+@media (prefers-reduced-motion:reduce){.wp-card{transition:none}}
