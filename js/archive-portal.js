@@ -51,7 +51,7 @@ window.SHD_PORTAL = function (view, X) {
     ['11/03/26', 'TV', tt ? ['catch the tiktok TV on the wall or go straight to ', L(`https://www.tiktok.com/@${tt}`, '@' + tt, 1), '.'] : ['tune in soon.']],
     ['11/01/26', 'LAB', ['want to make your own glitch? the ', L('index.html', 'DITHER LAB'), ' is free.']],
     ['10/30/26', 'SECRETS', ['some things in here are hidden. type the name. hold the file label. look for the coffee ring.']],
-    ...(cash ? [['10/09/26', 'TIP JAR', ['buy the artist a slushy → ', L(`https://cash.app/$${cash}`, '$' + cash, 1)]]] : []),
+    ...(cash ? [['10/09/26', 'TIP JAR', ['if something here stayed with u, ', h('a', { href: '#/', onclick: e => { e.preventDefault(); window.SHD_DRINK && window.SHD_DRINK(); } }, 'buy me a drink ▸')]]] : []),
   ];
   P.append(h('section', { class: 'p-mod p-news' }, kana('ニュース', 'NEWS'),
     h('div', { class: 'pn-box' }, news.map(([d, tag, body]) => h('div', { class: 'pn-item' }, h('div', { class: 'pn-meta' }, h('span', null, d), h('b', null, tag)), h('p', null, ...body))))));

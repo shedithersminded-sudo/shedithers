@@ -13,25 +13,29 @@ const PICK = ARTWORKS.filter(a => a.type !== 'video' && a.w && a.h).sort((x, y) 
 const N = PICK.length; if (N < 3) return;
 const STEP = 360 / N;
 const INKS = ['red', 'black', 'paper', 'teal', 'mustard', 'plum'];
-// small riddles for the "reading:" line on each slip
-const READINGS = [
-  'what you keep checking was never locked.',
-  'the thing you lost is wearing a different coat.',
-  'someone is still holding the other end.',
-  'you already know which one. you just want it said out loud.',
-  'what grows in the dark still reaches for something.',
-  'count what stayed, not what left.',
-  'you are the echo and the wall.',
-  'the answer sleeps in the last thing you said no to.',
-  'what gets heavier the longer you hold it? put it down and see.',
-  'i have no mouth but i keep you up at night. what am i?',
-  'the more you feed it, the less it eats. find the hunger.',
-  'what breaks when you say its name? say it anyway.',
-  'a door, a mirror, a wire. one of them is you today.',
-  'what is always behind you and never catches up?',
-];
+// readings: a riddle made from each piece, and its answer. pieces without one get a "finish the line" from their own words
+const RIDDLES = {
+  'i-dont-want-a-face': ['everyone looks at me first and still can\u2019t tell you who i am. what am i?', 'a face. you don\u2019t need one to be seen.'],
+  'doing-it-scared': ['your hands shake and you do it anyway. what is that called?', 'brave. it was always just scared, still moving.'],
+  'sky-lights': ['i burn every evening and nobody calls for help. what am i?', 'the sky. the lights below are just copying it.'],
+  'nothing-hates-you': ['you swear it\u2019s watching you. it isn\u2019t even looking. what is it?', 'the thing you\u2019re scared of. nothing hates you.'],
+  'when-you-rain': ['i don\u2019t drizzle. once i start i don\u2019t stop. what am i?', 'you, when you finally feel it. when you rain you pour.'],
+  'im-sorry-again': ['the more you say me, the less i mean. what am i?', 'sorry. say it once and mean it.'],
+  'i-stand-alone': ['there\u2019s only one of me in the room and i\u2019m not missing anyone. what am i?', 'alone. not lonely.'],
+  'gold': ['i don\u2019t rust and i don\u2019t fade, and i was in the dirt the whole time. what am i?', 'gold. you, before anyone noticed.'],
+  'the-end': ['i look like the last page but i\u2019m wearing a question mark. what am i?', 'the end? not yet.'],
+  'dream-without-action': ['you see it every night with your eyes closed and never touch it. what is it?', 'a dream with no action. that\u2019s just hallucination.'],
+  'not-lonely': ['i\u2019m by myself and i\u2019m fine. why does that scare you?', 'because you thought alone meant lonely.'],
+  's-gems': ['i\u2019m one letter, covered in shine. what do i start?', 'shedithers.'],
+};
+function riddleFor(a) {
+  if (RIDDLES[a.id]) return RIDDLES[a.id];
+  const w = String(a.words || '').split(' \u00b7 ')[0].trim();
+  const parts = w.split(/\s+/);
+  if (parts.length >= 4) { const k = Math.ceil(parts.length / 2); return [`finish the line: \u201c${parts.slice(0, k).join(' ')} \u2026\u201d`, w.toLowerCase()]; }
+  return ['no words on this one. what is it saying anyway?', 'whatever you heard. that\u2019s your reading.'];
+}
 // every line of words in the art, for the paper slips
-const LINES = ARTWORKS.filter(a => a.words && a.words.trim()).map(a => ({ text: a.words.trim(), a }));
 
 function build() {
   let angle = 0, vel = 0, drag = null, flipped = null, auto = !reduce, visible = false, raf = 0, last = 0;
@@ -72,23 +76,24 @@ function build() {
     card.addEventListener('pointerleave', () => { card.style.setProperty('--tx', '0deg'); card.style.setProperty('--ty', '0deg'); });
     ring.append(card); return card;
   });
-  // tap the front card and a paper slip comes out of it with a line from the art. not a cookie, still a card.
-  let slip = null, lastLine = '';
+  // tap the front card: it spins once, and a reading comes up. a riddle made from the piece, the answer hidden.
+  let slip = null;
   function pull(card, a) {
-    let pick = String(a.words || '').trim();
-    if (!pick || pick === lastLine || Math.random() < .5) {
-      const others = LINES.filter(l => l.text !== lastLine); const o = others[Math.floor(Math.random() * others.length)];
-      if (o) { pick = o.text; a = o.a; }
-    }
-    lastLine = pick;
     if (slip) { const old = slip; old.classList.add('gone'); setTimeout(() => old.remove(), 350); }
-    const close = h('button', { type: 'button', class: 'd3-slip-x', 'aria-label': 'Put the paper away', onclick: e => { e.stopPropagation(); away(); } }, '✕');
-    slip = h('div', { class: 'd3-slip', role: 'status', style: `--rot:${(Math.random() * 6 - 3).toFixed(1)}deg` },
-      close, h('small', null, 'you pulled'), h('p', null, pick),
-      h('p', { class: 'd3-slip-read' }, h('b', null, 'reading: '), READINGS[Math.floor(Math.random() * READINGS.length)]),
-      h('a', { href: `#/work/${a.id}`, class: 'd3-slip-from' }, `from “${a.title.toLowerCase()}” ▸`));
-    stage.append(slip); card.classList.remove('tug'); void card.offsetWidth; card.classList.add('tug');
-    window.shdCount && window.shdCount('deck-slip', 'Pulled a paper from the deck');
+    const [q, ans] = riddleFor(a), n = PICK.indexOf(a) + 1;
+    card.classList.remove('spin'); void card.offsetWidth; card.classList.add('spin');
+    setTimeout(() => card.classList.remove('spin'), 1000);
+    const close = h('button', { type: 'button', class: 'd3-slip-x', 'aria-label': 'Close the reading', onclick: e => { e.stopPropagation(); away(); } }, '\u2715');
+    const answer = h('p', { class: 'd3-ans', hidden: true }, ans);
+    const reveal = h('button', { type: 'button', class: 'd3-reveal', onclick: e => { e.stopPropagation(); answer.hidden = false; reveal.remove(); } }, 'turn it over \u25b8');
+    slip = h('div', { class: 'd3-read', role: 'status', style: `--ra:url('${abs(a.src)}')` },
+      close,
+      h('div', { class: 'd3-read-top' }, h('small', null, '\u30ea\u30fc\u30c7\u30a3\u30f3\u30b0'), h('span', null, `reading \u00b7 card ${String(n).padStart(2, '0')}`)),
+      h('b', { class: 'd3-read-t' }, a.title.toLowerCase()),
+      h('p', { class: 'd3-q' }, q), reveal, answer,
+      h('a', { href: `#/work/${a.id}`, class: 'd3-slip-from' }, 'look closer \u25b8'));
+    setTimeout(() => { if (slip) stage.append(slip); }, 420);
+    window.shdCount && window.shdCount('deck-reading', 'Got a reading from the deck');
   }
   function away() { if (!slip) return; const s = slip; slip = null; s.classList.add('gone'); setTimeout(() => s.remove(), 350); kick(); }
   function flip(card) { const on = !card.classList.contains('flipped'); cards.forEach(c => c.classList.remove('flipped')); card.classList.toggle('flipped', on); flipped = on ? card : null; }
@@ -132,7 +137,7 @@ function build() {
     h('button', { type: 'button', class: 'd3-btn red', onclick: () => flip(cards[frontIndex()]) }, '↻ flip'));
   const sizeIt = () => { const w = Math.min(stage.clientWidth || 600, 900), cw = w < 560 ? 150 : 190; stage.style.setProperty('--cw', cw + 'px'); stage.style.setProperty('--r', Math.round(cw / 2 / Math.tan(Math.PI / N) * 1.08) + 'px'); };
   const sec = h('section', { class: 'p-mod p-deck' },
-    h('div', { class: 'p-head' }, h('small', null, 'デッキ'), h('b', null, 'THE DECK'), h('span', null, 'DRAG TO SPIN · TAP THE FRONT CARD, GET A WORD')),
+    h('div', { class: 'p-head' }, h('small', null, 'デッキ'), h('b', null, 'THE DECK'), h('span', null, 'DRAG TO SPIN · TAP THE FRONT CARD FOR A READING')),
     stage, controls);
   new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) kick(); }, { rootMargin: '100px' }).observe(stage);
   document.addEventListener('visibilitychange', kick);

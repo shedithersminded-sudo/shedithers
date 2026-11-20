@@ -169,4 +169,14 @@ function musicBtn() {
 function bits2() { collabTitle(); musicBtn(); }
 if (view) new MutationObserver(bits2).observe(view, { childList: true, subtree: true });
 bits2(); setTimeout(bits2, 600); setTimeout(bits2, 2000);
+
+/* ---------- 8. discovery notes wear a strip of the artist's art; the bottom-of-the-page note says something new ---------- */
+if (window.SHD_FX && window.SHD_FX.NOTES) window.SHD_FX.NOTES.bottom = 'this is the bottom. i kept going anyway. so did you.';
+const NOTE_ART = (typeof ARTWORKS !== 'undefined' ? ARTWORKS : []).filter(a => a.type !== 'video');
+new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) {
+  if (n.nodeType !== 1 || !n.classList.contains('note-pop') || n.querySelector('.np-art') || !NOTE_ART.length) continue;
+  const a = NOTE_ART[Math.random() * NOTE_ART.length | 0], strip = document.createElement('i');
+  strip.className = 'np-art'; strip.setAttribute('aria-hidden', 'true'); strip.style.setProperty('--na', `url('${new URL(a.src, location.href).href}')`);
+  n.prepend(strip);
+} }).observe(document.body, { childList: true });
 })();
