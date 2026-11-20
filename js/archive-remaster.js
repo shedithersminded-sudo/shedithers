@@ -373,14 +373,14 @@ function thanksPanel() {
   const st = f => new URL('assets/ui/stickers/' + f + '.webp', location.href).href;
   const sec = document.createElement('section'); sec.className = 'p-mod p-thanks';
   sec.innerHTML = `<div class="ty-art" aria-hidden="true">
-      <img src="${st('bloom')}" alt="" draggable="false" class="ty-a1"><img src="${st('thumbprint')}" alt="" draggable="false" class="ty-a2"><img src="${st('flower')}" alt="" draggable="false" class="ty-a3">
+      <img src="${st('no-face')}" alt="" draggable="false" class="ty-a1"><img src="${st('gold')}" alt="" draggable="false" class="ty-a2"><img src="${st('leaves')}" alt="" draggable="false" class="ty-a3">
     </div>
     <div class="p-head"><small>ありがとう</small><b>THANK YOU</b><span>FOR BEING HERE</span></div>
     <div class="ty-body">
-      <p class="ty-big">if you looked, thank you.</p>
-      <p>if you liked something, saved it, reposted it, sent it to a friend, left a comment, or just stayed on one piece a little longer than you meant to: i see that, and i really appreciate it.</p>
-      <p>every person who stops to look keeps me making things.</p>
-      <p class="ty-sign">with love, shedithers <span aria-hidden="true">♥</span></p>
+      <p class="ty-big">If you looked, thank you.</p>
+      <p>Whether you liked something, saved it, reposted it, sent it to a friend, left a comment, or just stayed on one piece a little longer than you meant to, I see it, and I really appreciate it.</p>
+      <p>Every person who stops to look keeps me making things.</p>
+      <p class="ty-sign">With love, SHEDITHERS <span aria-hidden="true">♥</span></p>
     </div>`;
   foot.before(sec); edges();
 }

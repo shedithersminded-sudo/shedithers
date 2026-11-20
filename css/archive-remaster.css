@@ -900,3 +900,5 @@ body.dreaming #view *,body.dreaming #view *::before,body.dreaming #view *::after
 body.dreaming{overflow:hidden}
 @media (max-width:760px){.dm-song{display:none}}
 @media (prefers-reduced-motion:reduce){.dm-p{animation-duration:calc(var(--d) * 2)}.dm-bob,.dm-sky,.db-moon{animation:none}}
+/* v4.2.2: thank you art is three different pieces */
+.ty-art .ty-a1{width:96px}.ty-art .ty-a2{width:96px!important}.ty-art .ty-a3{width:150px!important;right:2%!important;bottom:-34px!important}
