@@ -9,7 +9,8 @@ const abs = u => new URL(u, location.href).href;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function h(tag, props, ...kids) { const e = document.createElement(tag); if (props) for (const k in props) { const v = props[k]; if (v == null || v === false) continue; if (k === 'class') e.className = v; else if (k === 'style') e.setAttribute('style', v); else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? '' : v); } for (const c of kids.flat()) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(c)); return e; }
 
-const PICK = ARTWORKS.filter(a => a.type !== 'video' && a.w && a.h).sort((x, y) => String(y.date).localeCompare(String(x.date))).slice(0, 12);
+const DECK_SKIP = ['play-online']; // the artist asked for these to stay out of the deck
+const PICK = ARTWORKS.filter(a => a.type !== 'video' && a.w && a.h && !DECK_SKIP.includes(a.id)).sort((x, y) => String(y.date).localeCompare(String(x.date))).slice(0, 12);
 const N = PICK.length; if (N < 3) return;
 const STEP = 360 / N;
 const INKS = ['red', 'black', 'paper', 'teal', 'mustard', 'plum'];

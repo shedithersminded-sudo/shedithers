@@ -45,6 +45,11 @@ window.SHD_PORTAL = function (view, X) {
   const tt = String(CFG.tiktok || '').replace(/^@/, ''), yt = String(CFG.youtube || '').replace(/^@/, ''), cash = String(CFG.cashapp || '').replace(/^\$/, '');
   const L = (href, txt, ext) => h('a', { href, target: ext ? '_blank' : null, rel: ext ? 'noopener' : null }, txt);
   const news = [
+    ['11/20/26', 'NEW', ['20 new pieces + 9 new moving ones. start with ', L('#/work/the-encircled-one', 'the encircled one'), ', ', L('#/work/self-exe', 'self.exe still installing'), ', ', L('#/work/sad-angels', 'sad angels need friends too'), '.']],
+    ['11/20/26', 'THE WALL', ['the newest pieces are pinned up loose on the home page. drag them around, make a mess.']],
+    ['11/20/26', 'SOUND', ['the site has its own song now. turn it up or down in now playing.']],
+    ['11/20/26', 'SHELOOPS', ['my other studio, for music. ', L('https://shedithersminded-sudo.github.io/sheloops/', 'make a song', 1), ', keep every bit of it.']],
+    ['11/20/26', 'THE DECK', ['draw a card. every piece has a riddle.']],
     ['11/07/26', 'SHEDITHERS', ['the archive is open. ', L('#/works', 'THE EDIT'), ' plays everything on loop — ', ARTWORKS.length + ' files', ' and counting.']],
     ['11/07/26', 'NEW', ['new pieces: ', L('#/work/not-lonely', 'I stand alone but I’m not lonely'), ', ', L('#/work/shedithers-eyes', 'SHEDITHERS (eyes)'), ', ', L('#/work/prettier-in-fragments', 'I look prettier in fragments'), '.']],
     ['11/05/26', 'MOTION', ['moving pieces live in ', L('#/col/motion', 'MOTION'), ' — put your headphones on, load your own music (bottom right).']],

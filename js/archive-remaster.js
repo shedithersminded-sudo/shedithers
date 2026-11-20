@@ -383,9 +383,9 @@ function styleNote() {
   const L = document.querySelector('.portal > .p-logo'); if (!L || L.querySelector('.pl-style')) return;
   const d = document.createElement('div'); d.className = 'pl-style';
   d.innerHTML = `<small>スタイル · the work</small>
-    <p class="pl-style-a">most of what you see here starts as photos i take myself. i layer them with found images, old computer windows, torn paper, my own handwriting and drawings, then push it all through dither and glitch until it feels like a memory with bad reception.</p>
-    <ol class="pl-steps" aria-label="how the work gets made"><li>my photos</li><li>collage</li><li>handwriting</li><li>dither</li><li>glitch</li><li>signal</li></ol>
-    <p>collage, drawing, signal and moving image. there’s no one way i make it.</p>
+    <p class="pl-style-a">i work fast. older pieces pull from things i found online, cut up and rebuilt. now it starts with photos i take myself: what’s around me, my hands, the sky, the walls. then it’s layers. torn paper, old computer windows, my handwriting and drawings, pushed through dither and glitch until it feels like a memory with bad reception.</p>
+    <ol class="pl-steps" aria-label="how the work gets made"><li>my photos</li><li>found things</li><li>collage</li><li>handwriting</li><li>dither</li><li>signal</li></ol>
+    <p>collage, drawing, signal and moving image. no one way to make it.</p>
     <p class="pl-style-b">it’s about identity. becoming and unbecoming, feeling things out loud, staying a little strange.</p>`;
   // the words come in when the block is on screen
   if ('IntersectionObserver' in window) { const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { d.classList.add('in'); io.disconnect(); } }, { threshold: .3 }); io.observe(d); } else d.classList.add('in');
