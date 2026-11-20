@@ -3,5 +3,3 @@ __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
-# the site song: not public until the artist confirms they can share it
-assets/ui/site-song.mp3
