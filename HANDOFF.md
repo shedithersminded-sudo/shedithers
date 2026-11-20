@@ -1,6 +1,6 @@
 # SHEDITHERS: handoff
 
-**This is the only handoff.** Written 2026-11-20 at **v4.0.3** (the finished site). Give this file to whoever picks the work up next, human or AI: paste it, or say "read C:\CODE\shedithers\HANDOFF.md". Add one line to the version log at the bottom on every release.
+**This is the only handoff.** Written 2026-11-20 at **v4.0.4** (the finished site). Give this file to whoever picks the work up next, human or AI: paste it, or say "read C:\CODE\shedithers\HANDOFF.md". Add one line to the version log at the bottom on every release.
 
 ---
 
@@ -34,8 +34,8 @@
 **Test sizes:** 1440x900, 1024x768, 768x1024, 375x812. Check: no sideways scroll (`document.documentElement.scrollWidth === innerWidth`), nothing over the menu bar, no console errors, no broken images/videos, on home, `#/works`, `#/col/<id>`, `#/about`, and the viewer `#/work/<id>`.
 
 **Release (every time):**
-1. `sed -i 's/?v=403/?v=404/g' index.html archive.html` (bump the cache number on every css/js link in both pages)
-2. Bump `VERSION` in `sw.js` (`shedithers-v4.0.3` becomes `shedithers-v4.0.4`)
+1. `sed -i 's/?v=404/?v=405/g' index.html archive.html` (bump the cache number on every css/js link in both pages)
+2. Bump `VERSION` in `sw.js` (`shedithers-v4.0.4` becomes `shedithers-v4.0.5`)
 3. Add one line to the version log at the bottom of this file
 4. Commit (end the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` if an AI made it), push `main`
 5. Wait until `https://shedithersminded-sudo.github.io/shedithers/sw.js` serves the new VERSION
@@ -66,7 +66,7 @@
 | `assets/ui/art2/` | UI-ready cuts of the artist's art: `no-face`, `thumbprint`, `leaves`, `leaf0-2`, `brave`, `sky`, videos `dreams.mp4`, `understand.mp4` |
 | `assets/ui/site-song.mp3` | "somewhere in between" (leyline hex), 96 kbps, 17 MB, 24 min. The artist confirmed they can use it |
 
-## 5. What's on the site (v4.0.3)
+## 5. What's on the site (v4.0.4)
 
 - **Intro:** only the drag intro. The artist's art morphs in dither behind the HD logo; the logo pulses red/lime rings and shakes until grabbed. First press: low bass buzz and the song starts muffled. Dragging: glitter sparkle sounds + a red/lime dither trail. Throw it: rising shimmer, the screen dithers shut along the throw, the archive opens and dithers open, the song opens up clear. Arrow keys / Enter / skip work too. A timer makes sure it always opens.
 - **Music:** starts at 22%, soft in the background (the artist asked twice for quieter; saved as `shd.songVol2`, a new key so old saved 40% values are ignored). Without the intro (same visit) it starts on the first tap anywhere. Inside: a tiny handwritten "now playing" line above the round red MUSIC button (play/pause), and a play button + quiet/loud slider in NOW PLAYING. The volume and a "paused" choice are remembered (`shd.songVol2`, `shd.songOff`). The visitor's own file player still exists (hint bar MUSIC) and pauses the song when used.
@@ -125,3 +125,4 @@ The drag intro and the blob screen, the deck, the comment section concept, NOW P
 - v4.0.1 (2026-11-20): "the work" note rewritten (own photos first) with animated process steps; Little Guy's bottom scoot removed; the side drink tab removed, the drink window opens from words.
 - v4.0.2 (2026-11-20): PLAY ONLINE? out of the deck (DECK_SKIP), five 11/20 news entries, "the work" note rewritten in the artist's words (fast, found things in older pieces, own photos now).
 - v4.0.3 (2026-11-20): deck cards fit their piece (wide/tall pieces show whole on a blurred copy), site song quieter (22%, new storage key).
+- v4.0.4 (2026-11-20): the dead netlify address under the home logo is now the real live link (github.io).

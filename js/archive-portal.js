@@ -22,7 +22,7 @@ window.SHD_PORTAL = function (view, X) {
   /* logo block */
   P.append(h('section', { class: 'p-mod p-logo' },
     h('div', { class: 'pl-mark', html: '<img class="pl-logo" src="assets/ui/logo-paper-sm.png" alt="">' }),
-    h('div', { class: 'pl-url' }, 'HTTP://SHEDITHERS.NETLIFY.APP/ART'),
+    h('a', { class: 'pl-url', href: 'https://shedithersminded-sudo.github.io/shedithers/archive.html' }, 'SHEDITHERSMINDED-SUDO.GITHUB.IO/SHEDITHERS'),
     h('div', { class: 'pl-name' }, 'SHEDITHERS', h('span', { class: 'pl-cursor' }, '▮')),
     h('div', { class: 'pl-virus' }, 'NO IDENTITY CONTROL VIRUS.'),
     h('pre', { class: 'pl-fine' }, `ARCHIVE_01 // ${ARTWORKS.length} FILES // VIEW ONLY\nCOLLAGE · DRAWING · SIGNAL · MOTION\nI DON'T WANT ORDINARY. IT'S NOT IN MY NATURE.\nSHEDITHERS LOVES YOU`)));
