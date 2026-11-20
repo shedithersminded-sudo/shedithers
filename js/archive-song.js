@@ -9,7 +9,7 @@ const CFG = typeof SHD_CONFIG !== 'undefined' ? SHD_CONFIG : {};
 const id = CFG.introSong && String(CFG.introSong.youtube || '').trim(); if (!/^[\w-]{11}$/.test(id)) return;
 const QUIET = 14, LOUD = 75;
 const card = document.createElement('div'); card.className = 'sg'; card.hidden = true;
-card.innerHTML = `<div class="sg-top"><span class="sg-dot" aria-hidden="true"></span><b>now playing</b><button class="sg-x" type="button" aria-label="Pause and hide the song">✕</button></div><div class="sg-frame"><div id="sgPlayer"></div></div>`;
+card.innerHTML = `<i class="sg-tape" aria-hidden="true"></i><div class="sg-frame"><div id="sgPlayer"></div></div><div class="sg-words"><span class="sg-dot" aria-hidden="true"></span><b>now playing</b><button class="sg-x" type="button" aria-label="Pause and hide the song">✕</button></div>`;
 document.body.append(card);
 let player = null, ready = false, want = false, playing = false, fadeT = 0, vol = QUIET;
 const inside = () => document.body.classList.contains('entered');

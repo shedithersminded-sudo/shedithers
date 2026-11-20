@@ -5,7 +5,7 @@
  * Keyboard: arrow keys throw it, Enter throws it up. Reduced motion: no throw, it just opens. */
 (() => {
 'use strict';
-const gate = document.getElementById('gate'); if (!gate) return;
+const gate = document.getElementById('gate'); if (!gate) { document.documentElement.classList.remove('dg-pre'); return; }
 let seen = false; try { seen = sessionStorage.getItem('shd.archive.in') === '1'; } catch (_) { }
 if (seen || /^#\/work\//.test(location.hash)) return;
 window.SHD_DRAGINTRO = true; // archive-walk.js skips the old walk when this is set
@@ -156,6 +156,7 @@ const ease = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
 function openArchive() { const b = document.getElementById('enter'); if (b) b.click(); else { gate.remove(); document.body.classList.add('entered'); } }
 function finish() {
   if (!root.isConnected) return;
+  document.documentElement.classList.remove('dg-pre');
   cancelAnimationFrame(raf); removeEventListener('resize', size);
   if (scr) scr.stop();
   root.remove(); document.body.classList.remove('dg-on');
