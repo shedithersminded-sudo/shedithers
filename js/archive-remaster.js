@@ -84,7 +84,8 @@ function drinkTab() {
   t.classList.add('dt2');
   t.innerHTML = `<i class="dt2-thread" aria-hidden="true"></i><i class="dt2-stamp" aria-hidden="true" style="background-image:url('${new URL('assets/ui/art2/thumbprint.webp', location.href).href}')"></i><b>buy me a drink</b><small>no pressure</small>`;
 }
-drinkTab(); setTimeout(drinkTab, 800); setTimeout(drinkTab, 2500);
+// v4.0.1: the side tab is removed (the artist was done with it); words open the drink window instead
+const killTab = () => document.querySelectorAll('.drink-tab').forEach(t => t.remove()); killTab(); setTimeout(killTab, 800); setTimeout(killTab, 2500);
 // the little drink links elsewhere lose the emoji too
 function deEmoji() { document.querySelectorAll('.ds-foot,.ds-view,.ab-tip-btn').forEach(b => { if (b.textContent.includes('🍹')) b.textContent = b.textContent.replace('🍹', '✦'); }); }
 if (view) new MutationObserver(deEmoji).observe(view, { childList: true, subtree: true });
@@ -382,8 +383,12 @@ function styleNote() {
   const L = document.querySelector('.portal > .p-logo'); if (!L || L.querySelector('.pl-style')) return;
   const d = document.createElement('div'); d.className = 'pl-style';
   d.innerHTML = `<small>スタイル · the work</small>
-    <p>collage, drawing, signal and moving image. i take found photos, old computer windows, torn paper and my own handwriting, cut them up and put them back together wrong on purpose, then push them through dither and glitch until they feel like a memory with bad reception.</p>
-    <p class="pl-style-b">it\u2019s about identity. becoming and unbecoming, feeling things out loud, staying a little strange.</p>`;
+    <p class="pl-style-a">most of what you see here starts as photos i take myself. i layer them with found images, old computer windows, torn paper, my own handwriting and drawings, then push it all through dither and glitch until it feels like a memory with bad reception.</p>
+    <ol class="pl-steps" aria-label="how the work gets made"><li>my photos</li><li>collage</li><li>handwriting</li><li>dither</li><li>glitch</li><li>signal</li></ol>
+    <p>collage, drawing, signal and moving image. there’s no one way i make it.</p>
+    <p class="pl-style-b">it’s about identity. becoming and unbecoming, feeling things out loud, staying a little strange.</p>`;
+  // the words come in when the block is on screen
+  if ('IntersectionObserver' in window) { const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { d.classList.add('in'); io.disconnect(); } }, { threshold: .3 }); io.observe(d); } else d.classList.add('in');
   L.append(d);
 }
 if (view) new MutationObserver(styleNote).observe(view, { childList: true, subtree: true });

@@ -1,6 +1,6 @@
 # SHEDITHERS: handoff
 
-**This is the only handoff.** Written 2026-11-20 at **v4.0.0** (the finished site). Give this file to whoever picks the work up next, human or AI: paste it, or say "read C:\CODE\shedithers\HANDOFF.md". Add one line to the version log at the bottom on every release.
+**This is the only handoff.** Written 2026-11-20 at **v4.0.1** (the finished site). Give this file to whoever picks the work up next, human or AI: paste it, or say "read C:\CODE\shedithers\HANDOFF.md". Add one line to the version log at the bottom on every release.
 
 ---
 
@@ -34,8 +34,8 @@
 **Test sizes:** 1440x900, 1024x768, 768x1024, 375x812. Check: no sideways scroll (`document.documentElement.scrollWidth === innerWidth`), nothing over the menu bar, no console errors, no broken images/videos, on home, `#/works`, `#/col/<id>`, `#/about`, and the viewer `#/work/<id>`.
 
 **Release (every time):**
-1. `sed -i 's/?v=400/?v=401/g' index.html archive.html` (bump the cache number on every css/js link in both pages)
-2. Bump `VERSION` in `sw.js` (`shedithers-v4.0.0` becomes `shedithers-v4.0.1`)
+1. `sed -i 's/?v=401/?v=402/g' index.html archive.html` (bump the cache number on every css/js link in both pages)
+2. Bump `VERSION` in `sw.js` (`shedithers-v4.0.1` becomes `shedithers-v4.0.2`)
 3. Add one line to the version log at the bottom of this file
 4. Commit (end the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` if an AI made it), push `main`
 5. Wait until `https://shedithersminded-sudo.github.io/shedithers/sw.js` serves the new VERSION
@@ -66,12 +66,12 @@
 | `assets/ui/art2/` | UI-ready cuts of the artist's art: `no-face`, `thumbprint`, `leaves`, `leaf0-2`, `brave`, `sky`, videos `dreams.mp4`, `understand.mp4` |
 | `assets/ui/site-song.mp3` | "somewhere in between" (leyline hex), 96 kbps, 17 MB, 24 min. The artist confirmed they can use it |
 
-## 5. What's on the site (v4.0.0)
+## 5. What's on the site (v4.0.1)
 
 - **Intro:** only the drag intro. The artist's art morphs in dither behind the HD logo; the logo pulses red/lime rings and shakes until grabbed. First press: low bass buzz and the song starts muffled. Dragging: glitter sparkle sounds + a red/lime dither trail. Throw it: rising shimmer, the screen dithers shut along the throw, the archive opens and dithers open, the song opens up clear. Arrow keys / Enter / skip work too. A timer makes sure it always opens.
 - **Music:** starts at 40% (a little below medium). Without the intro (same visit) it starts on the first tap anywhere. Inside: a tiny handwritten "now playing" line above the round red MUSIC button (play/pause), and a play button + quiet/loud slider in NOW PLAYING. The volume and a "paused" choice are remembered (`shd.songVol`, `shd.songOff`). The visitor's own file player still exists (hint bar MUSIC) and pauses the song when used.
 - **Top bar:** the logo, dark glass, red/blue glow line, lowercase mono links, lime underline, the lab as a lime pill.
-- **Home, top to bottom (PC grid over 1100px, one column below):** logo + NO IDENTITY block with a short note about the work / news / THE DECK / NOW PLAYING / THE COMMENT SECTION + COLLABS / COLLECTIONS / file directory + Dither Lab promo / instant photo / SHELOOPS / THE WALL / the archive film / wallpaper + links / motion lab + sign the list / word ticker / footer.
+- **Home, top to bottom (PC grid over 1100px, one column below):** logo + NO IDENTITY block with "the work" (how the artist makes things: mostly their own photos, layered with found images, old computer windows, torn paper, handwriting and drawings, pushed through dither and glitch; a row of process steps lights up one after another, lines slide in, a light scans across) / news / THE DECK / NOW PLAYING / THE COMMENT SECTION + COLLABS / COLLECTIONS / file directory + Dither Lab promo / instant photo / SHELOOPS / THE WALL / the archive film / wallpaper + links / motion lab + sign the list / word ticker / footer.
 - **Panels:** dark glass, steady red or blue glow, a light travelling around each border. "shedithers" code rain falls behind everything.
 - **Fonts:** titles Syne 800, reading text Space Grotesk, labels JetBrains Mono, handwriting Patrick Hand (`--rm-title` / `--rm-body` in `archive-remaster.css` swap them).
 - **THE DECK:** big 3D cards, light holo foil, a light sweep on the front card, cards sway, the ring leans to the mouse. Tap the front card or "draw a card" for a reading: a riddle made from the piece, the answer behind "turn it over".
@@ -81,7 +81,7 @@
 - **COLLECTIONS:** a showcase crossfades each collection's pieces with its name and words.
 - **SHELOOPS:** a record spinning with the no-face painting as label, a ring of light bars, the leaves, the features as track lanes, "your songs are yours" text, link out.
 - **THE WALL:** the newest pieces pinned up loose as polaroids. Drag them anywhere, tap to look closer, "mess it up" / "line them up", the YouTube short pinned up, "follow on youtube".
-- **Buy me a drink:** a small torn paper tag on the right edge. The window: "meet me in my dreams" video in a taped polaroid, the sky drifting, the artist's leaves falling, the note in their voice, four riddle drinks wearing their pieces ($3 / $5 / $10 / $25), QR first.
+- **Buy me a drink:** no side tab any more (the artist was done with it). Plain words open the window: "drink" in the top bar, the NEWS line, TIP JAR in WHERE TO FIND ME, the footer, the about page ticket (`#/tip`). The window: "meet me in my dreams" video in a taped polaroid, the sky drifting, the artist's leaves falling, the note in their voice, four riddle drinks wearing their pieces ($3 / $5 / $10 / $25), QR first.
 - **Discovery notes:** dark glass, a strip of a random piece on top, handwriting. Bottom of the page: "this is the bottom. i kept going anyway. so did you."
 - **THE EDIT (`#/works`), collections, about:** the artist's pieces as a slow dithered backdrop, Syne titles on the orange cut label, glowing pill buttons; THE EDIT screen is a glowing panel with the leaves on its corner and taped-polaroid rows (row videos only play on hover).
 - **Archive:** 94 pieces. Newest (2026-11-20): 20 pictures (THE ENCIRCLED ONE, I SOLD MY WINGS, OFFLINE IS THE NEW LUXURY, SORRY I DISAPPEARED, DOPAMINE, PLAY ONLINE?, I DESERVE TO HAVE CONNECTION, AUTO-REPLY: REINCARNATING, WHICH IS OK, FAIRY DUST HATES DUST BUNNIES, SHE, NOT ME I + II, SIGNAL LOST MEANING FOUND, THE ETERNAL SEEDLING, HELLO MY NAME IS, DREAM VOL.3, SELF.EXE STILL INSTALLING, NOSTALGIA'S COOL, CTRL, SAD ANGELS NEED FRIENDS TOO) and videos (WURRISUM, CONLOVED, WARPED WORDS, ME YOU WE, WAKE UP THEY ARE TAKING ALL THE COLOR AWAY I + II, PRESENTED BY SHEDITHERS, AM I BECOMING SOMEONE NEW, HOLD ON, PLEASE NO MORE, MEET ME IN MY DREAMS), plus I DONT WANT A FACE, DOING IT SCARED, UNTITLED (SKY). Titles came from the artist.
@@ -103,11 +103,12 @@ Measured in the test browser at 1440 wide: ~35 fps went to 60 to 117 fps everywh
 3. The artist mentioned sending Pinterest pictures for more UI ideas (inspiration only).
 4. The collection page (book spread) and about page (paper card) keep their older layouts under the new titles and backdrop; a deeper remaster is possible.
 5. The Dither Lab (`index.html`) has its own opening animation, untouched.
-6. "The work" note in the NO IDENTITY block was written from the art and the about page; the artist may want to reword it (`archive-remaster.js` section 16).
+6. "The work" note (`archive-remaster.js` section 16) was rewritten with the artist's input: most of the art starts as their own photos. They may still tweak the words.
+7. Little Guy no longer scoots along the bottom (the artist asked; `.lil-scoot` hidden). He still peeks on some page headers.
 
 ## 8. Don't break (the artist likes these)
 
-The drag intro and the blob screen, the deck, the comment section concept, NOW PLAYING seal, collab form, WHERE TO FIND ME, the mess layer, TikTok TV, tuck tabs (`js/tuck.js`), discovery notes and the FOUND counter, puzzle knobs (small, in the gaps), THE WALL, the Dither Lab skin.
+The drag intro and the blob screen, the deck, the comment section concept, NOW PLAYING seal, the drink window (polaroid video, riddle drinks, QR), collab form, WHERE TO FIND ME, the mess layer, TikTok TV, tuck tabs (`js/tuck.js`), discovery notes and the FOUND counter, puzzle knobs (small, in the gaps), THE WALL, the Dither Lab skin.
 
 ## 9. Version log (short)
 
@@ -120,3 +121,4 @@ The drag intro and the blob screen, the deck, the comment section concept, NOW P
 - v3.9.1 to v3.9.4: intro sounds, comment section remaster, SHELOOPS panel, THE EDIT remaster, new top bar, NOW PLAYING volume control, words-only muffled song.
 - v3.9.5 to v3.9.8: 20 pictures + 9 videos, THE WALL with the YouTube short, the artist's titles, style note, site check.
 - v4.0.0 (2026-11-20): the site song is published (96 kbps), big media never cached by the service worker, final check; one handoff (this file), old handoffs removed.
+- v4.0.1 (2026-11-20): "the work" note rewritten (own photos first) with animated process steps; Little Guy's bottom scoot removed; the side drink tab removed, the drink window opens from words.

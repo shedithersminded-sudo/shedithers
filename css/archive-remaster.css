@@ -656,3 +656,25 @@ body[data-route=about] .ab-h{font-family:'Syne',sans-serif!important;font-weight
 /* smaller screens: the floating stickers stop covering panels */
 @media (max-width:1280px){.lab-float{display:none!important}}
 @media (max-width:1100px){.disc-stamp{font-size:13px!important;padding:3px 8px!important;opacity:.75}.disc-stamp:hover{opacity:1}}
+
+/* ===== v4.0.1 ===== */
+/* the work: lines slide in, the process steps light up one after another, a scan of light passes */
+.pl-style{position:relative;overflow:hidden;max-width:620px}
+.pl-style p,.pl-style small,.pl-steps{opacity:0;translate:-10px 0;transition:opacity .7s ease,translate .7s cubic-bezier(.2,1,.3,1)}
+.pl-style.in p,.pl-style.in small,.pl-style.in .pl-steps{opacity:1;translate:0 0}
+.pl-style.in small{transition-delay:.05s}.pl-style.in .pl-style-a{transition-delay:.2s}.pl-style.in .pl-steps{transition-delay:.45s}.pl-style.in p:nth-of-type(2){transition-delay:.65s}.pl-style.in .pl-style-b{transition-delay:.85s}
+.pl-style::after{content:'';position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(100deg,transparent,rgba(212,255,0,.08),transparent);transform:translateX(-120%);pointer-events:none}
+.pl-style.in::after{animation:plScan 6s ease-in-out 1.2s infinite}
+@keyframes plScan{0%,60%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
+.pl-steps{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;padding:0;list-style:none;counter-reset:st}
+.pl-steps li{counter-increment:st;padding:4px 9px;border-radius:999px;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(233,227,209,.6);box-shadow:0 0 0 1px rgba(233,227,209,.2)}
+.pl-steps li::before{content:counter(st, decimal-leading-zero) ' ';color:#ff2338}
+.pl-style.in .pl-steps li{animation:plStep 6s ease-in-out infinite;animation-delay:calc(var(--d, 0s) + 1s)}
+.pl-steps li:nth-child(1){--d:0s}.pl-steps li:nth-child(2){--d:.5s}.pl-steps li:nth-child(3){--d:1s}.pl-steps li:nth-child(4){--d:1.5s}.pl-steps li:nth-child(5){--d:2s}.pl-steps li:nth-child(6){--d:2.5s}
+@keyframes plStep{0%,6%{color:rgba(233,227,209,.6)}10%,26%{color:#d4ff00}34%,100%{color:rgba(233,227,209,.6)}}
+@media (prefers-reduced-motion:reduce){.pl-style p,.pl-style small,.pl-steps{opacity:1;translate:none;transition:none}.pl-style.in::after,.pl-style.in .pl-steps li{animation:none}}
+/* the little doodle guy that scoots along the bottom: gone */
+.lil-scoot{display:none!important}
+/* the side drink tab: gone (the window it opened stays, opened from words) */
+.drink-tab{display:none!important}
+.nav a.drink-nav{color:#ff5a3c!important}
