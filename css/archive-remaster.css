@@ -414,3 +414,85 @@ body.rm-scrolling .rm-edge::before{animation-play-state:paused}
   .portal>.p-foot{grid-row:13!important}
 }
 @media (max-width:1100px){.portal>.p-loops{grid-column:1/-1!important;grid-row:auto!important;order:9!important}}
+
+/* ===== v3.9.2: SHELOOPS, second version: a record spinning with the artist's painting on the label, a ring of
+   light bars around it, the leaves branch hanging in, and the features as track lanes with a playhead ===== */
+.p-loops{overflow:hidden;isolation:isolate}
+.lp-sky{position:absolute;inset:0;z-index:-2;background:center/cover no-repeat;opacity:.28;filter:saturate(1.2);transform:scale(1.08);animation:lpSky 30s ease-in-out infinite alternate;will-change:transform}
+@keyframes lpSky{to{transform:scale(1.18) translate(-2%,-2%)}}
+.p-loops::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(rgba(11,10,9,.7) 32%,transparent 34%) 0 0/4px 4px,linear-gradient(90deg,rgba(11,10,9,.35),rgba(11,10,9,.85) 55%)}
+.lp-branch{position:absolute;left:-30px;top:-34px;width:230px;z-index:1;pointer-events:none;transform-origin:10% 0;animation:tpBranch 6s ease-in-out infinite;filter:drop-shadow(0 8px 10px rgba(0,0,0,.5))}
+@keyframes tpBranch{50%{rotate:4deg}}
+.p-loops .lp-wrap{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)!important;gap:36px!important}
+.lp-eq{display:none}
+/* the deck */
+.lp-deck{position:relative;aspect-ratio:1;width:min(100%,340px);justify-self:center;margin:6px 0 18px}
+.lp-rays{position:absolute;inset:0}
+.lp-rays i{position:absolute;left:50%;top:50%;width:4px;height:50%;margin-left:-2px;transform-origin:50% 0;transform:rotate(var(--a)) translateY(2px)}
+.lp-rays b{display:block;width:100%;height:20%;margin-top:calc(50% * 0 + 76%);border-radius:2px;background:linear-gradient(0deg,#d4ff00,#ff2338);transform-origin:50% 0;animation:lpRay .9s ease-in-out infinite alternate;animation-delay:calc(var(--k) * -97ms);opacity:.85;will-change:transform}
+.lp-rays i:nth-child(3n) b{animation-duration:.65s;background:linear-gradient(0deg,#2f7dff,#e9e3d1)}
+.lp-rays i:nth-child(4n+1) b{animation-duration:1.2s}
+@keyframes lpRay{from{transform:scaleY(.25)}to{transform:scaleY(1.35)}}
+.lp-disc{position:absolute;inset:16%;border-radius:50%;background:repeating-radial-gradient(circle,#111 0 2px,#1d1b19 2px 3px),#111;box-shadow:0 0 0 2px #0b0a09,0 0 0 4px rgba(233,227,209,.25),0 18px 40px rgba(0,0,0,.6);animation:lpSpin 4.5s linear infinite;will-change:transform}
+.lp-disc::after{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 30deg,transparent 0 40deg,rgba(255,255,255,.14) 60deg,transparent 80deg 220deg,rgba(255,255,255,.1) 240deg,transparent 260deg)}
+.lp-label{position:absolute;inset:30%;border-radius:50%;background:#efe8d2 center/80% no-repeat;box-shadow:0 0 0 3px #c3141c}
+.lp-hole{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px;border-radius:50%;background:#0b0a09;box-shadow:0 0 0 2px #e9e3d1}
+@keyframes lpSpin{to{transform:rotate(360deg)}}
+.lp-arm{position:absolute;right:2%;top:6%;width:44%;height:8px;border-radius:4px;background:linear-gradient(90deg,#8a8578,#e9e3d1);transform-origin:94% 50%;rotate:-28deg;box-shadow:0 4px 8px rgba(0,0,0,.5);animation:lpArm 4.5s ease-in-out infinite}
+.lp-arm::after{content:'';position:absolute;left:-6px;top:-5px;width:16px;height:18px;border-radius:3px;background:#c3141c}
+@keyframes lpArm{50%{rotate:-25deg}}
+.lp-now{position:absolute;left:50%;bottom:-22px;translate:-50% 0;white-space:nowrap;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:#d4ff00}
+.p-loops:hover .lp-disc{animation-duration:2s}
+/* the words */
+.lp-lede{font-size:clamp(24px,2.5vw,36px)!important;margin-bottom:14px!important}
+.lp-lede em{font-style:normal;color:#ff5a3c}
+.lp-lanes{position:relative;display:grid;gap:6px;margin:0 0 14px;padding:10px;border-radius:8px;background:rgba(11,10,9,.75);box-shadow:inset 0 0 0 1px rgba(233,227,209,.12);overflow:hidden}
+.lp-lane{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1fr);gap:10px;align-items:center}
+.lp-lane span{font:400 17px/1.15 'Patrick Hand',cursive;color:#e9e3d1}
+.lp-wave{position:relative;height:26px;border-radius:3px;overflow:hidden;background:#141210}
+.lp-wave i{position:absolute;top:0;bottom:0;width:100%;background:center/cover;filter:contrast(1.3) saturate(1.2) brightness(.85);
+  -webkit-mask:repeating-linear-gradient(90deg,#000 0 3px,transparent 3px 5px),linear-gradient(#000,#000);-webkit-mask-composite:source-in;mask:repeating-linear-gradient(90deg,#000 0 3px,transparent 3px 5px);
+  animation:lpScroll 9s linear infinite;animation-delay:calc(var(--k) * -2.2s);will-change:transform}
+.lp-wave i+i{left:100%}
+@keyframes lpScroll{to{transform:translateX(-100%)}}
+.lp-head{position:absolute;top:0;bottom:0;left:52%;width:2px;z-index:2;background:#ff2338;box-shadow:0 0 10px #ff2338;animation:lpHead 4.5s linear infinite;will-change:transform}
+@keyframes lpHead{from{transform:translateX(-30px)}to{transform:translateX(min(40vw,300px))}}
+.lp-safe{font:400 13px/1.55 'Space Grotesk',sans-serif!important;color:rgba(233,227,209,.85)!important}
+.lp-safe b{color:#d4ff00;font-weight:600}
+@media (max-width:860px){.p-loops .lp-wrap{grid-template-columns:1fr!important}.lp-deck{width:min(78%,280px)}.lp-branch{width:150px}.lp-lane{grid-template-columns:1fr}.lp-lane span{font-size:15px}}
+@media (prefers-reduced-motion:reduce){.lp-sky,.lp-branch,.lp-rays b,.lp-disc,.lp-arm,.lp-wave i,.lp-head{animation:none}}
+
+/* ===== the site song as words only: a tiny handwritten line above the MUSIC button ===== */
+.sg{display:none!important}
+.sgw{position:fixed;right:18px;bottom:90px;z-index:41;display:flex;align-items:center;gap:7px;max-width:min(240px,60vw);padding:5px 10px 5px 8px;border:0;border-radius:999px;background:rgba(11,10,9,.82);color:#e9e3d1;cursor:pointer;box-shadow:0 0 0 1px rgba(255,35,56,.5),0 0 12px rgba(255,35,56,.25);overflow:hidden}
+.sgw[hidden]{display:none}
+.sgw-dot{flex:none;width:6px;height:6px;border-radius:50%;background:#ff2338;box-shadow:0 0 6px #ff2338;animation:sgDot 1s ease-in-out infinite}
+@keyframes sgDot{50%{opacity:.25}}
+.sgw-run{display:flex;gap:8px;white-space:nowrap;animation:sgwRun 14s linear infinite}
+.sgw b{font:400 16px/1 'Patrick Hand',cursive}
+.sgw em{font:500 10px/1.6 'JetBrains Mono',monospace;font-style:normal;letter-spacing:.14em;text-transform:uppercase;color:#d4ff00}
+@keyframes sgwRun{0%,20%{transform:translateX(0)}80%,100%{transform:translateX(calc(-100% + 180px))}}
+.sgw:hover{box-shadow:0 0 0 1px #d4ff00}
+@media (max-width:760px){.sgw{right:12px;bottom:74px}}
+@media (prefers-reduced-motion:reduce){.sgw-run,.sgw-dot{animation:none}}
+.p-voices .vc-strip{contain:size;align-self:stretch;min-height:200px}
+
+/* ===== v3.9.2 fixes ===== */
+/* SHELOOPS: the light bars sit outside the record and grow outward */
+.lp-rays b{position:absolute;left:0;top:69%;width:100%;height:24%;margin:0!important;transform-origin:50% 0}
+/* drink window: the tape stays on the white border, never on the video */
+.tp-tape.t1{left:50%!important;top:-12px!important;margin-left:-43px;rotate:-3deg!important;height:20px!important}
+/* drink window: the riddle labels */
+.tp-drink b{font:400 16px/1.15 'Patrick Hand',cursive!important;letter-spacing:0!important;min-height:3.45em}
+/* the drink tab: a small torn paper tag hanging off the edge, the thumbprint stamped on it, a red thread */
+.drink-tab.dt2{width:46px!important;height:auto!important;min-height:0!important;padding:46px 0 12px!important;gap:6px!important;display:flex!important;flex-direction:column;align-items:center;
+  background:#efe8d2!important;background-image:none!important;color:#1d1b16!important;border:0!important;border-radius:0!important;
+  clip-path:polygon(0 3%,30% 0,62% 2%,100% 0,100% 100%,70% 98%,40% 100%,8% 97%,0 100%);
+  box-shadow:none!important;filter:drop-shadow(-3px 4px 0 #0b0a09) drop-shadow(0 0 10px rgba(255,35,56,.35))!important;translate:0 0;transition:translate .3s cubic-bezier(.3,1.6,.5,1)!important}
+.drink-tab.dt2:hover,.drink-tab.dt2:focus-visible{translate:-6px 0}
+.drink-tab.dt2 .dt2-stamp{position:absolute;left:50%;top:8px;width:30px;height:34px;margin-left:-15px;background:center/contain no-repeat;rotate:-8deg;filter:drop-shadow(0 1px 0 rgba(0,0,0,.4))}
+.drink-tab.dt2 .dt2-thread{position:absolute;left:50%;top:-40px;width:1px;height:44px;background:#c3141c}
+.drink-tab.dt2 b{writing-mode:vertical-rl;rotate:180deg;font:400 17px/1 'Patrick Hand',cursive!important;letter-spacing:.04em!important;text-transform:none!important;text-shadow:none!important;color:#1d1b16!important}
+.drink-tab.dt2 small{writing-mode:vertical-rl;rotate:180deg;font:500 8px 'JetBrains Mono',monospace!important;letter-spacing:.2em!important;text-transform:uppercase;color:#c3141c!important;opacity:1!important;display:block!important}
+.drink-tab.dt2 .dt-fig,.drink-tab.dt2 .dt-tape,.drink-tab.dt2 .dt-drip{display:none!important}
+@media (max-width:760px){.drink-tab.dt2{width:38px!important;padding-top:40px!important}.drink-tab.dt2 b{font-size:14px!important}.drink-tab.dt2 small{display:none!important}}

@@ -34,7 +34,7 @@ function open(e) {
   <div class="tp-card">
     <button class="tp-x" type="button" aria-label="Close">✕</button>
     <figure class="tp-film" aria-hidden="true">
-      <i class="tp-tape t1"></i><i class="tp-tape t2"></i>
+      <i class="tp-tape t1"></i>
       <video muted loop playsinline preload="metadata" poster="${A('dreams.jpg')}"><source src="${A('dreams.mp4')}" type="video/mp4"></video>
       <figcaption>meet me in my dreams</figcaption>
       <img class="tp-branch" src="${A('leaves.webp')}" alt="" draggable="false">

@@ -18,8 +18,8 @@ const SHD_CONFIG = {
   // evo on SoundCloud (his songs play on the site), the part after soundcloud.com/
   soundcloud: 'evosrevenge',
   // A song to point people to (full SoundCloud link). Empty = hidden.
-  // the site song, through YouTube's player: quiet during the intro, full once inside. '' = off
-  introSong: { youtube: 'Rfg-RWkSfMg' },
+  // the site song: an audio file, muffled through the wall in the intro, clear inside. src '' = no song
+  siteSong: { src: 'assets/ui/site-song.mp3', title: 'somewhere in between', artist: 'leyline hex' },
   soundcloudSong: '', // old intro song, off since v3.7.1
   // sinnceree (evo's brother) on SoundCloud, the part after soundcloud.com/
   soundcloudSinnceree: 'sinnceree',
@@ -105,9 +105,9 @@ const SHD_CONFIG = {
   tipLine: 'no paywall, no catch. stay as long as u want. if u liked looking at my art, or made something cool in the editor, maybe buy me a drink. it keeps the lights on and the weird stuff coming ♥',
   // each drink wears one of the artist's pieces (file in assets/ui/art2/). fit 'cover' fills the square.
   drinks: [
-    { label: 'a sip', art: 'thumbprint.webp', amount: 3 },
-    { label: 'a refill', art: 'brave.webp', fit: 'cover', amount: 5 },
-    { label: 'the whole drink', art: 'no-face.webp', amount: 10 },
-    { label: 'keep the lights on', art: 'sky.webp', fit: 'cover', amount: 25 },
+    { label: 'what has no face but still leaves a mark?', art: 'thumbprint.webp', amount: 3 },
+    { label: 'what shakes and does it anyway?', art: 'brave.webp', fit: 'cover', amount: 5 },
+    { label: 'who gets looked at and never seen?', art: 'no-face.webp', amount: 10 },
+    { label: 'what burns every night and keeps the lights on?', art: 'sky.webp', fit: 'cover', amount: 25 },
   ],
 };

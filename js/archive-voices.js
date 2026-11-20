@@ -58,8 +58,14 @@ function build() {
   const push = () => {
     const f = feed[i % feed.length]; i++;
     const b = bubble(f, list.childElementCount); b.classList.add('in'); list.prepend(b);
-    while (list.childElementCount > 5) list.lastElementChild.remove();
+    while (list.childElementCount > maxN()) list.lastElementChild.remove();
   };
+  // how many comments fit: as many as the panel is tall (the panel is as tall as COLLABS next to it)
+  const maxN = () => { // as many as fit next to COLLABS (measured from that panel, so adding comments can't make room for more)
+    const c = document.querySelector('.portal > .p-collab'); if (!c || innerWidth <= 1100) return 5;
+    const kids = [...c.querySelectorAll('.cl-grid > *')], natural = kids.reduce((t, k) => t + k.offsetHeight, 0) + 12 * Math.max(0, kids.length - 1) + 90;
+    return Math.max(4, Math.min(9, Math.floor((natural - 150) / 96))); };
+  const fill = () => { let g = 0; while (list.childElementCount < maxN() && g++ < 10) push(); };
   for (let k = 0; k < 4; k++) push();
   const loop = () => { clearTimeout(timer); if (!sec.isConnected) return; if (!paused && !document.hidden) push(); timer = setTimeout(loop, reduce ? 6000 : 2600); };
   const sec = h('section', { class: 'p-mod p-voices' },
@@ -68,6 +74,7 @@ function build() {
       h('div', { class: 'vc-strip', 'aria-hidden': 'true' }, h('div', { class: 'vc-reel' }, ...AV.concat(AV).map(a => h('i', { style: `background-image:url('${abs(a.src)}')` })))), list, big,
       h('div', { class: 'vc-ctrl' }, h('button', { type: 'button', class: 'vc-btn', onclick: e => { paused = !paused; e.currentTarget.textContent = paused ? '▶ play' : '❚❚ pause'; } }, '❚❚ pause'), h('button', { type: 'button', class: 'vc-btn', onclick: push }, 'next ▸'), h('a', { class: 'vc-btn red', href: 'https://www.tiktok.com/@' + String(CFG.tiktok || 'shedithers').replace(/^@/, ''), target: '_blank', rel: 'noopener' }, 'say something on tiktok ▸'))));
   sec.addEventListener('mouseenter', () => { paused = true; }); sec.addEventListener('mouseleave', () => { paused = false; });
+  requestAnimationFrame(() => requestAnimationFrame(fill)); setTimeout(fill, 1200); addEventListener('resize', () => { fill(); while (list.childElementCount > maxN()) list.lastElementChild.remove(); });
   const io = new IntersectionObserver(es => { if (!sec.isConnected) { clearTimeout(timer); io.disconnect(); return; } if (es[0].isIntersecting) loop(); else clearTimeout(timer); }); io.observe(sec);
   return sec;
 }

@@ -81,10 +81,8 @@ if (view) { new MutationObserver(() => { edges(); placeRain(); }).observe(view, 
 /* ---------- 3. buy me a drink tab: the artist's logo figure instead of the emoji ---------- */
 function drinkTab() {
   const t = document.querySelector('.drink-tab'); if (!t || t.dataset.rm) return; t.dataset.rm = '1';
-  const ico = t.querySelector('.dt-ico'); if (ico) ico.remove();
-  const fig = document.createElement('img'); fig.className = 'dt-fig'; fig.src = 'assets/ui/logo-paper-sm.png'; fig.alt = ''; fig.draggable = false;
-  t.insertBefore(fig, t.querySelector('b'));
-  const sm = t.querySelector('small'); if (sm) sm.textContent = 'no pressure';
+  t.classList.add('dt2');
+  t.innerHTML = `<i class="dt2-thread" aria-hidden="true"></i><i class="dt2-stamp" aria-hidden="true" style="background-image:url('${new URL('assets/ui/art2/thumbprint.webp', location.href).href}')"></i><b>buy me a drink</b><small>no pressure</small>`;
 }
 drinkTab(); setTimeout(drinkTab, 800); setTimeout(drinkTab, 2500);
 // the little drink links elsewhere lose the emoji too
@@ -206,19 +204,30 @@ function watchWall() { document.querySelectorAll('video.vc-wall:not([data-io])')
 function loopsPanel() {
   const P = document.querySelector('.portal'); if (!P || P.querySelector('.p-loops') || typeof ARTWORKS === 'undefined') return;
   const lab = P.querySelector('.p-lab') || P.querySelector('.p-strips'); if (!lab) return;
-  const pics = ARTWORKS.filter(a => a.type !== 'video').slice(-16);
+  const A2 = f => new URL('assets/ui/art2/' + f, location.href).href;
+  const pics = ARTWORKS.filter(a => a.type !== 'video').slice(-8).map(a => new URL(a.src, location.href).href);
   const sec = document.createElement('section'); sec.className = 'p-mod p-loops';
-  const bars = pics.map((a, k) => `<i style="--k:${k};background-image:url('${new URL(a.src, location.href).href}')"></i>`).join('');
+  const rays = Array.from({ length: 40 }, (_, k) => `<i style="--a:${k * 9}deg;--k:${k}"><b></b></i>`).join('');
+  const lane = (name, k) => `<div class="lp-lane" style="--k:${k}"><span>${name}</span><div class="lp-wave"><i style="background-image:url('${pics[k % pics.length]}')"></i><i style="background-image:url('${pics[(k + 3) % pics.length]}')"></i></div></div>`;
   sec.innerHTML = `
+    <div class="lp-sky" aria-hidden="true" style="background-image:url('${A2('sky.webp')}')"></div>
+    <img class="lp-branch" src="${A2('leaves.webp')}" alt="" aria-hidden="true" draggable="false">
     <div class="p-head"><small>ループ</small><b>SHELOOPS</b><span>MY OTHER STUDIO · FOR MUSIC</span></div>
     <div class="lp-wrap">
-      <div class="lp-eq" aria-hidden="true">${bars}</div>
+      <div class="lp-deck" aria-hidden="true">
+        <div class="lp-rays">${rays}</div>
+        <div class="lp-disc"><i class="lp-label" style="background-image:url('${A2('no-face.webp')}')"></i><i class="lp-hole"></i></div>
+        <i class="lp-arm"></i>
+        <span class="lp-now">now spinning · your next song</span>
+      </div>
       <div class="lp-txt">
-        <p class="lp-lede">a free music studio that runs in your browser.</p>
-        <ul><li>record vocals over your own beats</li><li>make beats with drums, sounds and loops</li><li>mix it, master it, export it</li><li>design your cover art</li></ul>
-        <p class="lp-safe">your songs stay on your computer. nothing gets uploaded.</p>
+        <p class="lp-lede">make music in your browser.<br><em>keep every bit of it.</em></p>
+        <div class="lp-lanes"><i class="lp-head" aria-hidden="true"></i>
+          ${lane('vocals · record over your own beats', 0)}${lane('beats · drums, sounds, loops', 1)}${lane('mix + master · then export', 2)}${lane('cover art · design the sleeve', 3)}
+        </div>
+        <p class="lp-safe"><b>your songs are yours.</b> they stay on your computer, nothing gets uploaded anywhere. export them as WAV or MP3 whenever you want and do whatever you want with them.</p>
         <a class="lp-go" href="https://shedithersminded-sudo.github.io/sheloops/" target="_blank" rel="noopener">open SHELOOPS <i aria-hidden="true">▸</i></a>
-        <small class="lp-note">works best in chrome or edge. nothing to install.</small>
+        <small class="lp-note">free. works best in chrome or edge. nothing to install.</small>
       </div>
     </div>`;
   lab.after(sec);
@@ -227,4 +236,11 @@ function loopsPanel() {
 function bits3() { watchWall(); loopsPanel(); }
 if (view) new MutationObserver(bits3).observe(view, { childList: true, subtree: true });
 bits3();
+
+/* ---------- 12. floating players never cover the menu bar ---------- */
+function keepBelowBar() {
+  const bar = document.getElementById('bar'), top = bar ? bar.getBoundingClientRect().bottom + 8 : 70;
+  document.querySelectorAll('.tv, .art-player').forEach(el => { const r = el.getBoundingClientRect(); if (r.height && r.top < top && getComputedStyle(el).position === 'fixed') el.style.top = top + 'px'; });
+}
+setInterval(keepBelowBar, 1500); addEventListener('resize', keepBelowBar);
 })();
