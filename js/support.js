@@ -15,13 +15,13 @@ function openTip() {
   const qr = h('div', { class: 'tip-qr' }, h('span', { class: 'note' }, 'LOADING QR…'));
   const body = h('div', null,
     h('div', { class: 'tip-head' }, h('span', { class: 'tip-heart', html: '<svg viewBox="0 0 40 40"><use href="#i-mark"/></svg>' }), h('p', null, CFG.tipLine || 'Buy the artist a drink ♥')),
-    h('div', { class: 'drinks' }, (CFG.drinks || []).map(d => h('button', { class: 'drink', onclick: () => openExt(cashURL(d.amount)) }, d.icon ? h('i', { class: 'dk-ico' }, h('img', { src: `assets/ui/drinks/${d.icon}.svg`, alt: '', draggable: false })) : h('i', null, d.emoji || '♥'), h('b', null, d.label), h('span', null, '$' + d.amount)))),
-    h('div', { class: 'tip-row' }, h('button', { class: 'btn primary', onclick: () => openExt(cashURL()) }, `OPEN CASH APP · $${cashtag()}`), rbUser() ? h('button', { class: 'btn pink', onclick: () => openExt(shopURL()) }, 'STICKERS & PRINTS') : null),
+    h('div', { class: 'drinks' }, (CFG.drinks || []).map(d => h('button', { class: 'drink', onclick: () => openExt(cashURL(d.amount)) }, d.art ? h('i', { class: 'dk-ico' }, h('img', { src: `assets/ui/art2/${d.art}`, alt: '', draggable: false, style: 'object-fit:' + (d.fit || 'contain') })) : d.icon ? h('i', { class: 'dk-ico' }, h('img', { src: `assets/ui/drinks/${d.icon}.svg`, alt: '', draggable: false })) : h('i', null, d.emoji || '♥'), h('b', null, d.label), h('span', null, '$' + d.amount)))),
+    h('div', { class: 'tip-row' }, h('button', { class: 'btn primary', onclick: () => openExt(cashURL()) }, 'OPEN CASH APP ▸'), rbUser() ? h('button', { class: 'btn pink', onclick: () => openExt(shopURL()) }, 'STICKERS & PRINTS') : null),
     h('div', { class: 'tip-scan' }, qr, h('p', { class: 'note' }, 'ON A COMPUTER? SCAN WITH YOUR PHONE CAMERA TO TIP IN CASH APP.', h('br'), h('br'), 'Payments go straight to the artist through Cash App. SHEDITHERS never sees your payment details.')));
   const art = id => { const w = typeof artById === 'function' && artById(id); return w ? `url('${new URL(w.src, location.href).href}')` : 'none'; };
   $$('.drink', body).forEach((d, i) => d.style.setProperty('--art', art(['i-love-shedithers', 'not-in-my-nature', 'when-you-rain', 'mad-women-and-poets'][i % 4])));
   body.prepend(h('div', { class: 'tip-banner', 'aria-hidden': 'true' }));
-  const md = openModal({ title: 'BUY ME A DRINK', sub: '$' + cashtag().toUpperCase(), cls: 'sm', body, foot: h('span', { class: 'note' }, 'SHEDITHERS LOVES YOU ♥') });
+  const md = openModal({ title: 'BUY ME A DRINK', sub: 'no pressure', cls: 'sm', body, foot: h('span', { class: 'note' }, 'SHEDITHERS LOVES YOU ♥') });
   md.el.style.width = 'min(580px,94vw)'; md.el.classList.add('tip-modal');
   md.el.style.setProperty('--tip-banner', art('no-identity')); md.el.style.setProperty('--tip-guy', `url('${new URL('assets/archive/little-guy.png', location.href).href}')`);
   md.el.prepend(h('i', { class: 'tip-guy', 'aria-hidden': 'true' }));

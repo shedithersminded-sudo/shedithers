@@ -71,6 +71,11 @@ const ARTWORKS = [
   { id: 'motion-05', file: 'motion-05.mp4', type: 'video', w: 0, h: 0, title: 'SHEDITHERS · MOTION 05', col: 'motion', date: '2026-06-30', medium: 'Moving image', words: '' },
   { id: 'motion-06', file: 'motion-06.mp4', type: 'video', w: 0, h: 0, title: 'SHEDITHERS · MOTION 06', col: 'motion', date: '2026-07-02', medium: 'Moving image', words: '' },
   { id: 'shesdithers', file: 'shesdithers.mp4', type: 'video', w: 0, h: 0, title: 'SHESDITHERS', col: 'motion', date: '2026-08-13', medium: 'Moving image', words: '' },
+  { id: 'i-dont-want-a-face', file: 'i-dont-want-a-face.jpg', w: 2000, h: 1658, title: 'I DONT WANT A FACE', col: 'drawing', date: '2026-11-20', medium: 'Painting + print', words: 'i dont want a face.' },
+  { id: 'doing-it-scared', file: 'doing-it-scared.jpg', w: 1500, h: 2000, title: 'DOING IT SCARED', col: 'collage', date: '2026-11-20', medium: 'Digital collage', words: 'doing it scared is just being brave.' },
+  { id: 'sky-lights', file: 'sky-lights.jpg', w: 2000, h: 1500, title: 'UNTITLED (SKY)', col: 'objects', date: '2026-11-20', medium: 'Photograph', words: '' },
+  { id: 'please-no-more', file: 'understand.mp4', type: 'video', w: 960, h: 678, title: 'PLEASE NO MORE', col: 'motion', date: '2026-11-11', medium: 'Moving image', words: 'understand?' },
+  { id: 'meet-me-in-my-dreams', file: 'meet-me-in-my-dreams.mp4', type: 'video', w: 720, h: 960, title: 'MEET ME IN MY DREAMS', col: 'motion', date: '2026-11-18', medium: 'Moving image', words: 'meet me in my dreams' },
 ];
 const UI_HANDS = 'assets/ui/hands.mp4'; /* the artist asked for this one in the interface, not the exhibit */
 COLLECTIONS.push({ id: 'screens', code: 'CODE_006', name: 'WIDESCREEN', sub: 'LANDSCAPE WORKS', color: '#a9a28a', ink: '#1d1b16' });

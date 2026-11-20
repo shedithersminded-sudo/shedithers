@@ -95,18 +95,17 @@ const SHD_CONFIG = {
   email: 'shedithersminded@gmail.com',
   // the tip jar note, one line per row: [style, words]. styles: marker, type, hand, stamp, small
   tipLines: [
-    ['marker', 'everything here is free.'],
-    ['type', 'no paywall. no sign up. look as long as u want.'],
-    ['hand', 'if a piece got under ur skin, or u made something in the dither lab...'],
-    ['stamp', 'buy me a drink'],
-    ['small', 'it goes straight to me. it keeps the site up and the weird stuff coming ♥'],
+    ['marker', 'all of this is free.'],
+    ['hand', 'doing it scared is just being brave.'],
+    ['type', 'if something here stayed with u, u can buy me a drink.'],
+    ['small', 'no pressure. looking is enough.'],
   ],
   tipLine: 'no paywall, no catch. stay as long as u want. if u liked looking at my art, or made something cool in the editor, maybe buy me a drink. it keeps the lights on and the weird stuff coming ♥',
-  // icon = little doodle in assets/ui/drinks/ (emoji is the fallback)
+  // each drink wears one of the artist's pieces (file in assets/ui/art2/). fit 'cover' fills the square.
   drinks: [
-    { label: 'SLUSHY', emoji: '🍧', icon: 'slushy', amount: 3 },
-    { label: 'FRUIT CUP', emoji: '🍓', icon: 'fruit', amount: 5 },
-    { label: 'COCKTAIL', emoji: '🍹', icon: 'cocktail', amount: 10 },
-    { label: 'ROUND FOR THE STUDIO', emoji: '🍾', icon: 'bottle', amount: 25 },
+    { label: 'a sip', art: 'thumbprint.webp', amount: 3 },
+    { label: 'a refill', art: 'brave.webp', fit: 'cover', amount: 5 },
+    { label: 'the whole drink', art: 'no-face.webp', amount: 10 },
+    { label: 'keep the lights on', art: 'sky.webp', fit: 'cover', amount: 25 },
   ],
 };

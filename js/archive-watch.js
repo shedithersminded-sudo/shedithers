@@ -151,7 +151,7 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     const stop = mk('ic-stop', '✕', 'Stop the song');
     const restart = mk('ic-restart', '⏮', 'Restart the song');
     const skip = mk('ic-skip', '⏭', 'Skip to the next song');
-    const tipB = mk('ic-tip', '', 'Buy me a drink'); tipB.innerHTML = '<img src="assets/ui/drinks/cocktail.svg" alt="">'; tipB.onclick = e => { e.stopPropagation(); window.SHD_DRINK && window.SHD_DRINK(); };
+    const tipB = mk('ic-tip', '', 'Buy me a drink'); tipB.innerHTML = '<img src="assets/ui/art2/thumbprint.webp" alt="">'; tipB.onclick = e => { e.stopPropagation(); window.SHD_DRINK && window.SHD_DRINK(); };
     chip.append(restart, pp, skip, mute, slider, tipB, stop);
     const paintPP = () => { const p = a.paused; pp.textContent = p ? '▶' : '❚❚'; pp.setAttribute('aria-label', p ? 'Play the song' : 'Pause the song'); pp.title = pp.getAttribute('aria-label'); chip.classList.toggle('paused', p); };
     const paintVol = () => { const v = fading ? vol : a.volume, m = a.muted || v === 0; mute.textContent = m ? '🔇' : v < 0.4 ? '🔉' : '🔊'; mute.setAttribute('aria-label', m ? 'Unmute the song' : 'Mute the song'); mute.title = mute.getAttribute('aria-label'); slider.value = a.muted ? 0 : Math.round(v * 100); };
@@ -304,7 +304,7 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
     modal.append(card); modal.addEventListener('click', ev => { if (ev.target === modal) close(); });
     document.body.append(modal); { const m = modal; requestAnimationFrame(() => m.classList.add('in')); } document.addEventListener('keydown', key, true); x.focus(); qr(box);
   }
-  const openCounted = e => { if (!modal && window.shdCount) window.shdCount('tip-jar-opened', 'Opened the tip jar'); open(e); };
+  const openCounted = e => { if (!modal && window.shdCount) window.shdCount('tip-jar-opened', 'Opened the tip jar'); (window.SHD_TIP || open)(e); };
   window.SHD_DRINK = openCounted;
   // the side tab: a hanging bar sign — tape on top, cocktail doodle, scrawled words, a drip
   const tab = el('button', 'drink-tab'); tab.type = 'button'; tab.setAttribute('aria-label', 'Buy me a drink');
@@ -316,15 +316,15 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
   const mini = (cls, html, label) => { const b = el('button', 'drink-spot ' + cls); b.type = 'button'; b.setAttribute('aria-label', label || 'Buy me a drink'); b.innerHTML = html; b.onclick = e => { e.preventDefault(); e.stopPropagation(); openCounted(); }; return b; };
   const place = () => {
     const row = document.querySelector('.p-pop .pp-row'); // home: a slushy sticker next to the spinning CD
-    if (row && !row.querySelector('.ds-slushy')) row.append(mini('ds-slushy', '<img src="assets/ui/drinks/slushy.svg" alt=""><span>buy me<br>a slushy</span>'));
+    if (row && !row.querySelector('.ds-slushy')) row.append(mini('ds-slushy', '<img class="ds-art" src="assets/ui/art2/thumbprint.webp" alt=""><span>buy me<br>a drink</span>'));
     const foot = document.querySelector('.p-foot'); // home footer links
-    if (foot && !foot.querySelector('.ds-foot')) { const a = mini('ds-foot pf-badge', '🍹 buy me a drink'); const pf = foot.querySelector('.pf-badge.dim'); pf ? pf.before(a) : foot.append(a); }
+    if (foot && !foot.querySelector('.ds-foot')) { const a = mini('ds-foot pf-badge', '✦ buy me a drink'); const pf = foot.querySelector('.pf-badge.dim'); pf ? pf.before(a) : foot.append(a); }
     const ctrl = document.querySelector('.p-deck .d3-ctrl'); // the deck: a tip button with the cards
-    if (ctrl && !ctrl.querySelector('.ds-deck')) ctrl.append(mini('ds-deck d3-btn', '<img src="assets/ui/drinks/fruit.svg" alt=""> tip the artist'));
+    if (ctrl && !ctrl.querySelector('.ds-deck')) ctrl.append(mini('ds-deck d3-btn', '<img class="ds-art" src="assets/ui/art2/no-face.webp" alt=""> tip the artist'));
     const va = document.querySelector('.v-actions'); // the viewer: "liked this one?"
-    if (va && !va.querySelector('.ds-view')) va.append(mini('ds-view v-btn', '🍹 liked this one?', 'Liked this piece? Buy me a drink'));
+    if (va && !va.querySelector('.ds-view')) va.append(mini('ds-view v-btn', '✦ liked this one?', 'Liked this piece? Buy me a drink'));
     const about = document.querySelector('.about-card .rights'); // about page: a bottle sticker by the rights line
-    if (about && !document.querySelector('.ds-about')) about.before(mini('ds-about', '<img src="assets/ui/drinks/bottle.svg" alt=""><span>round for the studio?</span>'));
+    if (about && !document.querySelector('.ds-about')) about.before(mini('ds-about', '<img class="ds-art" src="assets/ui/art2/sky.webp" alt=""><span>keep the lights on?</span>'));
   };
   place(); const view = document.getElementById('view'); if (view) new MutationObserver(place).observe(view, { childList: true, subtree: true });
 })();
