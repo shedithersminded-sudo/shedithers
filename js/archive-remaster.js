@@ -454,4 +454,56 @@ hackDir();
 /* ---------- 18. (v4.2.0) make a mess is retired; clear what it saved ---------- */
 try { localStorage.removeItem('shd.mess2'); localStorage.removeItem('shd.mess'); } catch (_) { }
 
+
+/* ---------- 19. DREAM MODE (top right): the site dims and the artist's pieces drift by like an old screensaver.
+   the song keeps playing. tap a piece to open it, tap anywhere else (or esc) to wake up ---------- */
+(() => {
+  if (typeof ARTWORKS === 'undefined') return;
+  const U = p => new URL(p, location.href).href;
+  const POOL = ARTWORKS.filter(a => a.type !== 'video' && a.w && a.h && a.id !== 'play-online');
+  const LINES = ['meet me in my dreams', 'are we alive yet?', 'doing it scared is just being brave', 'who will you be?', 'i look prettier in fragments', 'understanding me is understanding we', 'offline is the new luxury', 'strangers with familiar eyes', 'let the light in', 'stay a little strange', 'it\u2019s all in your head', 'shedithers loves you'];
+  const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'dream-btn'; btn.setAttribute('aria-label', 'Dream mode: watch the art drift by');
+  btn.innerHTML = `<i class="db-moon" aria-hidden="true" style="background-image:url('${U('assets/ui/intro-art/sky-2.jpg')}')"></i><b>DREAM MODE</b>`;
+  document.body.append(btn);
+  let ov = null, spawnT = 0, lineT = 0, li = 0;
+  const pick = () => POOL[Math.floor(Math.random() * POOL.length)];
+  function fly(pre) {
+    if (!ov) return; const field = ov.querySelector('.dm-field'); if (field.children.length > 10) return;
+    const a = pick(), z = Math.random(), w = Math.round(80 + z * 150), ltr = Math.random() < .5, dur = 34 - z * 16;
+    const el = document.createElement('button'); el.type = 'button'; el.className = 'dm-p'; el.dataset.id = a.id; el.setAttribute('aria-label', 'Open ' + a.title);
+    el.style.cssText = `--w:${w}px;--y:${(4 + Math.random() * 72).toFixed(1)}vh;--x0:${ltr ? `-${w + 60}px` : `calc(100vw + 60px)`};--x1:${ltr ? `calc(100vw + 60px)` : `-${w + 60}px`};--r0:${((Math.random() - .5) * 24).toFixed(1)}deg;--r1:${((Math.random() - .5) * 24).toFixed(1)}deg;--d:${dur.toFixed(1)}s;--o:${(.45 + z * .55).toFixed(2)};z-index:${Math.round(z * 10)};animation-delay:${pre ? -(Math.random() * dur * .8).toFixed(1) : 0}s`;
+    el.innerHTML = `<span class="dm-bob" style="--bd:${(4 + Math.random() * 4).toFixed(1)}s"><span class="dm-img" style="background-image:url('${U('assets/ui/intro-art/' + a.id + '.jpg')}')"></span></span>`;
+    el.addEventListener('animationend', e => { if (e.target === el) el.remove(); });
+    field.append(el);
+  }
+  function nextLine() { if (!ov) return; const l = ov.querySelector('.dm-line'); l.classList.remove('on'); setTimeout(() => { if (!ov) return; l.textContent = LINES[li++ % LINES.length]; l.classList.add('on'); }, 900); }
+  function open() {
+    if (ov) return;
+    ov = document.createElement('div'); ov.className = 'dm'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Dream mode');
+    const S = window.SHD_SONG;
+    ov.innerHTML = `<i class="dm-sky" aria-hidden="true" style="background-image:url('${U('assets/archive/sky-2.jpg')}')"></i><i class="dm-dots" aria-hidden="true"></i>
+      <div class="dm-field"></div>
+      <p class="dm-line" aria-live="polite"></p>
+      <div class="dm-top"><small>ドリーム · dream mode</small>${S && S.title ? `<span class="dm-song">\u266a ${S.title} \u00b7 ${S.artist}</span>` : ''}<button type="button" class="dm-x">wake up \u2715</button></div>
+      <p class="dm-hint">tap a piece to open it \u00b7 tap anywhere else to wake up</p>`;
+    document.body.append(ov); document.body.classList.add('dreaming'); btn.setAttribute('aria-pressed', 'true');
+    for (let i = 0; i < 7; i++) fly(true);
+    spawnT = setInterval(() => { if (!document.hidden) fly(false); }, 2600);
+    nextLine(); lineT = setInterval(nextLine, 7000);
+    let off = false; try { off = !!localStorage.getItem('shd.songOff'); } catch (_) { }
+    if (S && !S.playing && !off) S.play();
+    ov.addEventListener('click', e => { const p = e.target.closest('.dm-p'); if (p) { close(); location.hash = `#/work/${p.dataset.id}`; return; } close(); });
+    ov.querySelector('.dm-x').focus();
+    window.shdCount && window.shdCount('dream-mode', 'Opened dream mode');
+  }
+  function close() {
+    if (!ov) return; clearInterval(spawnT); clearInterval(lineT);
+    const o = ov; ov = null; o.classList.add('out'); document.body.classList.remove('dreaming'); btn.setAttribute('aria-pressed', 'false');
+    setTimeout(() => o.remove(), 600); btn.focus({ preventScroll: true });
+  }
+  btn.addEventListener('click', open);
+  addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  addEventListener('hashchange', () => { if (ov) close(); });
+  document.addEventListener('visibilitychange', () => { if (ov && !document.hidden) { const f = ov.querySelector('.dm-field'); for (let i = f.children.length; i < 6; i++) fly(true); } });
+})();
 })();

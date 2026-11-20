@@ -47,7 +47,8 @@ window.SHD_PORTAL = function (view, X) {
   const news = [
     ['11/20/26', 'MORE', ['5 more pieces + 2 moving ones. ', L('#/work/its-all-in-your-head', 'it’s all in your head'), ', ', L('#/work/distance', 'strangers with familiar eyes'), ', ', L('#/work/let-the-light-in', 'let the light in'), '.']],
     ['11/20/26', 'NEW', ['20 new pieces + 9 new moving ones. start with ', L('#/work/the-encircled-one', 'the encircled one'), ', ', L('#/work/self-exe', 'self.exe still installing'), ', ', L('#/work/sad-angels', 'sad angels need friends too'), '.']],
-    ['11/20/26', 'THE WALL', ['the newest pieces are pinned up loose on the home page. drag them around, make a mess.']],
+    ['11/20/26', 'THE DARKROOM', ['prints hang in the dark on the home page. you are the only light. tap one to develop it.']],
+    ['11/20/26', 'DREAM MODE', ['top right. the site goes quiet and my pieces drift by. tap one to wake up inside it.']],
     ['11/20/26', 'SOUND', ['the site has its own song now. turn it up or down in now playing.']],
     ['11/20/26', 'SHELOOPS', ['my other studio, for music. ', L('https://shedithersminded-sudo.github.io/sheloops/', 'make a song', 1), ', keep every bit of it.']],
     ['11/20/26', 'THE DECK', ['draw a card. every piece has a riddle.']],
