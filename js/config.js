@@ -18,7 +18,9 @@ const SHD_CONFIG = {
   // evo on SoundCloud (his songs play on the site), the part after soundcloud.com/
   soundcloud: 'evosrevenge',
   // A song to point people to (full SoundCloud link). Empty = hidden.
-  soundcloudSong: 'https://soundcloud.com/sinnceree/follow-me-to-heaven',
+  // the site song, through YouTube's player: quiet during the intro, full once inside. '' = off
+  introSong: { youtube: 'SjRaHQpD30E' },
+  soundcloudSong: '', // old intro song, off since v3.7.1
   // sinnceree (evo's brother) on SoundCloud, the part after soundcloud.com/
   soundcloudSinnceree: 'sinnceree',
   // TikTok TV: paste links to your favourite TikToks here (e.g. 'https://www.tiktok.com/@shedithers/video/1234567890').

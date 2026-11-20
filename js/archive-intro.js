@@ -149,10 +149,13 @@ function go(dx, dy) {
     if (e < IN + HOLD + OUT) requestAnimationFrame(step); else { if (!opened) openArchive(); finish(); }
   }
   requestAnimationFrame(step);
+  // safety: if animation frames stall (hidden tab, slow device), still open the archive
+  setTimeout(() => { if (!root.isConnected) return; if (!opened) { opened = true; openArchive(); } finish(); }, IN + HOLD + OUT + 900);
 }
 const ease = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
 function openArchive() { const b = document.getElementById('enter'); if (b) b.click(); else { gate.remove(); document.body.classList.add('entered'); } }
 function finish() {
+  if (!root.isConnected) return;
   cancelAnimationFrame(raf); removeEventListener('resize', size);
   if (scr) scr.stop();
   root.remove(); document.body.classList.remove('dg-on');

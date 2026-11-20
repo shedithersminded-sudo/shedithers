@@ -76,7 +76,7 @@ const gateBtn = $('#enter'); if (gateBtn) gateBtn.after(h('a', { class: 'gate-la
   tog.onclick = e => { e.stopPropagation(); on = !on; try { localStorage.setItem('shd.introSound', on ? 'on' : 'off'); } catch (_) { } paint(); };
   paint(); enterBtn.parentNode.insertBefore(tog, enterBtn);
   enterBtn.addEventListener('click', () => {
-    if (!on) return;
+    return; // v3.7.1: the old songs (Follow Me To Heaven, Sorry, you kno u) are off the site; the YouTube site song (archive-song.js) replaces them
     let vol = 0.3; try { const v = parseFloat(localStorage.getItem('shd.introVol')); if (v >= 0 && v <= 1) vol = v; } catch (_) { }
     // the site's songs, played in order: "Follow Me To Heaven" by sinnceree (from SoundCloud), "Sorry" by evo & crevo, then "you kno u" by evo
     const SC = (typeof SHD_CONFIG !== 'undefined' && SHD_CONFIG.soundcloud) ? 'https://soundcloud.com/' + SHD_CONFIG.soundcloud : '';
