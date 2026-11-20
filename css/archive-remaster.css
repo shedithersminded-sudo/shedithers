@@ -544,3 +544,59 @@ body[data-route=works] .lab-float{display:none!important}
 body[data-route=works] .works-head{display:flex!important;flex-direction:column;align-items:center;margin:0 auto!important;text-align:center!important;gap:2px}
 body[data-route=works] .works-head p{position:static!important;display:block!important;margin:4px 0 10px!important;max-width:none!important}
 body[data-route=works] .works-head h2{transform:rotate(-1deg)!important}
+
+/* ===== v3.9.4: the top bar, remastered (the logo stays). Dark glass, a thin red/blue glow line, plain lowercase
+   links with a light underline, the drink link as a small red dot, the lab as an outlined pill ===== */
+.bar{background:linear-gradient(180deg,rgba(11,10,9,.94),rgba(11,10,9,.82))!important;color:#e9e3d1!important;clip-path:none!important;
+  box-shadow:0 1px 0 rgba(255,35,56,.55),0 2px 14px rgba(255,35,56,.25),0 8px 24px rgba(0,0,0,.45)!important;padding-bottom:0!important}
+.bar::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,#2f7dff 20%,#ff2338 50%,#2f7dff 80%,transparent);opacity:.8;pointer-events:none}
+body.night .bar{background:linear-gradient(180deg,rgba(14,16,40,.94),rgba(14,16,40,.82))!important}
+.brand span{font:800 22px/1 'Syne',sans-serif!important;letter-spacing:-.01em!important;color:#e9e3d1}
+.brand small{font:500 9px 'JetBrains Mono',monospace!important;letter-spacing:.3em!important;color:#d4ff00;margin-top:3px}
+.nav{gap:2px!important;align-items:center}
+.nav a{position:relative;min-height:38px!important;padding:0 12px!important;background:none!important;color:rgba(233,227,209,.82)!important;
+  font:500 12px 'JetBrains Mono',monospace!important;letter-spacing:.16em!important;text-transform:lowercase;transform:none!important;box-shadow:none!important;border-radius:999px;transition:color .2s}
+.nav a::after{content:'';position:absolute;left:12px;right:12px;bottom:7px;height:1px;background:#d4ff00;box-shadow:0 0 6px #d4ff00;transform:scaleX(0);transform-origin:0 50%;transition:transform .3s cubic-bezier(.3,1.4,.5,1)}
+.nav a:hover,.nav a:focus-visible{color:#fff!important;outline:none}
+.nav a:hover::after,.nav a:focus-visible::after{transform:scaleX(1)}
+.nav a.on{color:#ff5a3c!important}
+.nav a.on::after{transform:scaleX(1);background:#ff2338;box-shadow:0 0 8px #ff2338}
+.nav a.drink-nav{color:#e9e3d1!important}
+.nav a.drink-nav::before{content:'';display:inline-block;width:7px;height:7px;margin-right:8px;border-radius:50%;background:#ff2338;box-shadow:0 0 8px #ff2338}
+.nav a.lab{margin-left:8px;color:#d4ff00!important;box-shadow:0 0 0 1px rgba(212,255,0,.55)!important}
+.nav a.lab::after{display:none}
+.nav a.lab:hover{box-shadow:0 0 0 1px #d4ff00,0 0 14px rgba(212,255,0,.35)!important}
+.nav-btn i{background:#e9e3d1!important}
+@media (max-width:760px){
+  .nav{background:rgba(11,10,9,.97)!important;box-shadow:0 1px 0 rgba(255,35,56,.5),0 20px 40px rgba(0,0,0,.6)!important}
+  .nav a{min-height:50px!important;font-size:15px!important;justify-content:flex-start}
+  .nav a.lab{margin-left:0;align-self:flex-start}
+  .brand span{font-size:19px!important}
+}
+/* collab form: the title fits its card (it was cut off at SOMETHING) */
+.cb-card h3{font-size:clamp(30px,7.2vw,46px)!important;line-height:.95!important;letter-spacing:-.02em!important;overflow-wrap:anywhere}
+.nav a.drink-nav::before{display:none}.nav a.drink-nav{color:#ff5a3c!important}
+
+/* ===== v3.9.4: NOW PLAYING ===== */
+.p-pop .ds-slushy{display:none!important}
+.pp-vol{display:flex;align-items:center;gap:16px;min-width:260px;padding:16px 18px;border-radius:14px;background:rgba(11,10,9,.8);box-shadow:0 0 0 1px rgba(233,227,209,.14);color:#e9e3d1}
+.pp-vol.none{opacity:.55}
+.pv-play{position:relative;flex:none;width:64px;height:64px;border-radius:50%;border:0;background:#c3141c;box-shadow:0 0 0 2px #e9e3d1,0 0 18px rgba(255,35,56,.5);cursor:pointer;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.pv-play:hover{transform:scale(1.06)}
+.pv-play i{position:absolute;left:50%;top:50%;width:0;height:0;margin:-11px 0 0 -7px;border-left:20px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent}
+.pp-vol.on .pv-play i{width:18px;height:20px;margin:-10px 0 0 -9px;border:0;background:linear-gradient(90deg,#fff 0 6px,transparent 6px 12px,#fff 12px 18px)}
+.pp-vol.on .pv-play{animation:pvBeat 1.2s ease-in-out infinite}
+@keyframes pvBeat{50%{box-shadow:0 0 0 2px #e9e3d1,0 0 30px rgba(255,35,56,.85)}}
+.pv-body{display:grid;gap:2px;min-width:0}
+.pv-body small{font:500 10px 'JetBrains Mono',monospace;letter-spacing:.24em;text-transform:uppercase;color:#d4ff00}
+.pv-name{font:400 22px/1.05 'Patrick Hand',cursive;color:#efe8d2}
+.pv-body em{font:500 10px 'JetBrains Mono',monospace;font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:rgba(233,227,209,.6)}
+.pv-slide{display:flex;align-items:center;gap:8px;margin-top:8px;font:500 9px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(233,227,209,.6)}
+.pv-slide input{-webkit-appearance:none;appearance:none;width:150px;height:6px;border-radius:3px;background:linear-gradient(90deg,#ff2338 0 var(--v,35%),rgba(233,227,209,.18) var(--v,35%));outline:none;cursor:pointer}
+.pv-slide input::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#d4ff00;box-shadow:0 0 0 2px #0b0a09,0 0 10px rgba(212,255,0,.6)}
+.pv-slide input::-moz-range-thumb{width:18px;height:18px;border:0;border-radius:50%;background:#d4ff00;box-shadow:0 0 0 2px #0b0a09,0 0 10px rgba(212,255,0,.6)}
+.pv-slide input:focus-visible{box-shadow:0 0 0 2px #d4ff00}
+.pv-num{font:500 11px 'JetBrains Mono',monospace;color:#ff5a3c}
+.pp-pix img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 1px 0 rgba(0,0,0,.25))}
+.pp-pix{width:56%!important;height:56%!important}
+@media (max-width:760px){.pp-vol{min-width:0;width:100%}.pv-slide input{width:120px}}

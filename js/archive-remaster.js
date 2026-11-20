@@ -272,4 +272,34 @@ function dressEdit() {
 }
 if (view) new MutationObserver(dressEdit).observe(view, { childList: true, subtree: true });
 dressEdit();
+
+/* ---------- 14. NOW PLAYING: a volume control for the site song (no speaker), the seal wears the logo ---------- */
+function dressPop() {
+  const pop = document.querySelector('.portal > .p-pop'); if (!pop || pop.dataset.rm) return; pop.dataset.rm = '1';
+  const sub = pop.querySelector('.p-head span'); if (sub) sub.textContent = 'TURN IT UP OR DOWN';
+  const S = window.SHD_SONG, row = pop.querySelector('.pp-row'), spk = pop.querySelector('.pp-spk');
+  const vol = document.createElement('div'); vol.className = 'pp-vol';
+  const v0 = S ? Math.round(S.volume * 100) : 35;
+  vol.innerHTML = `<button type="button" class="pv-play" aria-label="Play the music"><i aria-hidden="true"></i></button>
+    <div class="pv-body"><small>the sound</small><b class="pv-name">${S && S.title ? S.title : 'no song yet'}</b>${S && S.artist ? `<em>${S.artist}</em>` : ''}
+    <label class="pv-slide"><span class="pv-lo" aria-hidden="true">quiet</span><input type="range" min="0" max="100" value="${v0}" aria-label="Music volume"><span class="pv-hi" aria-hidden="true">loud</span></label>
+    <span class="pv-num">${v0}</span></div>`;
+  if (spk) spk.replaceWith(vol); else if (row) row.prepend(vol);
+  const btn = vol.querySelector('.pv-play'), rng = vol.querySelector('input'), num = vol.querySelector('.pv-num');
+  const sync = () => { const p = !!(window.SHD_SONG && window.SHD_SONG.playing); vol.classList.toggle('on', p); btn.setAttribute('aria-label', p ? 'Pause the music' : 'Play the music'); };
+  btn.onclick = () => { if (window.SHD_SONG) window.SHD_SONG.toggle(); };
+  rng.oninput = () => { num.textContent = rng.value; rng.style.setProperty('--v', rng.value + '%'); if (window.SHD_SONG) window.SHD_SONG.setVolume(rng.value / 100); };
+  rng.style.setProperty('--v', v0 + '%');
+  document.addEventListener('shd-song', sync); sync();
+  const none = () => { vol.classList.add('none'); vol.querySelector('.pv-name').textContent = 'no song yet'; const em = vol.querySelector('.pv-body em'); if (em) em.remove(); };
+  if (!S) none(); else if (S.available) S.available.then(a => { if (!a) none(); });
+  // the seal: the artist's logo in the middle, the artist's own line around it
+  const seal = pop.querySelector('.pp-seal');
+  if (seal) {
+    const tp = seal.querySelector('textPath'); if (tp) { tp.textContent = 'doing it scared is just being brave ✶ shedithers ✶ '; const t = tp.parentNode; t.setAttribute('font-family', "'JetBrains Mono', monospace"); t.setAttribute('font-size', '14'); t.setAttribute('letter-spacing', '1'); t.setAttribute('font-weight', '500'); tp.setAttribute('textLength', '486'); tp.setAttribute('lengthAdjust', 'spacing'); }
+    const pix = seal.querySelector('.pp-pix'); if (pix) pix.innerHTML = `<img src="${new URL('assets/ui/logo-red.png', location.href).href}" alt="" draggable="false">`;
+  }
+}
+if (view) new MutationObserver(dressPop).observe(view, { childList: true, subtree: true });
+dressPop();
 })();

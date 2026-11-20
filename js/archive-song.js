@@ -8,7 +8,8 @@ const CFG = typeof SHD_CONFIG !== 'undefined' ? SHD_CONFIG : {};
 const S = CFG.siteSong || {}; const src = String(S.src || '').trim(); if (!src) return;
 const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const MUFFLE = 320, OPEN = 20000, VOL = .7;
+const MUFFLE = 320, OPEN = 20000;
+let VOL = .35; try { const v = parseFloat(localStorage.getItem('shd.songVol')); if (v >= 0 && v <= 1) VOL = v; } catch (_) { } // starts quiet so nobody jumps
 let ctx = null, au = null, lp = null, gain = null, ok = null, playing = false;
 const inside = () => document.body.classList.contains('entered');
 function esc(t) { return String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
@@ -52,11 +53,17 @@ function openWall() {
   if (playing) { gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(gain.gain.value, t); gain.gain.linearRampToValueAtTime(VOL, t + d); }
 }
 function paint() {
+  document.dispatchEvent(new CustomEvent('shd-song', { detail: { volume: VOL, playing } }));
   tag.hidden = !playing || !inside();
   const b = document.querySelector('.rm-music'); if (b) { b.classList.toggle('playing', playing); b.setAttribute('aria-label', playing ? 'Pause the music' : 'Play the music'); }
 }
 tag.onclick = pause;
-window.SHD_SONG = { play, pause, toggle, get playing() { return playing; } };
+function setVolume(v) {
+  VOL = Math.max(0, Math.min(1, v)); try { localStorage.setItem('shd.songVol', String(VOL)); } catch (_) { }
+  if (gain && playing) { const t = ctx.currentTime; gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(gain.gain.value, t); gain.gain.linearRampToValueAtTime(inside() ? VOL : VOL * .8, t + .12); }
+  document.dispatchEvent(new CustomEvent('shd-song', { detail: { volume: VOL, playing } }));
+}
+window.SHD_SONG = { play, pause, toggle, setVolume, get volume() { return VOL; }, get playing() { return playing; }, title: S.title || '', artist: S.artist || '', available: ok };
 
 // intro: the first press on the logo starts it, muffled through the wall
 let seen = false; try { seen = sessionStorage.getItem('shd.archive.in') === '1'; } catch (_) { }

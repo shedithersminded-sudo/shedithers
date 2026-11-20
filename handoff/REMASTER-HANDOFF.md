@@ -1,6 +1,6 @@
 # SHEDITHERS archive: handoff
 
-Written 2026-11-20, after **v3.9.3**. Give this whole file to whoever picks the work up next, human or AI. It replaces the older remaster handoff (the old screenshots in `handoff/shots/` show problems that are now fixed).
+Written 2026-11-20, after **v3.9.4**. Give this whole file to whoever picks the work up next, human or AI. It replaces the older remaster handoff (the old screenshots in `handoff/shots/` show problems that are now fixed).
 
 ---
 
@@ -37,8 +37,8 @@ Clear `sessionStorage` to see the intro again.
 **Test sizes:** PC 1440x900, tablet 1024x768 and 768x1024, phone 375x812. Check: no sideways scroll (`document.documentElement.scrollWidth === innerWidth`), nothing floating over the menu bar, no console errors.
 
 **Release (every time):**
-1. Bump the cache number on every css/js link in both pages: `sed -i 's/?v=393/?v=394/g' index.html archive.html`
-2. Bump `VERSION` in `sw.js` (`shedithers-v3.9.3` becomes `shedithers-v3.9.4`).
+1. Bump the cache number on every css/js link in both pages: `sed -i 's/?v=394/?v=395/g' index.html archive.html`
+2. Bump `VERSION` in `sw.js` (`shedithers-v3.9.4` becomes `shedithers-v3.9.5`).
 3. Add one line to `HANDOFF.md`.
 4. Commit (message ends with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` if an AI made it), push `main`.
 5. Wait until `https://shedithersminded-sudo.github.io/shedithers/sw.js` serves the new VERSION.
@@ -69,10 +69,13 @@ Clear `sessionStorage` to see the intro again.
 | `assets/ui/art2/` | the artist's newest art prepared for the UI: cutouts (`no-face`, `thumbprint`, `leaves`, `leaf0-2`), `brave`, `sky`, videos `dreams.mp4`, `understand.mp4` |
 | `HANDOFF.md` | version history |
 
-## 5. What is on the site now (v3.5.0 to v3.9.3)
+## 5. What is on the site now (v3.5.0 to v3.9.4)
 
 - **Intro:** only the drag intro shows (old gate hidden from the first frame). The artist's art keeps morphing in dither behind the HD logo. The logo pulses red/lime rings and shakes every few seconds until grabbed. First press: low bass buzz. Dragging: glitter sparkle sounds and a red/lime dithered trail. Throw it far enough: rising shimmer, the screen dithers shut in that direction, the archive opens, it dithers open. Arrow keys / Enter / skip also work.
 - **Music:** YouTube is gone. `archive-song.js` plays `CFG.siteSong.src` (muffled through a wall during the intro, opening up once inside). Inside, only a tiny handwritten line shows above the round red MUSIC button, which plays/pauses. **See open item 1: the file is held back.** The visitor's own music player is still there (hint bar "MUSIC").
+- **Top bar (v3.9.4):** the artist's logo stays; dark glass bar with a thin red/blue glow line, plain lowercase mono links with a lime underline, active page in red, the lab as a lime outlined pill.
+- **NOW PLAYING (v3.9.4):** the "sound system" speaker is gone; in its place a volume control for the site song (play/pause + a slider, starts at 35% so nobody jumps, remembered in `localStorage shd.songVol`). The spinning seal has the artist's red logo in the middle and "doing it scared is just being brave ✶ shedithers ✶" around it. The little buy me a drink sticker next to NEW ART is hidden. Built in `archive-remaster.js` section 14 (it re-dresses the panel from `archive-pop.js`).
+- **Collab form:** the LET'S MAKE SOMETHING title fits its card now.
 - **Home layout:** one fixed grid on PC (over 1100px), one column below. Rows: logo + news / deck / now playing / comments + collabs / collections / file directory + Dither Lab promo / instant photo / **SHELOOPS** / archive film / wallpaper + links / motion lab + sign the list / word ticker / footer.
 - **Panels:** dark glass, steady red or blue glow (alternating), a light travelling around each border (a rotating layer, GPU-cheap). Code rain "shedithers" falls behind everything (30 fps, pre-rendered letters).
 - **Fonts (try 1, artist hasn't confirmed):** titles Syne 800, reading text Space Grotesk, labels JetBrains Mono, handwriting Patrick Hand. Swap via `--rm-title` / `--rm-body` in `archive-remaster.css`.
