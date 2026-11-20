@@ -24,6 +24,9 @@ const SHD_CONFIG = {
   // TikTok TV: paste links to your favourite TikToks here (e.g. 'https://www.tiktok.com/@shedithers/video/1234567890').
   // Leave empty to show your whole @shedithers feed instead.
   tiktokVideos: [
+    'https://www.tiktok.com/@shedithers/video/7709750366581083406',
+    'https://www.tiktok.com/@shedithers/video/7709457283566046478',
+    'https://www.tiktok.com/@shedithers/video/7707155931523468557',
     'https://www.tiktok.com/@shedithers/video/7703989500799618317',
     'https://www.tiktok.com/@shedithers/video/7703278709691714830',
     'https://www.tiktok.com/@shedithers/video/7703211470544309517',

@@ -25,7 +25,7 @@ let gi = 0; const gT = setInterval(() => { if (!document.body.contains(render)) 
 
 /* 2) the walk (once per visit, only when the gate is showing) */
 let seen = false; try { seen = sessionStorage.getItem('shd.archive.in') === '1' || sessionStorage.getItem('shd.walked') === '1'; } catch (_) { }
-if (seen || /^#\/work\//.test(location.hash)) return;
+if (seen || window.SHD_DRAGINTRO || /^#\/work\//.test(location.hash)) return;
 
 const PAPER = '#e9e3d1', ORANGE = '#e2682a', LIME = '#d4ff00';
 /* the scene: a rendered night alley (built from the artist's posters + doodles) at the end of which a warehouse door

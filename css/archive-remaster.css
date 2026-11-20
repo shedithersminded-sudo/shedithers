@@ -136,3 +136,30 @@ body:not(.entered) .rm-rain{opacity:0}
 }
 @media (max-width:760px){.rm-show{min-height:240px}.rm-show .rs-words{font-size:15px}}
 @media (prefers-reduced-motion:reduce){.rm-show>i{transition:opacity .6s;scale:1}.rm-show.run .rs-bar{animation:none}}
+
+/* ===== v3.6.0 ===== */
+/* real glow: every panel burns red or blue (alternating), steady, plus the travelling light on the border */
+.portal>.p-mod:not(.p-foot):not(.p-logo){box-shadow:0 0 0 1px color-mix(in srgb,var(--rm-g,#ff2338) 70%,transparent),0 0 14px color-mix(in srgb,var(--rm-g,#ff2338) 55%,transparent),0 0 38px color-mix(in srgb,var(--rm-g,#ff2338) 28%,transparent),inset 0 0 22px color-mix(in srgb,var(--rm-g,#ff2338) 12%,transparent),0 18px 40px rgba(0,0,0,.5)!important;transition:box-shadow .35s}
+.portal>.p-mod:not(.p-foot):not(.p-logo):hover{box-shadow:0 0 0 1.5px var(--rm-g,#ff2338),0 0 20px color-mix(in srgb,var(--rm-g,#ff2338) 75%,transparent),0 0 60px color-mix(in srgb,var(--rm-g,#ff2338) 40%,transparent),inset 0 0 30px color-mix(in srgb,var(--rm-g,#ff2338) 18%,transparent),0 22px 48px rgba(0,0,0,.55)!important}
+.rm-edge{padding:2px;opacity:1;background:conic-gradient(from var(--rm-a),transparent 0 40%,var(--c1) 58%,#fff 66%,var(--c2) 74%,transparent 90% 100%)}
+
+/* fonts, try 1: titles in Syne (wide, sharp, artsy), reading text in Space Grotesk, all a size up.
+   change --rm-title / --rm-body to try another pair */
+:root{--rm-title:'Syne','Bebas Neue',sans-serif;--rm-body:'Space Grotesk','Barlow Condensed',sans-serif}
+.portal .p-head b{font-family:var(--rm-title)!important;font-weight:800!important;font-size:clamp(28px,2.7vw,40px)!important;letter-spacing:-.01em!important;line-height:.95!important}
+.portal .p-head small{font:500 11px 'JetBrains Mono',monospace!important;letter-spacing:.24em!important}
+.portal .p-head span{font-size:11px!important;letter-spacing:.12em!important}
+.portal :is(.pn-box,.pn-box *,.fm-stop small,.cl-poster p,.cl-poster span,.p-mail p,.p-links p,.nd p,.p-pop p,.ps-label){font-family:var(--rm-body)!important}
+.portal :is(.pn-box,.pn-box p,.pn-box li){font-size:13.5px!important;line-height:1.5!important}
+.portal .fm-stop b{font:700 15px var(--rm-title)!important;letter-spacing:.02em!important}
+.portal .fm-stop small{font-size:13px!important}
+.portal .fm-head b,.portal .cl-title{font-family:var(--rm-title)!important;font-weight:800!important}
+.portal .ps-label{font-size:15px!important;font-weight:600!important;letter-spacing:.04em!important}
+.rm-show .rs-name{font-family:var(--rm-title);font-weight:800;font-size:clamp(38px,4.6vw,74px);letter-spacing:-.02em}
+.cb-card h3,.cb-send{font-family:var(--rm-title)!important;font-weight:800!important}
+.cb-card :is(.cb-lede,.cb-label,.cb-kinds button,.cb-in,.cb-msg,.cb-status){font-family:var(--rm-body)!important}
+body.entered{font-family:var(--rm-body)}
+.portal .p-head b{white-space:nowrap;max-width:100%}
+.portal .p-collab .cl-title{font-size:clamp(34px,3.3vw,50px)!important;letter-spacing:-.02em!important;line-height:.95!important}
+@media (max-width:520px){.portal .p-head b{font-size:clamp(20px,6.2vw,28px)!important;white-space:normal}}
+.portal .p-voices .p-head b{font-size:clamp(22px,2.1vw,30px)!important;letter-spacing:0!important}

@@ -1,0 +1,73 @@
+/* SHEDITHERS — the way in (v3.6.0): the art keeps morphing behind, you throw the logo any direction to go in. */
+.dg{position:fixed;inset:0;z-index:200;overflow:hidden;background:#0b0a09;color:#e9e3d1;touch-action:none;user-select:none;-webkit-user-select:none;--p:0}
+body.dg-on{overflow:hidden}
+.dg-bg{position:absolute;inset:-3%;transition:filter .4s}
+.dg-bg .bs-host{background:#0b0a09}
+.dg-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 55% at 50% 50%,transparent 30%,rgba(11,10,9,.55) 75%,rgba(11,10,9,.9));}
+.dg.grab .dg-bg{filter:saturate(1.3) contrast(1.1)}
+.dg-trail,.dg-wipe{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.dg-wipe{z-index:5}
+
+/* top + bottom lines: small, quiet, mono */
+.dg-top,.dg-bot{position:absolute;left:24px;right:24px;display:flex;justify-content:space-between;gap:16px;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.28em;text-transform:uppercase;color:rgba(233,227,209,.7);pointer-events:none;z-index:2}
+.dg-top{top:22px}.dg-bot{bottom:22px}
+.dg-top span:first-child{color:#e9e3d1;letter-spacing:.42em}
+.dg-xy{color:#d4ff00;font-variant-numeric:tabular-nums}
+
+/* the ring around the logo: thin line, 8 ticks, a red arc that fills as you pull */
+.dg-ring{position:absolute;left:50%;top:50%;width:min(56vmin,520px);aspect-ratio:1;translate:-50% -50%;pointer-events:none;z-index:2;transition:scale .5s cubic-bezier(.2,1.4,.4,1)}
+.dg-ring svg{width:100%;height:100%;overflow:visible}
+.dg-r1{fill:none;stroke:rgba(233,227,209,.22);stroke-width:.6;stroke-dasharray:1 3}
+.dg-prog{fill:none;stroke:#e0182b;stroke-width:1.6;stroke-dasharray:100;stroke-dashoffset:100;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;filter:drop-shadow(0 0 4px #e0182b) drop-shadow(0 0 10px #e0182b)}
+.dg-ring i{position:absolute;left:50%;top:50%;width:1px;height:12px;margin:-6px 0 0;background:rgba(233,227,209,.5)}
+.dg-ring i:nth-of-type(1){transform:rotate(0deg) translateY(calc(min(28vmin,260px) * -1 - 10px))}
+.dg-ring i:nth-of-type(2){transform:rotate(45deg) translateY(calc(min(28vmin,260px) * -1 - 10px))}
+.dg-ring i:nth-of-type(3){transform:rotate(90deg) translateY(calc(min(28vmin,260px) * -1 - 10px))}
+.dg-ring i:nth-of-type(4){transform:rotate(135deg) translateY(calc(min(28vmin,260px) * -1 - 10px))}
+.dg-ring i:nth-of-type(5){transform:rotate(180deg) translateY(calc(min(28vmin,260px) * -1 - 10px))}
+.dg-ring i:nth-of-type(6){transform:rotate(225deg) translateY(calc(min(28vmin,260px) * -1 - 10px))}
+.dg-ring i:nth-of-type(7){transform:rotate(270deg) translateY(calc(min(28vmin,260px) * -1 - 10px))}
+.dg-ring i:nth-of-type(8){transform:rotate(315deg) translateY(calc(min(28vmin,260px) * -1 - 10px))}
+.dg-ring i:nth-of-type(1){background:#d4ff00;height:18px;box-shadow:0 0 8px #d4ff00}
+.dg.grab .dg-ring{scale:1.06}
+
+/* the logo: the artist's own mark, crisp, breathing, with a red glow that grows as you pull */
+.dg-logo{position:absolute;left:50%;top:50%;width:min(40vmin,380px);aspect-ratio:1;margin:0;padding:0;border:0;background:none;cursor:grab;z-index:3;
+  transform:translate(-50%,-50%);touch-action:none;-webkit-tap-highlight-color:transparent}
+.dg-logo img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;
+  filter:drop-shadow(0 0 1px #0b0a09) drop-shadow(0 2px 0 #0b0a09) drop-shadow(0 0 calc(14px + var(--p) * 30px) rgba(224,24,43,calc(.45 + var(--p) * .5)));
+  animation:dgBreathe 4.6s ease-in-out infinite}
+.dg.grab .dg-logo{cursor:grabbing}
+.dg.grab .dg-logo img{animation-play-state:paused}
+.dg-logo:focus-visible{outline:none}
+.dg-logo:focus-visible img{filter:drop-shadow(0 0 1px #0b0a09) drop-shadow(0 0 0 #d4ff00) drop-shadow(0 0 18px #d4ff00)}
+@keyframes dgBreathe{0%,100%{scale:1;rotate:-1.5deg}50%{scale:1.025;rotate:1.5deg}}
+.dg.nudge .dg-logo img{animation:dgNudge .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes dgNudge{20%{translate:-14px 0;rotate:-6deg}45%{translate:12px 0;rotate:5deg}70%{translate:-5px 0;rotate:-2deg}}
+
+/* the hint under the logo */
+.dg-hint{position:absolute;left:50%;top:calc(50% + min(28vmin,260px) + 26px);translate:-50% 0;margin:0;text-align:center;pointer-events:none;z-index:2;transition:opacity .3s;opacity:calc(1 - var(--p) * 1.6)}
+.dg-hint b{display:block;font:400 clamp(26px,3.4vw,40px)/1 'Syne','Bebas Neue',sans-serif;font-weight:800;letter-spacing:.02em;text-transform:lowercase;color:#e9e3d1}
+.dg-hint b::after{content:'';display:inline-block;width:.5em;height:.5em;margin-left:.3em;border:2px solid #d4ff00;border-left:0;border-bottom:0;rotate:45deg;translate:0 -.06em;animation:dgArrow 1.6s ease-in-out infinite}
+@keyframes dgArrow{50%{rotate:225deg}}
+.dg-hint small{display:block;margin-top:8px;font:400 18px 'Patrick Hand',cursive;color:rgba(233,227,209,.75)}
+
+.dg-skip{position:absolute;right:20px;bottom:52px;z-index:4;padding:8px 12px;border:1px solid rgba(233,227,209,.3);border-radius:3px;background:rgba(11,10,9,.6);color:#e9e3d1;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase}
+.dg-skip:hover,.dg-skip:focus-visible{border-color:#d4ff00;color:#d4ff00;outline:none}
+
+/* going in */
+.dg.out .dg-hint,.dg.out .dg-ring,.dg.out .dg-skip,.dg.out .dg-top,.dg.out .dg-bot{opacity:0;transition:opacity .25s}
+.dg.clear{background:transparent}
+.dg.clear .dg-vig,.dg.clear .dg-trail,.dg.clear .dg-logo{display:none}
+
+@media (max-width:760px){
+  .dg-top,.dg-bot{left:14px;right:14px;font-size:9px;letter-spacing:.18em}
+  .dg-top span:last-child,.dg-bot span:last-child{display:none}
+  .dg-logo{width:min(62vw,300px)}
+  .dg-ring{width:min(84vw,400px)}
+  .dg-ring i{transform-origin:50% 50%}
+  .dg-ring i:nth-of-type(n){display:none}
+  .dg-hint{top:calc(50% + min(42vw,200px) + 20px)}
+  .dg-skip{bottom:44px;right:14px}
+}
+@media (prefers-reduced-motion:reduce){.dg-logo img,.dg-hint b::after{animation:none}}

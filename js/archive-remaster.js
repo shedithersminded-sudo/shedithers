@@ -24,25 +24,24 @@ function size() {
   cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
   fs = W < 760 ? 13 : 15; const step = Math.round(fs * 1.35), n = Math.ceil(W / step);
-  cols = Array.from({ length: n }, (_, i) => ({ x: i * step + 4, y: Math.random() * H * 1.5 - H * .5, v: 22 + Math.random() * 46, len: 8 + (Math.random() * 14 | 0), off: Math.random() * 10 | 0, on: Math.random() < .55 }));
+  cols = Array.from({ length: n }, (_, i) => ({ x: i * step + 4, y: Math.random() * H * 1.5 - H * .5, v: 90 + Math.random() * 80, len: 8 + (Math.random() * 14 | 0), off: Math.random() * 10 | 0, on: Math.random() < .55 }));
 }
 function draw(t) {
-  const dt = Math.min(.1, (t - last) / 1000 || 0); last = t;
+  const dt = Math.min(.05, (t - last) / 1000 || 0); last = t;
   g.clearRect(0, 0, W, H); g.font = `500 ${fs}px "JetBrains Mono", monospace`; g.textBaseline = 'top';
   const lh = fs * 1.2;
   for (const c of cols) {
-    if (!c.on) { if (Math.random() < .002) c.on = true; continue; }
-    c.y += c.v * dt;
-    const head = Math.floor(c.y / lh);
+    if (!c.on) { if (Math.random() < .004) c.on = true; continue; }
+    c.y += c.v * dt; // smooth, sub-pixel fall (no row snapping)
     for (let k = 0; k < c.len; k++) {
-      const row = head - k; if (row < 0) continue; const y = row * lh; if (y > H) continue;
-      // the letters are fixed to the column, so each column always reads s-h-e-d-i-t-h-e-r-s top to bottom
-      const ch = WORD[((row + c.off) % 10 + 10) % 10];
+      const y = c.y - k * lh; if (y < -lh || y > H) continue;
+      // each trail carries its own letters, so it always reads s-h-e-d-i-t-h-e-r-s top to bottom
+      const ch = WORD[((c.off - k) % 10 + 10) % 10];
       const a = k === 0 ? 1 : (1 - k / c.len) * .7;
       g.fillStyle = k === 0 ? `rgba(233,255,170,${a})` : `rgba(212,255,0,${a * .75})`;
       g.fillText(ch, c.x, y);
     }
-    if ((head - c.len) * lh > H) { c.y = -Math.random() * H * .6; c.v = 22 + Math.random() * 46; c.len = 8 + (Math.random() * 14 | 0); c.on = Math.random() < .7; }
+    if (c.y - c.len * lh > H) { c.len = 8 + (Math.random() * 14 | 0); c.y = -Math.random() * H * .4; c.v = 90 + Math.random() * 80; c.on = Math.random() < .75; }
   }
   if (!reduce) raf = requestAnimationFrame(draw);
 }
@@ -55,13 +54,13 @@ else {
 }
 
 /* ---------- 2. glowing panel edges ---------- */
-const HUES = ['#d4ff00', '#e2682a', '#c3141c', '#f2b234', '#3f7f7a', '#8a4766'];
+const HUES = ['#ff2338', '#2f7dff']; // the artist asked for a real glow: red or blue, alternating
 function edges() {
   const P = document.querySelector('.portal'); if (!P) return;
   [...P.children].forEach((m, i) => {
     if (!m.classList.contains('p-mod') || m.querySelector(':scope > .rm-edge')) return;
     const e = document.createElement('i'); e.className = 'rm-edge'; e.setAttribute('aria-hidden', 'true');
-    e.style.setProperty('--c1', HUES[i % HUES.length]); e.style.setProperty('--c2', HUES[(i + 2) % HUES.length]);
+    const c1 = HUES[i % 2], c2 = i % 2 ? '#7fb2ff' : '#ff7a5c'; e.style.setProperty('--c1', c1); e.style.setProperty('--c2', c2); m.style.setProperty('--rm-g', c1);
     e.style.setProperty('--spd', (9 + (i % 5) * 2) + 's'); e.style.setProperty('--dl', (-i * 1.7) + 's');
     m.append(e);
   });
