@@ -82,4 +82,60 @@ drinkTab(); setTimeout(drinkTab, 800); setTimeout(drinkTab, 2500);
 function deEmoji() { document.querySelectorAll('.ds-foot,.ds-view,.ab-tip-btn').forEach(b => { if (b.textContent.includes('🍹')) b.textContent = b.textContent.replace('🍹', '✦'); }); }
 if (view) new MutationObserver(deEmoji).observe(view, { childList: true, subtree: true });
 deEmoji();
+
+/* ---------- 4. collections showcase: the left side of the panel crossfades through each collection's pieces ---------- */
+function showcase() {
+  const S = document.querySelector('.portal > .p-strips'); if (!S || S.querySelector('.rm-show') || typeof ARTWORKS === 'undefined') return;
+  const rowEls = [...S.querySelectorAll(':scope > .ps-row')]; if (!rowEls.length) return;
+  const rows = h('div', 'rm-rows'); rowEls.forEach(r => rows.append(r));
+  const show = document.createElement('a'); show.className = 'rm-show';
+  const code = h('span', 'rs-code'), count = h('span', 'rs-count'), txt = h('span', 'rs-txt'), bar = h('i', 'rs-bar');
+  const name = h('b', 'rs-name'), sub = h('span', 'rs-sub'), words = h('span', 'rs-words'); txt.append(name, sub, words);
+  const cols = (typeof COLLECTIONS !== 'undefined' ? COLLECTIONS : []).map(c => ({ c, w: ARTWORKS.filter(a => a.col === c.id && a.type !== 'video').slice(0, 6) })).filter(x => x.w.length);
+  if (!cols.length) return;
+  const layers = [h('i'), h('i')]; show.append(...layers, code, count, txt, bar);
+  S.append(show, rows);
+  // each row lights up its collection
+  const rowOf = cols.map(x => rowEls.find(r => (r.querySelector('.ps-label')?.getAttribute('href') || '').endsWith('/' + x.c.id)));
+  const T = 3400; let ci = 0, pi = 0, top = 0, pinned = false, timer = 0;
+  show.style.setProperty('--rs-t', T + 'ms');
+  function paint(newCol) {
+    const { c, w } = cols[ci], a = w[pi % w.length];
+    const L = layers[top = 1 - top]; L.style.backgroundImage = `url('${a.src}')`;
+    L.classList.add('on'); layers[1 - top].classList.remove('on');
+    const set = () => { code.textContent = c.code || ''; name.textContent = c.name; sub.textContent = c.sub || ''; };
+    if (newCol) { show.classList.add('swap'); setTimeout(() => { set(); words.textContent = a.words || a.title.toLowerCase(); show.classList.remove('swap'); }, 350); }
+    else { set(); words.textContent = a.words || a.title.toLowerCase(); }
+    count.textContent = String(pi % w.length + 1).padStart(2, '0') + ' / ' + String(w.length).padStart(2, '0');
+    show.href = `#/col/${c.id}`; show.setAttribute('aria-label', `Open the ${c.name} collection`);
+    rowOf.forEach((r, i) => r && r.classList.toggle('rm-on', i === ci));
+    show.classList.remove('run'); void show.offsetWidth; if (!reduce) show.classList.add('run');
+  }
+  function tick() {
+    if (!S.isConnected) return clearInterval(timer);
+    if (document.hidden) return;
+    pi++;
+    if (!pinned && pi >= cols[ci].w.length) { ci = (ci + 1) % cols.length; pi = 0; paint(true); } else paint(false);
+  }
+  function pick(i) { if (i === ci) return; ci = i; pi = 0; paint(true); clearInterval(timer); timer = setInterval(tick, T); }
+  rowOf.forEach((r, i) => { if (!r) return;
+    r.addEventListener('pointerenter', () => { pinned = true; pick(i); });
+    r.addEventListener('focusin', () => { pinned = true; pick(i); });
+    r.addEventListener('pointerleave', () => { pinned = false; });
+    r.addEventListener('focusout', () => { pinned = false; });
+  });
+  paint(false);
+  timer = setInterval(tick, reduce ? T * 2 : T);
+}
+function h(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; if (tag === 'i') e.setAttribute('aria-hidden', 'true'); return e; }
+
+/* ---------- 5. WHERE TO FIND ME: the peek always holds a piece (the first stop's art), never an empty frame ---------- */
+function peekDefault() {
+  const p = document.querySelector('.p-collab .fm-peek'); if (!p || p.dataset.rm) return; p.dataset.rm = '1';
+  const s = document.querySelector('.p-collab .fm-stop.here') || document.querySelector('.p-collab .fm-stop'); if (!s) return;
+  s.dispatchEvent(new Event('pointerenter')); p.classList.remove('on');
+}
+function homeBits() { showcase(); peekDefault(); }
+if (view) new MutationObserver(homeBits).observe(view, { childList: true, subtree: true });
+homeBits();
 })();

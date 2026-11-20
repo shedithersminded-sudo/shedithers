@@ -53,7 +53,9 @@ body:not(.entered) .rm-rain{opacity:0}
   .portal>.p-foot   {grid-column:1/13!important;grid-row:12!important}
   .portal>.p-news{align-self:stretch!important}
   .portal>.p-news .pn-box{height:calc(100% - 60px)!important;min-height:250px}
-  .portal>.p-collab .cl-grid{height:100%}
+  /* knobs never stick out past the page edge */
+  .portal>:is(.p-news,.p-pop,.p-strips,.p-lab,.p-traffic,.p-links,.p-mail,.p-speed)>.pz-r{display:none}
+  .portal>:is(.p-deck,.p-pop,.p-voices,.p-strips,.nd,.p-instant,.p-traffic,.p-wall,.p-flash,.p-speed)>.pz-l{display:none}
 }
 @media (max-width:1100px){
   .portal>.p-mod{grid-column:1/-1!important;grid-row:auto!important}
@@ -84,3 +86,53 @@ body:not(.entered) .rm-rain{opacity:0}
   .drink-tab b{font-size:12px!important;letter-spacing:.12em!important}
   .drink-tab small,.drink-tab .dt-tape,.drink-tab .dt-drip{display:none!important}
 }
+
+/* ===== v3.5.1 ===== */
+/* collabs: the panel is a column, the two boxes size naturally (no more WHERE TO FIND ME sticking out) */
+.portal>.p-collab{display:flex;flex-direction:column}
+.portal>.p-collab>.cl-grid{flex:1;align-content:start}
+/* the peek always holds a piece, dimmed until a stop is hovered */
+.p-collab .fm-peek{opacity:.6}
+.p-collab .fm-peek.on{opacity:1}
+/* puzzle knobs: smaller, sitting in the gaps between panels, never over content */
+.portal .pz{width:22px;height:22px}
+.portal .pz-knob::after{inset:4px}
+.portal .pz-knob::before{width:7px;height:7px;margin:-3.5px}
+.portal .pz-r{right:-19px}.portal .pz-b{bottom:-19px}
+.portal .pz-l{left:-17px}.portal .pz-t{top:-17px}
+.portal>.p-collab>.pz{display:none}
+
+/* collections: a showcase on the left, the rows on the right */
+.portal>.p-strips{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-rows:auto 1fr;gap:6px 26px}
+.p-strips>.p-head{grid-column:1/-1}
+.p-strips>.rm-rows{grid-column:2;display:flex;flex-direction:column;justify-content:center}
+.p-strips .ps-row{cursor:default;transition:opacity .3s}
+.p-strips .rm-rows:hover .ps-row:not(:hover){opacity:.55}
+.p-strips .ps-row.rm-on .ps-label{color:#d4ff00}
+.rm-show{grid-column:1;position:relative;min-height:340px;overflow:hidden;border-radius:6px;background:#0b0a09;box-shadow:0 0 0 1px rgba(233,227,209,.12);color:#e9e3d1;text-decoration:none;isolation:isolate}
+.rm-show>i{position:absolute;inset:0;background:center 30%/cover no-repeat;opacity:0;scale:1.06;transition:opacity 1.6s ease,scale 9s linear;
+  filter:grayscale(1) contrast(1.5) brightness(.9) sepia(.6) saturate(2) hue-rotate(-18deg)}
+.rm-show>i.on{opacity:1;scale:1}
+.rm-show::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(rgba(0,0,0,.55) 35%,transparent 36%) 0 0/3px 3px;mix-blend-mode:multiply}
+.rm-show::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(11,10,9,.55),transparent 35%,transparent 50%,rgba(11,10,9,.92))}
+.rm-show .rs-txt{position:absolute;left:18px;right:18px;bottom:16px;z-index:2}
+.rm-show .rs-code{position:absolute;left:18px;top:14px;z-index:2;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.18em;color:#d4ff00}
+.rm-show .rs-count{position:absolute;right:18px;top:14px;z-index:2;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#e9e3d1;opacity:.8}
+.rm-show .rs-name{display:block;font:400 clamp(44px,5.4vw,86px)/.86 'Bebas Neue',sans-serif;letter-spacing:.02em;color:#e9e3d1;text-shadow:3px 3px 0 #c3141c}
+.rm-show .rs-sub{display:block;margin-top:6px;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#e2682a}
+.rm-show .rs-words{display:block;margin-top:8px;font:400 17px/1.25 'Patrick Hand',cursive;color:#e9e3d1;opacity:.9;min-height:1.25em}
+.rm-show .rs-name,.rm-show .rs-sub,.rm-show .rs-words{transition:opacity .5s,translate .5s}
+.rm-show.swap .rs-name,.rm-show.swap .rs-sub,.rm-show.swap .rs-words{opacity:0;translate:0 8px}
+.rm-show .rs-bar{position:absolute;left:0;bottom:0;z-index:2;height:2px;width:100%;background:#d4ff00;transform-origin:0 50%;transform:scaleX(0)}
+.rm-show.run .rs-bar{animation:rsBar var(--rs-t,3.4s) linear}
+@keyframes rsBar{to{transform:scaleX(1)}}
+.rm-show:hover .rs-name{color:#d4ff00}
+.rm-show:focus-visible{outline:2px solid #d4ff00;outline-offset:2px}
+@media (max-width:1100px){
+  .portal>.p-strips{grid-template-columns:1fr}
+  .p-strips>.rm-show,.p-strips>.rm-rows{grid-column:1}
+  .rm-show{min-height:300px}
+  .p-strips .ps-row{align-items:flex-start}
+}
+@media (max-width:760px){.rm-show{min-height:240px}.rm-show .rs-words{font-size:15px}}
+@media (prefers-reduced-motion:reduce){.rm-show>i{transition:opacity .6s;scale:1}.rm-show.run .rs-bar{animation:none}}
