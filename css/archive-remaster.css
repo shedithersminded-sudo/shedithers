@@ -252,3 +252,77 @@ body.entered{font-family:var(--rm-body)}
 .note-pop.list p{font-size:16px!important}
 @media (prefers-reduced-motion:reduce){.note-pop,.note-pop .np-art{animation:none}}
 .d3-front::after{opacity:.38!important}
+
+/* ===== v3.9.0: smoothness ===== */
+.rm-rain{mix-blend-mode:normal!important;opacity:.11!important;transform:translateZ(0)}
+@media (max-width:760px){.rm-rain{opacity:.05!important}}
+/* panels: no live blur behind them (they are nearly opaque anyway), lighter shadows, glow edge without per-frame filters */
+.portal>.p-mod{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.rm-edge{filter:none!important}
+.portal>.p-mod:hover>.rm-edge,.portal>.p-mod:focus-within>.rm-edge{filter:none!important}
+/* anything inside a panel that is off screen stops animating */
+.rm-off,.rm-off *,.rm-off *::before,.rm-off *::after{animation-play-state:paused!important}
+/* the background art: only the visible layer drifts, the tint holds still (it was repainting the whole screen) */
+.p-render{transform:translateZ(0);contain:strict}
+.pr-layer:not(.on){animation-play-state:paused!important}
+.pr-tint{animation:none!important}
+.pr-streaks{filter:none!important}
+/* while scrolling: the always-moving extras pause for a moment */
+body.rm-scrolling .rm-edge,body.rm-scrolling .pr-streaks,body.rm-scrolling .pr-layer,body.rm-scrolling .d3-glare::after,body.rm-scrolling .d3-front::before{animation-play-state:paused!important}
+.grain{mix-blend-mode:normal!important}
+
+/* ===== v3.9.0: the deck bigger, the reading alive ===== */
+.d3-stage{perspective:1400px!important;margin-top:18px!important}
+.d3-btn.d3-draw{background:linear-gradient(90deg,#c3141c,#e2682a);color:#fff;box-shadow:0 0 0 2px #e9e3d1,0 0 18px rgba(255,35,56,.55)}
+.d3-btn.d3-draw:hover{box-shadow:0 0 0 2px #fff,0 0 26px rgba(255,35,56,.85)}
+/* every card catches the light when you hover it, not only the front one */
+.d3-card:hover .d3-glare{opacity:1!important}
+.d3-card:not(.front):hover .d3-inner{filter:brightness(1.15)}
+/* the reading card */
+.d3-read{width:min(380px,90%)!important;padding:20px 22px 18px!important}
+.d3-q span{opacity:0;animation:d3Type .02s linear forwards;animation-delay:calc(var(--k) * 22ms + .45s)}
+@keyframes d3Type{to{opacity:1}}
+.d3-glyphs{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.d3-glyphs b{position:absolute;left:var(--x);bottom:-20px;font:500 13px 'JetBrains Mono',monospace;color:#d4ff00;opacity:0;text-shadow:0 0 8px #d4ff00;animation:d3Rise 6s linear infinite;animation-delay:calc(var(--k) * .6s)}
+@keyframes d3Rise{0%{opacity:0;transform:translateY(0)}15%{opacity:.55}85%{opacity:.35}100%{opacity:0;transform:translateY(-320px) rotate(40deg)}}
+.d3-scan{position:absolute;left:0;right:0;top:-30%;height:30%;z-index:-1;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(255,35,56,.16),rgba(212,255,0,.1),transparent);animation:d3Scan 3.2s ease-in-out infinite}
+@keyframes d3Scan{0%{top:-30%}100%{top:110%}}
+.d3-read-t{animation:d3Glitch .6s steps(2,end) .2s both}
+@keyframes d3Glitch{0%{opacity:0;transform:translateX(-6px);text-shadow:-3px 0 #2f7dff,3px 0 #ff2338}50%{opacity:1;transform:translateX(4px)}100%{transform:none;text-shadow:2px 2px 0 #0b0a09}}
+.d3-reveal{animation:tpIn .4s ease both;animation-delay:1.2s}
+.d3-read.told{box-shadow:0 0 0 1px rgba(212,255,0,.8),0 0 22px rgba(212,255,0,.35),0 0 50px rgba(47,125,255,.2),0 24px 50px rgba(0,0,0,.65)!important}
+.d3-ans{position:relative;overflow:hidden}
+.d3-ans::after{content:'';position:absolute;inset:0;background:radial-gradient(rgba(11,10,9,.85) 35%,transparent 37%) 0 0/4px 4px;animation:d3Dis .9s steps(6,end) forwards}
+@keyframes d3Dis{to{opacity:0}}
+@keyframes tpIn{from{opacity:0;translate:-6px 0}to{opacity:1;translate:0 0}}
+@media (prefers-reduced-motion:reduce){.d3-q span,.d3-reveal{animation:none;opacity:1}.d3-glyphs,.d3-scan{display:none}.d3-read-t,.d3-ans::after{animation:none}}
+
+/* ===== v3.9.0 smoothness, part 2 ===== */
+/* edges: a rotating conic layer inside the border mask (transform animation runs on the GPU, no repaint) */
+.rm-edge{background:none!important;animation:none!important;overflow:hidden}
+.rm-edge::before{content:'';position:absolute;left:50%;top:50%;width:var(--rm-d,1400px);height:var(--rm-d,1400px);margin:calc(var(--rm-d,1400px) / -2) 0 0 calc(var(--rm-d,1400px) / -2);
+  background:conic-gradient(transparent 0 40%,var(--c1) 58%,#fff 66%,var(--c2) 74%,transparent 90% 100%);animation:rmTurn var(--spd,11s) linear infinite;animation-delay:var(--dl,0s);will-change:transform}
+.portal>.p-mod:hover>.rm-edge::before,.portal>.p-mod:focus-within>.rm-edge::before{background:conic-gradient(var(--c1),#fff8,var(--c2),var(--c1),#fff8,var(--c2),var(--c1))}
+@keyframes rmTurn{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.rm-edge::before{animation:none}}
+body.rm-scrolling .rm-edge::before{animation-play-state:paused}
+/* deck: cards sway with the GPU-friendly rotate property (no per-frame repaint), the foil stops hue-cycling,
+   and only the front card gets the moving light streak */
+.d3-inner{animation:d3Sway2 6s ease-in-out infinite!important;animation-delay:calc(var(--i) * -.7s)!important;transform:rotateY(var(--tx)) rotateX(var(--ty))!important}
+.d3-card.front .d3-inner{transform:translateZ(30px) scale(1.06) rotateY(var(--tx)) rotateX(var(--ty))!important}
+.d3-card.flipped .d3-inner{animation:none!important;rotate:none}
+.d3-card.spin .d3-inner{animation:d3Spin .95s cubic-bezier(.3,.8,.3,1)!important}
+@keyframes d3Sway2{0%,100%{rotate:y -8deg}50%{rotate:y 8deg}}
+.d3-front::before{animation:none!important}
+.d3-glare::after{display:none}
+.d3-card.front .d3-glare::after{display:block;left:0!important;transform:translateX(-160%) skewX(-18deg);animation:d3Sweep2 5.5s ease-in-out infinite!important}
+@keyframes d3Sweep2{0%,55%{transform:translateX(-160%) skewX(-18deg)}85%,100%{transform:translateX(360%) skewX(-18deg)}}
+.d3-card:not(.front) .d3-words i{animation:none!important}
+@media (prefers-reduced-motion:reduce){.d3-inner,.d3-card.front .d3-glare::after{animation:none!important}}
+@keyframes d3Spin{from{rotate:y 0deg;scale:1}55%{rotate:y 380deg;scale:1.08}to{rotate:y 360deg;scale:1}}
+/* word ticker core: pulse an opacity layer instead of repainting a 110px box-shadow every frame */
+.ps-core{animation:none!important}
+.ps-core::after{content:'';position:absolute;inset:-16px;border-radius:50%;box-shadow:0 0 44px 16px rgba(255,255,255,.45),0 0 110px rgba(212,255,0,.7);opacity:0;animation:rmCore 2.4s ease-in-out infinite;pointer-events:none}
+@keyframes rmCore{50%{opacity:1}}
+.ps-streak{will-change:transform,opacity}
+@media (prefers-reduced-motion:reduce){.ps-core::after{animation:none}}

@@ -20,14 +20,22 @@ placeRain();
 const g = cv.getContext('2d');
 let W = 0, H = 0, cols = [], fs = 15, dpr = 1, last = 0;
 function size() {
-  dpr = Math.min(2, window.devicePixelRatio || 1); W = innerWidth; H = innerHeight;
+  dpr = 1; // the rain is soft and faint: full device resolution only cost speed W = innerWidth; H = innerHeight;
   cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
-  fs = W < 760 ? 13 : 15; const step = Math.round(fs * 1.35), n = Math.ceil(W / step);
+  fs = W < 760 ? 13 : 15; for (const k in glyphs) delete glyphs[k]; const step = Math.round(fs * 1.35), n = Math.ceil(W / step);
   cols = Array.from({ length: n }, (_, i) => ({ x: i * step + 4, y: Math.random() * H * 1.5 - H * .5, v: 90 + Math.random() * 80, len: 8 + (Math.random() * 14 | 0), off: Math.random() * 10 | 0, on: Math.random() < .55 }));
 }
+const glyphs = {};
+function glyph(ch, head) {
+  const k = ch + (head ? 1 : 0); if (glyphs[k]) return glyphs[k];
+  const c = document.createElement('canvas'), x = c.getContext('2d'); c.width = Math.ceil(fs * .8); c.height = Math.ceil(fs * 1.25);
+  x.font = `500 ${fs}px "JetBrains Mono", monospace`; x.textBaseline = 'top'; x.fillStyle = head ? 'rgb(233,255,170)' : 'rgb(212,255,0)'; x.fillText(ch, 0, 0);
+  return (glyphs[k] = c);
+}
 function draw(t) {
-  const dt = Math.min(.05, (t - last) / 1000 || 0); last = t;
+  if (!reduce && t - last < 32) { raf = requestAnimationFrame(draw); return; } // ~30 fps is plenty for falling letters
+  const dt = Math.min(.08, (t - last) / 1000 || 0); last = t;
   g.clearRect(0, 0, W, H); g.font = `500 ${fs}px "JetBrains Mono", monospace`; g.textBaseline = 'top';
   const lh = fs * 1.2;
   for (const c of cols) {
@@ -38,11 +46,11 @@ function draw(t) {
       // each trail carries its own letters, so it always reads s-h-e-d-i-t-h-e-r-s top to bottom
       const ch = WORD[((c.off - k) % 10 + 10) % 10];
       const a = k === 0 ? 1 : (1 - k / c.len) * .7;
-      g.fillStyle = k === 0 ? `rgba(233,255,170,${a})` : `rgba(212,255,0,${a * .75})`;
-      g.fillText(ch, c.x, y);
+      g.globalAlpha = k === 0 ? a : a * .75; g.drawImage(glyph(ch, k === 0), c.x, y);
     }
     if (c.y - c.len * lh > H) { c.len = 8 + (Math.random() * 14 | 0); c.y = -Math.random() * H * .4; c.v = 90 + Math.random() * 80; c.on = Math.random() < .75; }
   }
+  g.globalAlpha = 1;
   if (!reduce) raf = requestAnimationFrame(draw);
 }
 let raf = 0;
@@ -63,8 +71,10 @@ function edges() {
     const c1 = HUES[i % 2], c2 = i % 2 ? '#7fb2ff' : '#ff7a5c'; e.style.setProperty('--c1', c1); e.style.setProperty('--c2', c2); m.style.setProperty('--rm-g', c1);
     e.style.setProperty('--spd', (9 + (i % 5) * 2) + 's'); e.style.setProperty('--dl', (-i * 1.7) + 's');
     m.append(e);
+    if (edgeRO) edgeRO.observe(m);
   });
 }
+const edgeRO = 'ResizeObserver' in window ? new ResizeObserver(es => es.forEach(en => { const r = en.contentRect; en.target.style.setProperty('--rm-d', Math.round(Math.hypot(r.width, r.height) + 40) + 'px'); })) : null;
 const view = document.getElementById('view');
 if (view) { new MutationObserver(() => { edges(); placeRain(); }).observe(view, { childList: true }); new MutationObserver(edges).observe(view, { childList: true, subtree: true }); edges(); }
 
@@ -179,4 +189,12 @@ new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) {
   strip.className = 'np-art'; strip.setAttribute('aria-hidden', 'true'); strip.style.setProperty('--na', `url('${new URL(a.src, location.href).href}')`);
   n.prepend(strip);
 } }).observe(document.body, { childList: true });
+
+/* ---------- 9. smoothness: panels off screen stop animating; the background only moves the layer you can see ---------- */
+const offIO = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('rm-off', !e.isIntersecting)), { rootMargin: '120px 0px' }) : null;
+function watchPanels() { const P = document.querySelector('.portal'); if (!P || !offIO) return; [...P.children].forEach(m => { if (m.classList.contains('p-mod') && !m.dataset.rmio) { m.dataset.rmio = '1'; offIO.observe(m); } }); }
+if (view) new MutationObserver(watchPanels).observe(view, { childList: true, subtree: true });
+watchPanels();
+// while the page is scrolling, the heaviest decorative motion holds still (less work per frame = smoother scroll)
+let scT = 0; addEventListener('scroll', () => { if (!document.body.classList.contains('rm-scrolling')) document.body.classList.add('rm-scrolling'); clearTimeout(scT); scT = setTimeout(() => document.body.classList.remove('rm-scrolling'), 160); }, { passive: true });
 })();

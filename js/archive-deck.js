@@ -85,12 +85,14 @@ function build() {
     setTimeout(() => card.classList.remove('spin'), 1000);
     const close = h('button', { type: 'button', class: 'd3-slip-x', 'aria-label': 'Close the reading', onclick: e => { e.stopPropagation(); away(); } }, '\u2715');
     const answer = h('p', { class: 'd3-ans', hidden: true }, ans);
-    const reveal = h('button', { type: 'button', class: 'd3-reveal', onclick: e => { e.stopPropagation(); answer.hidden = false; reveal.remove(); } }, 'turn it over \u25b8');
+    const qEl = h('p', { class: 'd3-q', 'aria-label': q }, ...[...q].map((c, k) => h('span', { style: `--k:${k}`, 'aria-hidden': 'true' }, c)));
+    const glyphs = h('i', { class: 'd3-glyphs', 'aria-hidden': 'true' }, ...'shedithers'.split('').map((c, k) => h('b', { style: `--k:${k};--x:${(k * 37 + 11) % 100}%` }, c)));
+    const reveal = h('button', { type: 'button', class: 'd3-reveal', onclick: e => { e.stopPropagation(); answer.hidden = false; reveal.remove(); slip && slip.classList.add('told'); } }, 'turn it over \u25b8');
     slip = h('div', { class: 'd3-read', role: 'status', style: `--ra:url('${abs(a.src)}')` },
       close,
       h('div', { class: 'd3-read-top' }, h('small', null, '\u30ea\u30fc\u30c7\u30a3\u30f3\u30b0'), h('span', null, `reading \u00b7 card ${String(n).padStart(2, '0')}`)),
       h('b', { class: 'd3-read-t' }, a.title.toLowerCase()),
-      h('p', { class: 'd3-q' }, q), reveal, answer,
+      qEl, reveal, answer, glyphs, h('i', { class: 'd3-scan', 'aria-hidden': 'true' }),
       h('a', { href: `#/work/${a.id}`, class: 'd3-slip-from' }, 'look closer \u25b8'));
     setTimeout(() => { if (slip) stage.append(slip); }, 420);
     window.shdCount && window.shdCount('deck-reading', 'Got a reading from the deck');
@@ -99,28 +101,30 @@ function build() {
   function flip(card) { const on = !card.classList.contains('flipped'); cards.forEach(c => c.classList.remove('flipped')); card.classList.toggle('flipped', on); flipped = on ? card : null; }
   function frontIndex() { return ((Math.round(-angle / STEP) % N) + N) % N; }
   function paint() {
-    ring.style.transform = `translateZ(calc(var(--r) * -1)) rotateY(${angle}deg)`;
+    ring.style.transform = `translateZ(calc(var(--r) * -1)) rotateX(${lean.y.toFixed(2)}deg) rotateY(${angle + lean.x}deg)`;
     const fi = frontIndex();
     cards.forEach((c, i) => { const on = i === fi; if (c.classList.contains('front') !== on) { c.classList.toggle('front', on); if (!on && c.classList.contains('flipped')) { c.classList.remove('flipped'); flipped = null; } } });
     count.textContent = `${String(fi + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')}`;
   }
-  let target = null;
+  let target = null, drawing = false; const lean = { x: 0, y: 0, tx: 0, ty: 0 };
   function goTo(i) { const cur = -angle / STEP; let d = ((i - cur) % N + N) % N; if (d > N / 2) d -= N; target = angle - d * STEP; vel = 0; kick(); }
   function tick(t) {
     raf = 0; const dt = Math.min(48, t - (last || t)); last = t;
     if (drag) { /* finger moves it */ }
-    else if (target != null) { const d = target - angle; angle += d * Math.min(1, dt / 120); if (Math.abs(d) < .05) { angle = target; target = null; } }
-    else if (Math.abs(vel) > .02) { angle += vel * dt / 16; vel *= Math.pow(.92, dt / 16); if (Math.abs(vel) <= .02) goTo(frontIndex()); }
+    else if (target != null) { const d = target - angle; angle += d * Math.min(1, dt / 120); if (Math.abs(d) < .05) { angle = target; target = null; if (drawing) { drawing = false; const fi = frontIndex(); setTimeout(() => pull(cards[fi], PICK[fi]), 120); } } }
+    else if (Math.abs(vel) > .02) { angle += vel * dt / 16; vel *= Math.pow(drawing ? .955 : .92, dt / 16); if (Math.abs(vel) <= (drawing ? .4 : .02)) { vel = 0; goTo(frontIndex()); } }
     else if (auto && !flipped && !hover && !slip) angle -= .012 * dt;
+    lean.x += (lean.tx - lean.x) * .08; lean.y += (lean.ty - lean.y) * .08;
     paint();
-    if (visible && !document.hidden && (drag || target != null || Math.abs(vel) > .02 || (auto && !flipped && !hover && !slip))) raf = requestAnimationFrame(tick);
+    if (visible && !document.hidden && (drag || target != null || Math.abs(vel) > .02 || Math.abs(lean.tx - lean.x) > .05 || Math.abs(lean.ty - lean.y) > .05 || (auto && !flipped && !hover && !slip))) raf = requestAnimationFrame(tick);
   }
   function kick() { if (!raf) { last = 0; raf = requestAnimationFrame(tick); } }
 
   let hover = false, moved = false;
   const stage = h('div', { class: 'd3-stage', tabindex: '0', role: 'region', 'aria-label': 'The deck: 3D art cards. Use arrow keys to spin, Enter to flip.' }, ring);
   stage.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { hover = true; } });
-  stage.addEventListener('pointerleave', () => { hover = false; kick(); });
+  stage.addEventListener('pointerleave', () => { hover = false; lean.tx = 0; lean.ty = 0; kick(); });
+  stage.addEventListener('pointermove', e => { if (drag || e.pointerType !== 'mouse') return; const r = stage.getBoundingClientRect(); lean.tx = ((e.clientX - r.left) / r.width - .5) * 10; lean.ty = -((e.clientY - r.top) / r.height - .5) * 8; kick(); });
   stage.addEventListener('pointerdown', e => { if (e.button > 0) return; drag = { x: e.clientX, a: angle, t: performance.now(), lx: e.clientX }; moved = false; target = null; vel = 0; kick(); });
   addEventListener('pointermove', e => { if (!drag) return; const dx = e.clientX - drag.x; if (Math.abs(dx) > 6) moved = true; if (!moved) return; const now = performance.now(); vel = (e.clientX - drag.lx) * .35 * 16 / Math.max(8, now - drag.t); drag.lx = e.clientX; drag.t = now; angle = drag.a + dx * .35; paint(); });
   addEventListener('pointerup', () => { if (!drag) return; drag = null; if (!moved) vel = 0; else if (Math.abs(vel) < .3) goTo(frontIndex()); kick(); setTimeout(() => { moved = false; }, 0); });
@@ -132,12 +136,13 @@ function build() {
     h('button', { type: 'button', class: 'd3-btn', 'aria-label': 'Previous card', onclick: () => goTo((frontIndex() - 1 + N) % N) }, '◂'),
     count,
     h('button', { type: 'button', class: 'd3-btn', 'aria-label': 'Next card', onclick: () => goTo((frontIndex() + 1) % N) }, '▸'),
+    h('button', { type: 'button', class: 'd3-btn d3-draw', onclick: () => { away(); drawing = true; target = null; vel = (Math.random() < .5 ? -1 : 1) * (14 + Math.random() * 10); kick(); } }, '✦ draw a card'),
     h('button', { type: 'button', class: 'd3-btn', onclick: () => goTo(Math.floor(Math.random() * N)) }, '★ shuffle'),
     autoBtn,
     h('button', { type: 'button', class: 'd3-btn red', onclick: () => flip(cards[frontIndex()]) }, '↻ flip'));
-  const sizeIt = () => { const w = Math.min(stage.clientWidth || 600, 900), cw = w < 560 ? 150 : 190; stage.style.setProperty('--cw', cw + 'px'); stage.style.setProperty('--r', Math.round(cw / 2 / Math.tan(Math.PI / N) * 1.08) + 'px'); };
+  const sizeIt = () => { const w = Math.min(stage.clientWidth || 600, 1000), cw = w < 560 ? 160 : Math.round(Math.min(260, Math.max(200, w * .3))); stage.style.setProperty('--cw', cw + 'px'); stage.style.setProperty('--r', Math.round(cw / 2 / Math.tan(Math.PI / N) * 1.08) + 'px'); };
   const sec = h('section', { class: 'p-mod p-deck' },
-    h('div', { class: 'p-head' }, h('small', null, 'デッキ'), h('b', null, 'THE DECK'), h('span', null, 'DRAG TO SPIN · TAP THE FRONT CARD FOR A READING')),
+    h('div', { class: 'p-head' }, h('small', null, 'デッキ'), h('b', null, 'THE DECK'), h('span', null, 'DRAG TO SPIN · DRAW A CARD FOR A READING')),
     stage, controls);
   new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) kick(); }, { rootMargin: '100px' }).observe(stage);
   document.addEventListener('visibilitychange', kick);
