@@ -51,7 +51,7 @@ function build() {
   const cards = PICK.map((a, i) => {
     const words = String(a.words || '').split(' · ')[0];
     const front = h('div', { class: 'd3-face d3-front' },
-      h('i', { class: 'd3-art', style: `background-image:url('${abs(a.src)}')`, 'aria-hidden': 'true' }),
+      h('i', { class: 'd3-art' + (a.w / a.h < .6 || a.w / a.h > .92 ? ' d3-fit' : ''), style: `background-image:url('${abs(a.src)}')`, 'aria-hidden': 'true' }, h('b', { class: 'd3-fitbg', style: `background-image:url('${abs(a.src)}')` })),
       h('i', { class: 'd3-glare', 'aria-hidden': 'true' }),
       h('span', { class: 'd3-code' }, `NO.${String(i + 1).padStart(2, '0')}`),
       h('span', { class: 'd3-stars', 'aria-hidden': 'true' }, '★'.repeat(3 + (i % 3))),

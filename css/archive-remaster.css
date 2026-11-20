@@ -678,3 +678,10 @@ body[data-route=about] .ab-h{font-family:'Syne',sans-serif!important;font-weight
 /* the side drink tab: gone (the window it opened stays, opened from words) */
 .drink-tab{display:none!important}
 .nav a.drink-nav{color:#ff5a3c!important}
+
+/* ===== v4.0.3: every piece fits its card. wide or very tall pieces show whole, on a blurred copy of themselves ===== */
+.d3-art{overflow:hidden}
+.d3-fitbg{display:none}
+.d3-art.d3-fit{background-size:contain!important;background-color:#0b0a09}
+.d3-art.d3-fit .d3-fitbg{display:block;position:absolute;inset:-12%;z-index:-1;background:center/cover no-repeat;filter:blur(14px) brightness(.55) saturate(1.2)}
+.d3-art.d3-fit{isolation:isolate}

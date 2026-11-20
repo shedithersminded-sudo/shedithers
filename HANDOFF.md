@@ -1,6 +1,6 @@
 # SHEDITHERS: handoff
 
-**This is the only handoff.** Written 2026-11-20 at **v4.0.2** (the finished site). Give this file to whoever picks the work up next, human or AI: paste it, or say "read C:\CODE\shedithers\HANDOFF.md". Add one line to the version log at the bottom on every release.
+**This is the only handoff.** Written 2026-11-20 at **v4.0.3** (the finished site). Give this file to whoever picks the work up next, human or AI: paste it, or say "read C:\CODE\shedithers\HANDOFF.md". Add one line to the version log at the bottom on every release.
 
 ---
 
@@ -34,8 +34,8 @@
 **Test sizes:** 1440x900, 1024x768, 768x1024, 375x812. Check: no sideways scroll (`document.documentElement.scrollWidth === innerWidth`), nothing over the menu bar, no console errors, no broken images/videos, on home, `#/works`, `#/col/<id>`, `#/about`, and the viewer `#/work/<id>`.
 
 **Release (every time):**
-1. `sed -i 's/?v=402/?v=403/g' index.html archive.html` (bump the cache number on every css/js link in both pages)
-2. Bump `VERSION` in `sw.js` (`shedithers-v4.0.2` becomes `shedithers-v4.0.3`)
+1. `sed -i 's/?v=403/?v=404/g' index.html archive.html` (bump the cache number on every css/js link in both pages)
+2. Bump `VERSION` in `sw.js` (`shedithers-v4.0.3` becomes `shedithers-v4.0.4`)
 3. Add one line to the version log at the bottom of this file
 4. Commit (end the message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` if an AI made it), push `main`
 5. Wait until `https://shedithersminded-sudo.github.io/shedithers/sw.js` serves the new VERSION
@@ -66,15 +66,15 @@
 | `assets/ui/art2/` | UI-ready cuts of the artist's art: `no-face`, `thumbprint`, `leaves`, `leaf0-2`, `brave`, `sky`, videos `dreams.mp4`, `understand.mp4` |
 | `assets/ui/site-song.mp3` | "somewhere in between" (leyline hex), 96 kbps, 17 MB, 24 min. The artist confirmed they can use it |
 
-## 5. What's on the site (v4.0.2)
+## 5. What's on the site (v4.0.3)
 
 - **Intro:** only the drag intro. The artist's art morphs in dither behind the HD logo; the logo pulses red/lime rings and shakes until grabbed. First press: low bass buzz and the song starts muffled. Dragging: glitter sparkle sounds + a red/lime dither trail. Throw it: rising shimmer, the screen dithers shut along the throw, the archive opens and dithers open, the song opens up clear. Arrow keys / Enter / skip work too. A timer makes sure it always opens.
-- **Music:** starts at 40% (a little below medium). Without the intro (same visit) it starts on the first tap anywhere. Inside: a tiny handwritten "now playing" line above the round red MUSIC button (play/pause), and a play button + quiet/loud slider in NOW PLAYING. The volume and a "paused" choice are remembered (`shd.songVol`, `shd.songOff`). The visitor's own file player still exists (hint bar MUSIC) and pauses the song when used.
+- **Music:** starts at 22%, soft in the background (the artist asked twice for quieter; saved as `shd.songVol2`, a new key so old saved 40% values are ignored). Without the intro (same visit) it starts on the first tap anywhere. Inside: a tiny handwritten "now playing" line above the round red MUSIC button (play/pause), and a play button + quiet/loud slider in NOW PLAYING. The volume and a "paused" choice are remembered (`shd.songVol2`, `shd.songOff`). The visitor's own file player still exists (hint bar MUSIC) and pauses the song when used.
 - **Top bar:** the logo, dark glass, red/blue glow line, lowercase mono links, lime underline, the lab as a lime pill.
 - **Home, top to bottom (PC grid over 1100px, one column below):** logo + NO IDENTITY block with "the work" (how the artist makes things, in their words: they work fast; older pieces pull from things found online, the newer work starts with photos they take themselves; then layers of torn paper, old computer windows, handwriting and drawings, pushed through dither and glitch; a row of process steps lights up one after another, lines slide in, a light scans across) / news / THE DECK / NOW PLAYING / THE COMMENT SECTION + COLLABS / COLLECTIONS / file directory + Dither Lab promo / instant photo / SHELOOPS / THE WALL / the archive film / wallpaper + links / motion lab + sign the list / word ticker / footer.
 - **Panels:** dark glass, steady red or blue glow, a light travelling around each border. "shedithers" code rain falls behind everything.
 - **Fonts:** titles Syne 800, reading text Space Grotesk, labels JetBrains Mono, handwriting Patrick Hand (`--rm-title` / `--rm-body` in `archive-remaster.css` swap them).
-- **THE DECK:** the 12 newest pictures except the ids in `DECK_SKIP` in `archive-deck.js` (PLAY ONLINE? is skipped at the artist's request). Big 3D cards, light holo foil, a light sweep on the front card, cards sway, the ring leans to the mouse. Tap the front card or "draw a card" for a reading: a riddle made from the piece, the answer behind "turn it over".
+- **THE DECK:** the 12 newest pictures except the ids in `DECK_SKIP` in `archive-deck.js` (PLAY ONLINE? is skipped at the artist's request). Pieces that aren't card-shaped (wider than 0.92 or taller than 0.6 width/height) show whole on a blurred copy of themselves (`.d3-fit`) instead of being cropped. Big 3D cards, light holo foil, a light sweep on the front card, cards sway, the ring leans to the mouse. Tap the front card or "draw a card" for a reading: a riddle made from the piece, the answer behind "turn it over".
 - **NEWS:** newest first, in `archive-portal.js` (the list of `[date, tag, [text and links]]`). 11/20/26 entries: new pieces, THE WALL, the site song, SHELOOPS, the deck riddles. Add a line there when something new lands.
 - **NOW PLAYING:** volume control, the spinning seal with the artist's red logo and "doing it scared is just being brave", the NEW ART folder.
 - **THE COMMENT SECTION:** the "understand?" video on the wall, a rolling film reel matched to the list, real TikTok comments as different objects (notebook scrap, black sticker, receipt, red tape, polaroid) in mixed fonts, about 7 at a time. Tap to blow one up, heart it.
@@ -124,3 +124,4 @@ The drag intro and the blob screen, the deck, the comment section concept, NOW P
 - v4.0.0 (2026-11-20): the site song is published (96 kbps), big media never cached by the service worker, final check; one handoff (this file), old handoffs removed.
 - v4.0.1 (2026-11-20): "the work" note rewritten (own photos first) with animated process steps; Little Guy's bottom scoot removed; the side drink tab removed, the drink window opens from words.
 - v4.0.2 (2026-11-20): PLAY ONLINE? out of the deck (DECK_SKIP), five 11/20 news entries, "the work" note rewritten in the artist's words (fast, found things in older pieces, own photos now).
+- v4.0.3 (2026-11-20): deck cards fit their piece (wide/tall pieces show whole on a blurred copy), site song quieter (22%, new storage key).

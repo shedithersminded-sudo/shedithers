@@ -9,7 +9,7 @@ const S = CFG.siteSong || {}; const src = String(S.src || '').trim(); if (!src) 
 const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const MUFFLE = 320, OPEN = 20000;
-let VOL = .4; try { const v = parseFloat(localStorage.getItem('shd.songVol')); if (v >= 0 && v <= 1) VOL = v; } catch (_) { } // starts a little below medium so nobody jumps
+let VOL = .22; try { const v = parseFloat(localStorage.getItem('shd.songVol2')); if (v >= 0 && v <= 1) VOL = v; } catch (_) { } // soft, in the background (the artist asked twice for quieter)
 let ctx = null, au = null, lp = null, gain = null, ok = null, playing = false;
 const inside = () => document.body.classList.contains('entered');
 function esc(t) { return String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
@@ -59,7 +59,7 @@ function paint() {
 }
 tag.onclick = pause;
 function setVolume(v) {
-  VOL = Math.max(0, Math.min(1, v)); try { localStorage.setItem('shd.songVol', String(VOL)); } catch (_) { }
+  VOL = Math.max(0, Math.min(1, v)); try { localStorage.setItem('shd.songVol2', String(VOL)); } catch (_) { }
   if (gain && playing) { const t = ctx.currentTime; gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(gain.gain.value, t); gain.gain.linearRampToValueAtTime(inside() ? VOL : VOL * .8, t + .12); }
   document.dispatchEvent(new CustomEvent('shd-song', { detail: { volume: VOL, playing } }));
 }
