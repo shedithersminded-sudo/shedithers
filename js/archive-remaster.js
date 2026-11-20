@@ -211,6 +211,7 @@ function loopsPanel() {
   const sec = document.createElement('section'); sec.className = 'p-mod p-made';
   sec.innerHTML = `
     <div class="p-head"><small>つくったもの</small><b>OTHER THINGS I MADE</b><span>FREE · NO SIGN UP · WHAT YOU MAKE IS YOURS</span></div>
+    <div class="mk-sky" aria-hidden="true" style="background-image:url('${new URL('assets/archive/sky-2.jpg', location.href).href}')"></div>
     <p class="mk-lede">i built these for me first. now they’re yours too. free, nothing to install, no account. go make something weird.</p>
     <div class="mk-row">
       <article class="mk-card mk-lab">
@@ -454,8 +455,8 @@ hackDir();
    cutouts, little prints with tape, words on paper. saved per page; CLEAN UP takes it all off ---------- */
 (() => {
   const STK = ['bloom', 'flower', 'gold', 'leaves', 'logo', 'no-face', 'thumbprint'];
-  const CHIP = ['are-we-alive-yet', 'not-in-my-nature', 'no-identity', 'prettier-in-fragments', 'who-will-you-be', 'when-you-rain', 'she-knows-the-night', 'click-to-be-saved', 'i-love-shedithers', 'shedithers-eyes', 'so-free', 'stop-asking', 'all-signs-yellow', 'bloom'];
-  const WORDS = ['shedithers wuz here', 'not ordinary', 'me too', 'doing it scared', 'no identity', 'x x x', 'are we alive yet?', 'still installing', 'understanding me is understanding we', 'i look prettier in fragments', 'who will you be?', 'stay a little strange'];
+  const CHIP = ['are-we-alive-yet', 'not-in-my-nature', 'no-identity', 'prettier-in-fragments', 'who-will-you-be', 'when-you-rain', 'she-knows-the-night', 'click-to-be-saved', 'i-love-shedithers', 'shedithers-eyes', 'so-free', 'stop-asking', 'all-signs-yellow', 'bloom', 'its-all-in-your-head', 'distance', 'circle-of-becoming', 'inner-world', 'sky-2'];
+  const WORDS = ['shedithers wuz here', 'not ordinary', 'me too', 'doing it scared', 'no identity', 'x x x', 'are we alive yet?', 'still installing', 'understanding me is understanding we', 'i look prettier in fragments', 'who will you be?', 'stay a little strange', 'it’s all in your head', 'repair before you replace', 'strangers with familiar eyes', 'let the light in'];
   const KEY = 'shd.mess2', U = p => new URL(p, location.href).href;
   let all = []; try { all = JSON.parse(localStorage.getItem(KEY)) || []; } catch (_) { }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(all.slice(-120))); } catch (_) { } };

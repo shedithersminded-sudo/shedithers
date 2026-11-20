@@ -800,3 +800,6 @@ body.messing .mess-tip.on{top:calc(var(--bar,56px) + 160px)}
 }
 .portal>.p-made{background:linear-gradient(rgba(11,10,9,.9),rgba(11,10,9,.94))!important}
 @media (max-width:600px){.nd.hk .nd-fields{grid-template-columns:4.6em 1fr;column-gap:6px;font-size:16px}.nd.hk .nd-fields>span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}}
+/* v4.1.1: the artist's own sky photo, soft behind OTHER THINGS I MADE */
+.mk-sky{position:absolute;inset:0;z-index:-2;pointer-events:none;background:center 30%/cover no-repeat;opacity:.45;filter:saturate(1.1)}
+.portal>.p-made{background:linear-gradient(rgba(11,10,9,.78),rgba(11,10,9,.92))!important}

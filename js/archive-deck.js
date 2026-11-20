@@ -16,6 +16,11 @@ const STEP = 360 / N;
 const INKS = ['red', 'black', 'paper', 'teal', 'mustard', 'plum'];
 // readings: a riddle made from each piece, and its answer. pieces without one get a "finish the line" from their own words
 const RIDDLES = {
+  'its-all-in-your-head': ['i sit somewhere between dreams and reality and never answer. where am i?', 'it’s all in your head. repair before you replace.'],
+  'distance': ['i turn your memories into strangers, but they keep their eyes. what am i?', 'distance. strangers with familiar eyes.'],
+  'circle-of-becoming': ['what loves, becomes. what becomes, must change. what happens to what changes?', 'it gets devoured. the circle of becoming.'],
+  'inner-world': ['i wear the persona and hold the ego, but i’m bigger than both. what am i?', 'the self. the inner world.'],
+  'sky-2': ['i’m never the same twice and i’m always above you. what am i?', 'the sky. i took this one myself.'],
   'untitled-faces': ['the words go round and round your head and never come out straight. what are they?', 'warped words. understanding me is understanding we.'],
   'untitled-spiral': ['i spin you around until you can\u2019t tell if you\u2019re lost or loved. what am i?', 'conloved. confused and loved at the same time.'],
   'untitled-red-sun': ['he burns all day about things that never happen. who is he?', 'wurrisum. a dude named worrisome.'],

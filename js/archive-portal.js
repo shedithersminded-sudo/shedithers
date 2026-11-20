@@ -45,6 +45,7 @@ window.SHD_PORTAL = function (view, X) {
   const tt = String(CFG.tiktok || '').replace(/^@/, ''), yt = String(CFG.youtube || '').replace(/^@/, ''), cash = String(CFG.cashapp || '').replace(/^\$/, '');
   const L = (href, txt, ext) => h('a', { href, target: ext ? '_blank' : null, rel: ext ? 'noopener' : null }, txt);
   const news = [
+    ['11/20/26', 'MORE', ['5 more pieces + 2 moving ones. ', L('#/work/its-all-in-your-head', 'it’s all in your head'), ', ', L('#/work/distance', 'strangers with familiar eyes'), ', ', L('#/work/let-the-light-in', 'let the light in'), '.']],
     ['11/20/26', 'NEW', ['20 new pieces + 9 new moving ones. start with ', L('#/work/the-encircled-one', 'the encircled one'), ', ', L('#/work/self-exe', 'self.exe still installing'), ', ', L('#/work/sad-angels', 'sad angels need friends too'), '.']],
     ['11/20/26', 'THE WALL', ['the newest pieces are pinned up loose on the home page. drag them around, make a mess.']],
     ['11/20/26', 'SOUND', ['the site has its own song now. turn it up or down in now playing.']],

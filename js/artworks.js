@@ -71,6 +71,11 @@ const ARTWORKS = [
   { id: 'motion-05', file: 'motion-05.mp4', type: 'video', w: 0, h: 0, title: 'SHEDITHERS · MOTION 05', col: 'motion', date: '2026-06-30', medium: 'Moving image', words: '' },
   { id: 'motion-06', file: 'motion-06.mp4', type: 'video', w: 0, h: 0, title: 'SHEDITHERS · MOTION 06', col: 'motion', date: '2026-07-02', medium: 'Moving image', words: '' },
   { id: 'shesdithers', file: 'shesdithers.mp4', type: 'video', w: 0, h: 0, title: 'SHESDITHERS', col: 'motion', date: '2026-08-13', medium: 'Moving image', words: '' },
+  { id: 'its-all-in-your-head', file: 'its-all-in-your-head.png', w: 663, h: 828, title: 'IT’S ALL IN YOUR HEAD', col: 'collage', date: '2026-11-20', medium: 'Digital collage', words: 'i was my first victim and now my only hope · repair before you replace' },
+  { id: 'distance', file: 'distance.png', w: 743, h: 827, title: 'STRANGERS WITH FAMILIAR EYES', col: 'collage', date: '2026-11-20', medium: 'Digital collage', words: 'distance turned my memories into strangers with familiar eyes.' },
+  { id: 'circle-of-becoming', file: 'circle-of-becoming.png', w: 1011, h: 855, title: 'THE CIRCLE OF BECOMING', col: 'signal', date: '2026-11-20', medium: 'Digital diagram', words: 'what loves, becomes. what becomes, must change. and what changes, must be devoured.' },
+  { id: 'inner-world', file: 'inner-world.png', w: 870, h: 831, title: 'INNER WORLD', col: 'signal', date: '2026-11-20', medium: 'Digital diagram', words: 'persona · ego · self' },
+  { id: 'sky-2', file: 'sky-2.jpg', w: 1500, h: 2000, title: 'UNTITLED (SKY II)', col: 'objects', date: '2026-11-20', medium: 'Photograph', words: '' },
   { id: 'i-dont-want-a-face', file: 'i-dont-want-a-face.jpg', w: 2000, h: 1658, title: 'I DONT WANT A FACE', col: 'drawing', date: '2026-11-20', medium: 'Painting + print', words: 'i dont want a face.' },
   { id: 'doing-it-scared', file: 'doing-it-scared.jpg', w: 1500, h: 2000, title: 'DOING IT SCARED', col: 'collage', date: '2026-11-20', medium: 'Digital collage', words: 'doing it scared is just being brave.' },
   { id: 'sky-lights', file: 'sky-lights.jpg', w: 2000, h: 1500, title: 'UNTITLED (SKY)', col: 'objects', date: '2026-11-20', medium: 'Photograph', words: '' },
@@ -105,6 +110,8 @@ const ARTWORKS = [
   { id: 'am-i-becoming', file: 'am-i-becoming.mp4', type: 'video', w: 0, h: 0, title: 'AM I BECOMING SOMEONE NEW', col: 'motion', date: '2026-11-20', medium: 'Moving image', words: 'am i becoming someone new or returning to myself?' },
   { id: 'untitled-map', file: 'untitled-map.mp4', type: 'video', w: 0, h: 0, title: 'ME, YOU, WE', col: 'motion', date: '2026-11-20', medium: 'Moving image', words: 'me · you · we' },
   { id: 'hold-on', file: 'hold-on.mp4', type: 'video', w: 0, h: 0, title: 'HOLD ON', col: 'motion', date: '2026-11-20', medium: 'Moving image', words: 'hold on' },
+  { id: 'let-the-light-in', file: 'let-the-light-in.mp4', type: 'video', w: 0, h: 0, title: 'LET THE LIGHT IN', col: 'motion', date: '2026-11-20', medium: 'Moving image', words: 'let the light in. our dreams are dying to.' },
+  { id: 'wake-up-3', file: 'wake-up-3.mp4', type: 'video', w: 0, h: 0, title: 'WAKE UP THEY ARE TAKING ALL THE COLOR AWAY III', col: 'motion', date: '2026-11-20', medium: 'Moving image', words: '' },
 ];
 const UI_HANDS = 'assets/ui/hands.mp4'; /* the artist asked for this one in the interface, not the exhibit */
 COLLECTIONS.push({ id: 'screens', code: 'CODE_006', name: 'WIDESCREEN', sub: 'LANDSCAPE WORKS', color: '#a9a28a', ink: '#1d1b16' });
