@@ -82,16 +82,11 @@ const cleanBtn = h('button', { class: 'clean-btn', title: 'Clean up your mess' }
 document.body.append(messBtn, cleanBtn);
 const STAMP_KINDS = ['splat', 'splat', 'heart', 'star', 'tag', 'tape', 'scrib'];
 const TAGS = ['♥ wuz here', 'SHEDITHERS', 'x x x', 'not ordinary', 'me too', '!!!', 'lol', '☆'];
-function setMess(on) { mess = on; document.body.classList.toggle('messing', on); messBtn.setAttribute('aria-pressed', on); messBtn.querySelector('b').textContent = on ? 'TAP TO SPRAY · DONE' : 'MAKE A MESS'; }
+function setMess(on) { mess = on; document.body.classList.toggle('messing', on); messBtn.setAttribute('aria-pressed', on); messBtn.querySelector('b').textContent = on ? 'TAP ANYWHERE · DONE' : 'MAKE A MESS'; }
 messBtn.onclick = () => setMess(!mess);
 cleanBtn.onclick = () => { stamps.length = 0; LS.set('shd.mess', stamps); drawStamps(); };
 const blocked = '.obj,.print,.ticket,.frame,.reel-cell,.v-mat,.viewer,a,button,input,.player,.note-pop,.tickets img,.win,.about-card,.title-scrap,.strip-log,.hint,.bar,.chips';
-document.addEventListener('pointerdown', e => {
-  if (!mess || e.button > 0 || e.target.closest(blocked) || !e.target.closest('#view, .wall, body')) return;
-  const y = e.clientY + scrollY, x = e.clientX, k = STAMP_KINDS[Math.floor(Math.random() * STAMP_KINDS.length)];
-  const s = { k, x, y, r: (Math.random() - 0.5) * 50, ink: INKS[Math.floor(Math.random() * INKS.length)], size: k === 'splat' ? 50 + Math.random() * 90 : k === 'tape' ? 80 : 30 + Math.random() * 30, q: TAGS[Math.floor(Math.random() * TAGS.length)], n: Math.floor(Math.random() * 3), page: routeKey() };
-  stamps.push(s); if (stamps.length > 80) stamps.shift(); LS.set('shd.mess', stamps); addStamp(s, true);
-});
+// (v4.1.0) tapping in mess mode is handled by the sticker layer in archive-remaster.js, section 18
 function addStamp(s, fresh) { const el = spawn(s.k, s.x - s.size / 2, s.y - s.size / 2, s.r, s); el.classList.add('stamp'); if (fresh && !reduce) el.classList.add('sprayed'); wall.append(el); }
 function drawStamps() { wall.querySelectorAll('.stamp').forEach(e => e.remove()); stamps.filter(s => s.page === routeKey()).forEach(s => addStamp(s)); }
 

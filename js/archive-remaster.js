@@ -201,37 +201,45 @@ let scT = 0; addEventListener('scroll', () => { if (!document.body.classList.con
 const vidIO = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { const v = e.target; v.muted = true; if (e.isIntersecting && !reduce) v.play().catch(() => { }); else v.pause(); }), { rootMargin: '80px 0px' }) : null;
 function watchWall() { document.querySelectorAll('video.vc-wall:not([data-io])').forEach(v => { v.dataset.io = '1'; v.muted = true; if (vidIO) vidIO.observe(v); }); }
 
-/* ---------- 11. SHELOOPS: the sister studio, in a panel made from the artist's art ---------- */
+/* ---------- 11. OTHER THINGS I MADE: the two free studios side by side (Dither Lab for pictures, SHELOOPS for music) ---------- */
 function loopsPanel() {
-  const P = document.querySelector('.portal'); if (!P || P.querySelector('.p-loops') || typeof ARTWORKS === 'undefined') return;
-  const lab = P.querySelector('.p-lab') || P.querySelector('.p-strips'); if (!lab) return;
+  const P = document.querySelector('.portal'); if (!P || P.querySelector('.p-made') || typeof ARTWORKS === 'undefined') return;
+  const lab = P.querySelector('.p-lab'); if (!lab) return;
   const A2 = f => new URL('assets/ui/art2/' + f, location.href).href;
-  const pics = ARTWORKS.filter(a => a.type !== 'video').slice(-8).map(a => new URL(a.src, location.href).href);
-  const sec = document.createElement('section'); sec.className = 'p-mod p-loops';
+  const screen = lab.querySelector('.pl-screen');
   const rays = Array.from({ length: 40 }, (_, k) => `<i style="--a:${k * 9}deg;--k:${k}"><b></b></i>`).join('');
-  const lane = (name, k) => `<div class="lp-lane" style="--k:${k}"><span>${name}</span><div class="lp-wave"><i style="background-image:url('${pics[k % pics.length]}')"></i><i style="background-image:url('${pics[(k + 3) % pics.length]}')"></i></div></div>`;
+  const sec = document.createElement('section'); sec.className = 'p-mod p-made';
   sec.innerHTML = `
-    <div class="lp-sky" aria-hidden="true" style="background-image:url('${A2('sky.webp')}')"></div>
-    <img class="lp-branch" src="${A2('leaves.webp')}" alt="" aria-hidden="true" draggable="false">
-    <div class="p-head"><small>ループ</small><b>SHELOOPS</b><span>MY OTHER STUDIO · FOR MUSIC</span></div>
-    <div class="lp-wrap">
-      <div class="lp-deck" aria-hidden="true">
-        <div class="lp-rays">${rays}</div>
-        <div class="lp-disc"><i class="lp-label" style="background-image:url('${A2('no-face.webp')}')"></i><i class="lp-hole"></i></div>
-        <i class="lp-arm"></i>
-        <span class="lp-now">now spinning · your next song</span>
-      </div>
-      <div class="lp-txt">
-        <p class="lp-lede">make music in your browser.<br><em>keep every bit of it.</em></p>
-        <div class="lp-lanes"><i class="lp-head" aria-hidden="true"></i>
-          ${lane('vocals · record over your own beats', 0)}${lane('beats · drums, sounds, loops', 1)}${lane('mix + master · then export', 2)}${lane('cover art · design the sleeve', 3)}
-        </div>
-        <p class="lp-safe"><b>your songs are yours.</b> they stay on your computer, nothing gets uploaded anywhere. export them as WAV or MP3 whenever you want and do whatever you want with them.</p>
-        <a class="lp-go" href="https://shedithersminded-sudo.github.io/sheloops/" target="_blank" rel="noopener">open SHELOOPS <i aria-hidden="true">▸</i></a>
-        <small class="lp-note">free. works best in chrome or edge. nothing to install.</small>
-      </div>
+    <div class="p-head"><small>つくったもの</small><b>OTHER THINGS I MADE</b><span>FREE · NO SIGN UP · WHAT YOU MAKE IS YOURS</span></div>
+    <p class="mk-lede">i built these for me first. now they’re yours too. free, nothing to install, no account. go make something weird.</p>
+    <div class="mk-row">
+      <article class="mk-card mk-lab">
+        <span class="mk-free" aria-hidden="true">FREE</span>
+        <div class="mk-art"></div>
+        <small class="mk-for">01 · for pictures + video</small>
+        <h3>DITHER LAB</h3>
+        <p>drop in a photo and break it on purpose. dither, glitch, glow, halftone, paper, grain. 60+ effects. save it as a picture, a gif or a video.</p>
+        <a class="mk-go" href="index.html">open the lab <i aria-hidden="true">▸</i></a>
+        <small class="mk-note">your photos never leave your computer.</small>
+      </article>
+      <article class="mk-card mk-loops">
+        <div class="lp-sky" aria-hidden="true" style="background-image:url('${A2('sky.webp')}')"></div>
+        <img class="lp-branch" src="${A2('leaves.webp')}" alt="" aria-hidden="true" draggable="false">
+        <span class="mk-free" aria-hidden="true">FREE</span>
+        <div class="mk-art"><div class="lp-deck" aria-hidden="true">
+          <div class="lp-rays">${rays}</div>
+          <div class="lp-disc"><i class="lp-label" style="background-image:url('${A2('no-face.webp')}')"></i><i class="lp-hole"></i></div>
+          <i class="lp-arm"></i>
+        </div></div>
+        <small class="mk-for">02 · for music</small>
+        <h3>SHELOOPS</h3>
+        <p>make beats, record your voice over them, mix it, design the cover. your songs stay on your computer. export them as wav or mp3 whenever you want.</p>
+        <a class="mk-go" href="https://shedithersminded-sudo.github.io/sheloops/" target="_blank" rel="noopener">open sheloops <i aria-hidden="true">▸</i></a>
+        <small class="mk-note">works best in chrome or edge.</small>
+      </article>
     </div>`;
-  lab.after(sec);
+  if (screen) { screen.setAttribute('aria-label', 'Open the Dither Lab'); sec.querySelector('.mk-lab .mk-art').append(screen); }
+  lab.after(sec); lab.remove();
   edges();
 }
 function bits3() { watchWall(); loopsPanel(); }
@@ -308,7 +316,7 @@ dressPop();
    "mess it up" throws them around, "line them up" puts them in rows. A YouTube short is pinned up too ---------- */
 function wallPanel() {
   const P = document.querySelector('.portal'); if (!P || P.querySelector('.p-wallpin') || typeof ARTWORKS === 'undefined') return;
-  const after = P.querySelector('.p-loops') || P.querySelector('.p-lab'); if (!after) return;
+  const after = P.querySelector('.p-made') || P.querySelector('.p-lab'); if (!after) return;
   const CFG = typeof SHD_CONFIG !== 'undefined' ? SHD_CONFIG : {};
   // SHE, NOT ME I + II hang together as one double card
   const pieces = ARTWORKS.filter(a => a.type !== 'video' && a.date >= '2026-11-20' && a.id !== 'self-portrait-grey').slice(-14);
@@ -393,4 +401,110 @@ function styleNote() {
 }
 if (view) new MutationObserver(styleNote).observe(view, { childList: true, subtree: true });
 styleNote();
+
+/* ---------- 17. FILE DIRECTORY: an old hacker screen. green phosphor, a typed command, a preview of the file,
+   a glitch tear now and then while it's on screen, ACCESS GRANTED when you open something ---------- */
+function hackDir() {
+  const nd = document.querySelector('.portal > .nd'); if (!nd || nd.dataset.hk) return;
+  const scr = nd.querySelector('.nd-scr'), list = nd.querySelector('.nd-list'), fields = nd.querySelector('.nd-fields'), box = nd.querySelector('.nd-box');
+  if (!scr || !list || !fields || !box) return; nd.dataset.hk = '1'; nd.classList.add('hk');
+  const sub = nd.querySelector('.p-head span'); if (sub) sub.textContent = 'HOVER · ARROW KEYS · CLICK TO OPEN';
+  const cmd = document.createElement('div'); cmd.className = 'nd-cmd';
+  cmd.innerHTML = '<span class="nd-ps">C:\\SHEDITHERS&gt;</span> <span class="nd-typed"></span><i class="nd-car" aria-hidden="true"></i>';
+  list.before(cmd);
+  const low = document.createElement('div'); low.className = 'nd-low'; fields.before(low); low.append(fields);
+  const prev = document.createElement('div'); prev.className = 'nd-prev'; prev.setAttribute('aria-hidden', 'true');
+  prev.innerHTML = '<i class="nd-img"></i><b class="nd-pt">PREVIEW</b><span class="nd-pk"></span>'; low.append(prev);
+  scr.insertAdjacentHTML('beforeend', '<i class="nd-roll" aria-hidden="true"></i><i class="nd-tear" aria-hidden="true"></i><i class="nd-tear b" aria-hidden="true"></i><div class="nd-ok" aria-hidden="true"><b>ACCESS GRANTED</b><small>opening file…</small></div>');
+  const img = prev.querySelector('.nd-img'), pk = prev.querySelector('.nd-pk'), cache = {};
+  // small copies first (the intro art), the full piece if there is no small one
+  function load(a, cb) {
+    if (cache[a.id]) return cb(cache[a.id]);
+    const sm = new URL('assets/ui/intro-art/' + a.id + '.jpg', location.href).href, im = new Image();
+    im.onload = () => { cache[a.id] = sm; cb(sm); }; im.onerror = () => { const f = new URL(a.src, location.href).href; cache[a.id] = f; cb(f); }; im.src = sm;
+  }
+  let cur = '', pt = 0;
+  function show() {
+    const t = box.textContent; if (t === cur) return; cur = t; clearTimeout(pt);
+    prev.classList.remove('sw'); void prev.offsetWidth; prev.classList.add('sw');
+    const a = ARTWORKS.find(x => x.title === t); if (!a) return;
+    if (a.type === 'video') { img.style.backgroundImage = ''; prev.classList.add('mo'); pk.textContent = 'MOTION · OPEN TO PLAY'; return; }
+    prev.classList.remove('mo'); pk.textContent = a.w && a.h ? `${a.w}×${a.h}` : '';
+    pt = setTimeout(() => load(a, u => { if (cur === t) img.style.backgroundImage = `url('${u}')`; }), 120);
+  }
+  new MutationObserver(show).observe(box, { childList: true, characterData: true, subtree: true }); show();
+  const typed = cmd.querySelector('.nd-typed'), line = 'dir /archive /all /show-me-everything';
+  let on = false, gt = 0, did = false;
+  function type() { if (did) return; did = true; if (reduce) { typed.textContent = line; return; } let k = 0; const iv = setInterval(() => { typed.textContent = line.slice(0, ++k); if (k >= line.length) clearInterval(iv); }, 42); }
+  function glitch() {
+    clearTimeout(gt); if (!on || !nd.isConnected) return;
+    if (!reduce && !document.hidden && !document.body.classList.contains('rm-scrolling')) { scr.style.setProperty('--ty', (8 + Math.random() * 80).toFixed(0) + '%'); scr.classList.remove('gl'); void scr.offsetWidth; scr.classList.add('gl'); }
+    gt = setTimeout(glitch, 2400 + Math.random() * 4000);
+  }
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => { on = es[0].isIntersecting; if (on) { type(); glitch(); } else clearTimeout(gt); }, { threshold: .15 }).observe(nd); else type();
+  // opening a file: ACCESS GRANTED flashes, then the file opens
+  const grant = li => { if (scr.classList.contains('ok')) return; scr.classList.add('ok'); setTimeout(() => { li.dataset.ok = '1'; li.click(); delete li.dataset.ok; }, reduce ? 0 : 420); setTimeout(() => scr.classList.remove('ok'), 1100); };
+  list.addEventListener('click', e => { const li = e.target.closest('li'); if (!li || li.dataset.ok) return; e.stopPropagation(); e.preventDefault(); grant(li); }, true);
+  list.addEventListener('keydown', e => { if (e.key !== 'Enter') return; const li = list.querySelector('li.on'); if (!li) return; e.stopPropagation(); e.preventDefault(); grant(li); }, true);
+}
+if (view) new MutationObserver(hackDir).observe(view, { childList: true, subtree: true });
+hackDir();
+
+/* ---------- 18. MAKE A MESS: tap (or drag) anywhere and the artist's art sticks to the page, on top of everything.
+   cutouts, little prints with tape, words on paper. saved per page; CLEAN UP takes it all off ---------- */
+(() => {
+  const STK = ['bloom', 'flower', 'gold', 'leaves', 'logo', 'no-face', 'thumbprint'];
+  const CHIP = ['are-we-alive-yet', 'not-in-my-nature', 'no-identity', 'prettier-in-fragments', 'who-will-you-be', 'when-you-rain', 'she-knows-the-night', 'click-to-be-saved', 'i-love-shedithers', 'shedithers-eyes', 'so-free', 'stop-asking', 'all-signs-yellow', 'bloom'];
+  const WORDS = ['shedithers wuz here', 'not ordinary', 'me too', 'doing it scared', 'no identity', 'x x x', 'are we alive yet?', 'still installing', 'understanding me is understanding we', 'i look prettier in fragments', 'who will you be?', 'stay a little strange'];
+  const KEY = 'shd.mess2', U = p => new URL(p, location.href).href;
+  let all = []; try { all = JSON.parse(localStorage.getItem(KEY)) || []; } catch (_) { }
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(all.slice(-120))); } catch (_) { } };
+  const page = () => (location.hash.replace(/^#\/?/, '').split('/').slice(0, 2).join('/') || 'home');
+  const layer = document.createElement('div'); layer.className = 'mess-top'; layer.setAttribute('aria-hidden', 'true'); document.body.append(layer);
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  function el(s) {
+    let e;
+    if (s.k === 'cut') { e = document.createElement('img'); e.src = U('assets/ui/stickers/' + s.v + '.webp'); e.draggable = false; e.alt = ''; e.className = 'ms ms-cut'; e.style.width = s.w + 'px'; }
+    else if (s.k === 'chip') { e = document.createElement('span'); e.className = 'ms ms-chip'; e.style.width = s.w + 'px'; const i = document.createElement('img'); i.src = U('assets/ui/intro-art/' + s.v + '.jpg'); i.alt = ''; i.draggable = false; e.append(i); }
+    else { e = document.createElement('span'); e.className = 'ms ms-word' + (s.w > 130 ? ' red' : ''); e.textContent = s.v; }
+    e.style.left = `calc(50% + ${s.cx}px)`; e.style.top = s.y + 'px'; e.style.setProperty('--r', s.r + 'deg');
+    return e;
+  }
+  function draw() { layer.textContent = ''; layer.style.height = document.documentElement.scrollHeight + 'px'; const p = page(); all.filter(s => s.p === p).forEach(s => layer.append(el(s))); }
+  let ac = null;
+  function thwip() {
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)(); const t = ac.currentTime, o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'triangle'; o.frequency.setValueAtTime(520 + Math.random() * 300, t); o.frequency.exponentialRampToValueAtTime(140, t + .09);
+      g.gain.setValueAtTime(.05, t); g.gain.exponentialRampToValueAtTime(.0001, t + .12); o.connect(g).connect(ac.destination); o.start(t); o.stop(t + .13);
+    } catch (_) { }
+  }
+  function slap(x, y) {
+    const r = Math.random(), k = r < .45 ? 'cut' : r < .75 ? 'chip' : 'word';
+    const v = k === 'cut' ? pick(STK) : k === 'chip' ? pick(CHIP) : pick(WORDS);
+    const w = k === 'cut' ? 80 + Math.random() * 80 : k === 'chip' ? 70 + Math.random() * 50 : Math.random() * 200;
+    const s = { p: page(), k, v, w: Math.round(w), cx: Math.round(x - innerWidth / 2), y: Math.round(y), r: Math.round((Math.random() - .5) * 40) };
+    all.push(s); save();
+    if (layer.offsetHeight < document.documentElement.scrollHeight) layer.style.height = document.documentElement.scrollHeight + 'px';
+    const e = el(s); if (!reduce) e.classList.add('slap'); layer.append(e); thwip();
+  }
+  const skip = t => t.closest('.mess-btn, .clean-btn, #bar, .bar, .mess-tip');
+  const messing = () => document.body.classList.contains('messing');
+  let held = null;
+  addEventListener('pointerdown', e => {
+    if (!messing() || e.button > 0 || skip(e.target)) return;
+    e.preventDefault(); e.stopPropagation(); slap(e.pageX, e.pageY); held = [e.pageX, e.pageY];
+  }, true);
+  addEventListener('pointermove', e => { if (!held || !messing()) return; if (Math.hypot(e.pageX - held[0], e.pageY - held[1]) > 110) { slap(e.pageX, e.pageY); held = [e.pageX, e.pageY]; } }, { passive: true });
+  addEventListener('pointerup', () => { held = null; }); addEventListener('pointercancel', () => { held = null; });
+  // while messing, taps never open links or buttons under them
+  addEventListener('click', e => { if (messing() && !skip(e.target)) { e.preventDefault(); e.stopPropagation(); } }, true);
+  // a short note the first time mess mode turns on
+  const tip = document.createElement('div'); tip.className = 'mess-tip'; tip.textContent = 'tap or drag anywhere. my art sticks to the page.'; document.body.append(tip);
+  let tt = 0; new MutationObserver(() => { const on = messing(); tip.classList.toggle('on', on); clearTimeout(tt); if (on) tt = setTimeout(() => tip.classList.remove('on'), 3200); }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  document.addEventListener('click', e => { if (e.target.closest('.clean-btn')) { all = []; save(); layer.querySelectorAll('.ms').forEach(m => { m.classList.add('peel'); setTimeout(() => m.remove(), 380); }); } });
+  addEventListener('hashchange', () => setTimeout(draw, 250));
+  let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(draw, 250); });
+  setTimeout(draw, 600);
+})();
 })();
