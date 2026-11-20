@@ -71,3 +71,12 @@ body.dg-on{overflow:hidden}
   .dg-skip{bottom:44px;right:14px}
 }
 @media (prefers-reduced-motion:reduce){.dg-logo img,.dg-hint b::after{animation:none}}
+
+/* v3.9.1: the logo calls you: rings pulse out of it and it buzzes every few seconds until you grab it */
+.dg-logo::before,.dg-logo::after{content:'';position:absolute;inset:6%;border-radius:50%;border:2px solid rgba(224,24,43,.75);box-shadow:0 0 18px rgba(224,24,43,.6);opacity:0;pointer-events:none;animation:dgRing 2.8s ease-out infinite}
+.dg-logo::after{animation-delay:1.4s;border-color:rgba(212,255,0,.6);box-shadow:0 0 14px rgba(212,255,0,.45)}
+@keyframes dgRing{0%{opacity:.9;transform:scale(.9)}100%{opacity:0;transform:scale(1.55)}}
+.dg.woke .dg-logo::before,.dg.woke .dg-logo::after,.dg.out .dg-logo::before,.dg.out .dg-logo::after{animation:none;opacity:0}
+.dg.buzz:not(.grab) .dg-logo img{animation:dgBuzz .5s linear,dgBreathe 4.6s ease-in-out infinite .5s}
+@keyframes dgBuzz{0%,100%{translate:0 0}10%{translate:-3px 1px}20%{translate:3px -1px}30%{translate:-2px -2px}40%{translate:2px 2px}50%{translate:-3px 0}60%{translate:3px 1px}70%{translate:-1px -2px}80%{translate:2px 1px}90%{translate:-1px 0}}
+@media (prefers-reduced-motion:reduce){.dg-logo::before,.dg-logo::after{animation:none}.dg.buzz .dg-logo img{animation:none}}

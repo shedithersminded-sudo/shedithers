@@ -197,4 +197,34 @@ if (view) new MutationObserver(watchPanels).observe(view, { childList: true, sub
 watchPanels();
 // while the page is scrolling, the heaviest decorative motion holds still (less work per frame = smoother scroll)
 let scT = 0; addEventListener('scroll', () => { if (!document.body.classList.contains('rm-scrolling')) document.body.classList.add('rm-scrolling'); clearTimeout(scT); scT = setTimeout(() => document.body.classList.remove('rm-scrolling'), 160); }, { passive: true });
+
+/* ---------- 10. the comment wall video only plays while you can see it ---------- */
+const vidIO = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { const v = e.target; v.muted = true; if (e.isIntersecting && !reduce) v.play().catch(() => { }); else v.pause(); }), { rootMargin: '80px 0px' }) : null;
+function watchWall() { document.querySelectorAll('video.vc-wall:not([data-io])').forEach(v => { v.dataset.io = '1'; v.muted = true; if (vidIO) vidIO.observe(v); }); }
+
+/* ---------- 11. SHELOOPS: the sister studio, in a panel made from the artist's art ---------- */
+function loopsPanel() {
+  const P = document.querySelector('.portal'); if (!P || P.querySelector('.p-loops') || typeof ARTWORKS === 'undefined') return;
+  const lab = P.querySelector('.p-lab') || P.querySelector('.p-strips'); if (!lab) return;
+  const pics = ARTWORKS.filter(a => a.type !== 'video').slice(-16);
+  const sec = document.createElement('section'); sec.className = 'p-mod p-loops';
+  const bars = pics.map((a, k) => `<i style="--k:${k};background-image:url('${new URL(a.src, location.href).href}')"></i>`).join('');
+  sec.innerHTML = `
+    <div class="p-head"><small>ループ</small><b>SHELOOPS</b><span>MY OTHER STUDIO · FOR MUSIC</span></div>
+    <div class="lp-wrap">
+      <div class="lp-eq" aria-hidden="true">${bars}</div>
+      <div class="lp-txt">
+        <p class="lp-lede">a free music studio that runs in your browser.</p>
+        <ul><li>record vocals over your own beats</li><li>make beats with drums, sounds and loops</li><li>mix it, master it, export it</li><li>design your cover art</li></ul>
+        <p class="lp-safe">your songs stay on your computer. nothing gets uploaded.</p>
+        <a class="lp-go" href="https://shedithersminded-sudo.github.io/sheloops/" target="_blank" rel="noopener">open SHELOOPS <i aria-hidden="true">▸</i></a>
+        <small class="lp-note">works best in chrome or edge. nothing to install.</small>
+      </div>
+    </div>`;
+  lab.after(sec);
+  edges();
+}
+function bits3() { watchWall(); loopsPanel(); }
+if (view) new MutationObserver(bits3).observe(view, { childList: true, subtree: true });
+bits3();
 })();

@@ -94,4 +94,6 @@ function open(e) {
   }
 }
 window.SHD_TIP = open;
+// tip links anywhere on the site (no cashtag shown) open this window
+document.addEventListener('click', e => { const a = e.target.closest('a[href="#/tip"]'); if (!a) return; e.preventDefault(); (window.SHD_DRINK || open)(e); }, true);
 })();

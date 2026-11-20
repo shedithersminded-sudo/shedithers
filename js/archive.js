@@ -242,7 +242,7 @@ function viewAbout() {
         ticket(tt, '♪ tiktok', '@' + tt, `https://www.tiktok.com/@${tt}`, 'red'),
         ticket(yt, '▶ youtube', '@' + yt, `https://www.youtube.com/@${yt}`),
         ticket(mail, '✉ email', mail, `mailto:${mail}`),
-        ticket(cash, '$ cash app', '$' + cash, `https://cash.app/$${cash}`, 'red'),
+        ticket(cash, 'tip jar', 'buy me a drink', '#/tip', 'red', false),
         ticket(rb, '★ stickers + prints', 'redbubble', `https://www.redbubble.com/people/${rb}/shop`),
         ticket(true, '▣ the dither lab', 'make your own', 'index.html', 'paper', false)),
       h('div', { class: 'ab-tip' },

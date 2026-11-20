@@ -326,3 +326,91 @@ body.rm-scrolling .rm-edge::before{animation-play-state:paused}
 @keyframes rmCore{50%{opacity:1}}
 .ps-streak{will-change:transform,opacity}
 @media (prefers-reduced-motion:reduce){.ps-core::after{animation:none}}
+
+/* ===== v3.9.1: THE COMMENT SECTION, remastered. Same idea (real comments, tap to blow up, heart it), new look:
+   the artist's "understand?" video plays on the wall, the art strip is a film reel that rolls, and every comment is
+   a different object: a notebook scrap, a black sticker, a receipt, a strip of red tape, a polaroid caption ===== */
+.p-voices .vc-wrap{isolation:isolate;overflow:hidden;background:#0b0a09!important;box-shadow:none!important;border-radius:10px;padding:20px!important}
+.vc-wall{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;filter:grayscale(.35) contrast(1.15) brightness(.42) saturate(1.3);pointer-events:none}
+.p-voices .vc-wrap::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(rgba(11,10,9,.6) 32%,transparent 34%) 0 0/4px 4px,linear-gradient(90deg,rgba(11,10,9,.85),rgba(11,10,9,.35) 40%,rgba(11,10,9,.55))}
+/* the film reel */
+.p-voices .vc-strip{position:relative;overflow:hidden;padding:0 12px;background:#141210;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(233,227,209,.15)}
+.p-voices .vc-strip::before,.p-voices .vc-strip::after{content:'';position:absolute;top:0;bottom:0;width:8px;z-index:2;background:repeating-linear-gradient(180deg,transparent 0 6px,rgba(233,227,209,.55) 6px 12px,transparent 12px 18px)}
+.p-voices .vc-strip::before{left:2px}.p-voices .vc-strip::after{right:2px}
+.vc-reel{display:flex;flex-direction:column;gap:6px;animation:vcReel 40s linear infinite;will-change:transform}
+.vc-reel i{display:block;flex:none;height:78px;background:center/cover;filter:grayscale(1) contrast(1.3) sepia(.55) hue-rotate(-25deg) saturate(2.2);transform:none!important;box-shadow:none!important}
+.vc-reel i:nth-child(3n){filter:contrast(1.1) saturate(1.1)}
+@keyframes vcReel{to{transform:translateY(-50%)}}
+.p-voices .vc-strip:hover .vc-reel{animation-play-state:paused}
+/* the comments */
+.p-voices .vc-list{gap:14px!important}
+.p-voices .vc-b{position:relative;border-radius:0;outline:none!important;box-shadow:0 10px 22px rgba(0,0,0,.45)!important;background:#efe8d2;color:#1d1b16}
+.p-voices .vc-b:nth-child(n){background:revert-layer}
+.p-voices .vc-b .vc-av{width:44px;height:44px}
+/* notebook scrap: lined paper, red margin, torn top */
+.p-voices .vk-paper{background:#efe8d2 repeating-linear-gradient(180deg,transparent 0 23px,rgba(70,90,140,.25) 23px 24px)!important;color:#1d1b16!important;padding-left:30px!important;
+  clip-path:polygon(0 6%,5% 0,12% 4%,20% 0,29% 5%,38% 1%,47% 4%,56% 0,65% 5%,74% 1%,83% 4%,92% 0,100% 4%,100% 100%,0 100%)}
+.p-voices .vk-paper::before{content:'';position:absolute;left:18px;top:0;bottom:0;width:1px;background:rgba(195,20,28,.55)}
+/* black sticker: lime text, rounded, a bit of shine */
+.p-voices .vk-tag{background:linear-gradient(160deg,#1a1816,#070606)!important;color:#d4ff00!important;border-radius:14px!important;box-shadow:0 0 0 2px #e9e3d1,0 10px 22px rgba(0,0,0,.5)!important}
+.p-voices .vk-tag .vc-tx small{color:#e9e3d1}
+/* receipt: thermal paper, mono, zigzag bottom edge */
+.p-voices .vk-receipt{background:#f4f1ea!important;color:#2a2620!important;padding-bottom:16px!important;
+  clip-path:polygon(0 0,100% 0,100% 88%,97% 100%,94% 88%,91% 100%,88% 88%,85% 100%,82% 88%,79% 100%,76% 88%,73% 100%,70% 88%,67% 100%,64% 88%,61% 100%,58% 88%,55% 100%,52% 88%,49% 100%,46% 88%,43% 100%,40% 88%,37% 100%,34% 88%,31% 100%,28% 88%,25% 100%,22% 88%,19% 100%,16% 88%,13% 100%,10% 88%,7% 100%,4% 88%,1% 100%,0 88%)}
+.p-voices .vk-receipt .vc-tx small::after{content:'  ·  #' attr(data-n);opacity:.6}
+.p-voices .vk-receipt p{font-family:'JetBrains Mono',monospace!important;font-size:15px!important;letter-spacing:-.01em}
+/* red tape strip: white bold, ragged ends */
+.p-voices .vk-tape{background:#c3141c!important;color:#fff!important;clip-path:polygon(1% 8%,4% 0,97% 4%,100% 14%,98% 52%,100% 88%,96% 100%,3% 96%,0 84%,2% 48%)}
+.p-voices .vk-tape .vc-tx small{color:#ffd8d0}
+/* polaroid caption: white frame, handwriting under a strip of art */
+.p-voices .vk-polaroid{background:#fbfaf6!important;color:#1d1b16!important;border-bottom:16px solid #fbfaf6;box-shadow:0 0 0 1px rgba(0,0,0,.15),0 12px 24px rgba(0,0,0,.5)!important}
+.p-voices .vk-polaroid::after{content:'';position:absolute;right:62px;top:-9px;width:70px;height:18px;background:rgba(233,227,209,.75);rotate:-5deg;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+/* new fonts in the mix */
+.vf-syne p{font:800 19px/1.15 'Syne',sans-serif!important;letter-spacing:-.01em}
+.vf-type p{font:400 18px/1.25 'Special Elite','Courier New',monospace!important}
+/* the way they arrive: dropped onto the wall, a little bounce, no blur (cheap to draw) */
+.p-voices .vc-b.in{animation:vcDrop .6s cubic-bezier(.2,1.5,.4,1)!important}
+@keyframes vcDrop{0%{opacity:0;transform:translateY(-26px) rotate(calc(var(--r) - 6deg)) scale(1.06)}100%{opacity:1}}
+.p-voices .vc-b:hover,.p-voices .vc-b:focus-visible{transform:rotate(0) scale(1.025) translateX(4px)!important;box-shadow:0 0 0 2px #d4ff00,0 14px 28px rgba(0,0,0,.55)!important}
+/* the blown-up comment: letters drop in one at a time over the video */
+.p-voices .vc-big{left:6%!important;right:6%!important;top:24%!important;color:#efe8d2!important;text-shadow:3px 3px 0 #c3141c,0 0 30px rgba(0,0,0,.9)!important}
+.p-voices .vc-big span{display:inline-block;white-space:pre;opacity:0}
+.p-voices .vc-big.on span{animation:vcLetter .45s cubic-bezier(.2,1.6,.4,1) forwards;animation-delay:calc(var(--n) * 18ms)}
+@keyframes vcLetter{from{opacity:0;transform:translateY(-30px) rotate(-12deg) scale(1.4)}to{opacity:1;transform:none}}
+/* controls */
+.p-voices .vc-btn{border-radius:999px!important;background:rgba(11,10,9,.85)!important;box-shadow:0 0 0 1px rgba(233,227,209,.35)!important;font-family:'JetBrains Mono',monospace!important;font-size:12px!important;letter-spacing:.12em!important;text-transform:uppercase;padding:9px 14px!important}
+.p-voices .vc-btn:hover{box-shadow:0 0 0 1px #d4ff00,0 0 14px rgba(212,255,0,.35)!important;color:#d4ff00}
+.p-voices .vc-btn.red{background:#c3141c!important;color:#fff!important}
+@media (max-width:760px){.vc-reel{flex-direction:row;animation-name:vcReelX}.vc-reel i{width:70px;height:auto}.p-voices .vc-strip::before,.p-voices .vc-strip::after{display:none}}
+@keyframes vcReelX{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.vc-reel,.p-voices .vc-big.on span{animation:none;opacity:1}}
+
+/* ===== SHELOOPS panel: an equalizer made of the artist's pieces ===== */
+.p-loops .lp-wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;align-items:center}
+.lp-eq{display:flex;align-items:flex-end;gap:5px;height:230px;padding:14px;border-radius:10px;background:#0b0a09;box-shadow:inset 0 0 0 1px rgba(233,227,209,.12);overflow:hidden}
+.lp-eq i{flex:1;height:100%;background:center/cover;transform-origin:50% 100%;border-radius:3px 3px 0 0;filter:contrast(1.15) saturate(1.2);
+  animation:lpBar 1.1s ease-in-out infinite alternate;animation-delay:calc(var(--k) * -137ms);will-change:transform;box-shadow:0 0 0 1px rgba(0,0,0,.6)}
+.lp-eq i:nth-child(3n){animation-duration:.8s}.lp-eq i:nth-child(4n+1){animation-duration:1.35s}
+@keyframes lpBar{from{transform:scaleY(.18)}to{transform:scaleY(1)}}
+.p-loops:hover .lp-eq i{animation-duration:.45s}
+.lp-lede{margin:0 0 10px;font:800 clamp(22px,2.2vw,30px)/1.1 'Syne',sans-serif;color:#e9e3d1;letter-spacing:-.01em}
+.lp-txt ul{margin:0 0 12px;padding:0;list-style:none;display:grid;gap:4px}
+.lp-txt li{font:400 18px/1.3 'Patrick Hand',cursive;color:#e9e3d1}
+.lp-txt li::before{content:'✦ ';color:#d4ff00}
+.lp-safe{margin:0 0 14px;font:500 12px/1.5 'JetBrains Mono',monospace;color:rgba(233,227,209,.7)}
+.lp-go{display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;background:linear-gradient(90deg,#2f7dff,#c3141c);color:#fff;font:800 16px 'Syne',sans-serif;text-decoration:none;box-shadow:0 0 0 2px #e9e3d1,0 0 22px rgba(47,125,255,.45);transition:transform .25s cubic-bezier(.3,1.6,.5,1),box-shadow .25s}
+.lp-go:hover,.lp-go:focus-visible{transform:translateY(-3px) scale(1.03);box-shadow:0 0 0 2px #fff,0 0 30px rgba(255,35,56,.6);outline:none}
+.lp-go i{font-style:normal}
+.lp-note{display:block;margin-top:10px;font:500 11px 'JetBrains Mono',monospace;color:rgba(233,227,209,.55)}
+@media (max-width:860px){.p-loops .lp-wrap{grid-template-columns:1fr}.lp-eq{height:150px}}
+@media (prefers-reduced-motion:reduce){.lp-eq i{animation:none;transform:scaleY(.7)}}
+/* grid: SHELOOPS gets its own full-width row under the Dither Lab promo; everything below moves down one */
+@media (min-width:1101px){
+  .portal>.p-loops  {grid-column:1/13!important;grid-row:8!important}
+  .portal>.p-traffic{grid-row:9!important}
+  .portal>.p-wall,.portal>.p-links{grid-row:10!important}
+  .portal>.p-flash,.portal>.p-mail{grid-row:11!important}
+  .portal>.p-speed{grid-row:12!important}
+  .portal>.p-foot{grid-row:13!important}
+}
+@media (max-width:1100px){.portal>.p-loops{grid-column:1/-1!important;grid-row:auto!important;order:9!important}}

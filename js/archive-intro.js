@@ -25,6 +25,54 @@ root.innerHTML = `
   <button class="dg-skip" type="button">skip ▸</button>
   <canvas class="dg-wipe" aria-hidden="true"></canvas>`;
 document.body.append(root); document.body.classList.add('dg-on');
+
+/* ---- sound, made right here with Web Audio (no files): a low bass buzz that calls you to the logo,
+ * glitter sparkles while you drag it, a rising shimmer when you throw it. Browsers only allow sound after a touch,
+ * so the buzz tries once on arrival and plays for sure on the first press. ---- */
+const SFX = (() => {
+  const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return { buzz() { }, sparkle() { }, rise() { }, unlock() { } };
+  let ctx = null, out = null, lastSp = 0;
+  const NOTES = [1318.5, 1568, 1760, 2093, 2349.3, 2637, 3136, 3520]; // a bright pentatonic for the glitter
+  function init() { if (ctx) return ctx; ctx = new AC(); out = ctx.createGain(); out.gain.value = .55; const comp = ctx.createDynamicsCompressor(); out.connect(comp); comp.connect(ctx.destination); return ctx; }
+  function unlock() { init(); if (ctx.state === 'suspended') ctx.resume().catch(() => { }); }
+  function buzz() {
+    init(); if (ctx.state !== 'running') return; const t = ctx.currentTime;
+    const o = ctx.createOscillator(), o2 = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(), lfo = ctx.createOscillator(), lg = ctx.createGain();
+    o.type = 'sawtooth'; o.frequency.value = 55; o2.type = 'square'; o2.frequency.value = 55.6;
+    f.type = 'lowpass'; f.frequency.value = 180; f.Q.value = 6;
+    lfo.frequency.value = 9; lg.gain.value = 60; lfo.connect(lg); lg.connect(f.frequency);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.32, t + .05); g.gain.exponentialRampToValueAtTime(.001, t + .7);
+    o.connect(f); o2.connect(f); f.connect(g); g.connect(out);
+    [o, o2, lfo].forEach(n => { n.start(t); n.stop(t + .75); });
+  }
+  function ping(freq, when, vol, len) {
+    const t = ctx.currentTime + when, o = ctx.createOscillator(), g = ctx.createGain(), pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+    o.type = 'sine'; o.frequency.setValueAtTime(freq, t); o.frequency.exponentialRampToValueAtTime(freq * 1.004, t + len);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .004); g.gain.exponentialRampToValueAtTime(.0008, t + len);
+    o.connect(g); if (pan) { pan.pan.value = Math.random() * 1.6 - .8; g.connect(pan); pan.connect(out); } else g.connect(out);
+    o.start(t); o.stop(t + len + .02);
+  }
+  function shimmer(when, len, from, to, vol) {
+    const t = ctx.currentTime + when, n = Math.floor(ctx.sampleRate * len), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = b; f.type = 'bandpass'; f.Q.value = 3; f.frequency.setValueAtTime(from, t); f.frequency.exponentialRampToValueAtTime(to, t + len);
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + len);
+    src.connect(f); f.connect(g); g.connect(out); src.start(t);
+  }
+  function sparkle(speed) {
+    if (!ctx || ctx.state !== 'running') return; const now = performance.now(), gap = Math.max(45, 140 - speed * 60); if (now - lastSp < gap) return; lastSp = now;
+    const k = 1 + Math.min(2, speed | 0);
+    for (let i = 0; i < k; i++) ping(NOTES[Math.random() * NOTES.length | 0] * (Math.random() < .3 ? 2 : 1), i * .03, .07, .18 + Math.random() * .2);
+    if (Math.random() < .35) shimmer(0, .12, 6000, 9000, .025);
+  }
+  function rise() {
+    if (!ctx || ctx.state !== 'running') return;
+    NOTES.concat(NOTES.map(n => n * 2)).forEach((n, i) => ping(n, i * .045, .06, .5));
+    shimmer(0, 1.1, 1500, 11000, .06);
+  }
+  return { buzz, sparkle, rise, unlock };
+})();
 const $ = s => root.querySelector(s);
 const logo = $('.dg-logo'), ring = $('.dg-ring'), prog = $('.dg-prog'), xy = $('.dg-xy'), bg = $('.dg-bg');
 let scr = null; if (window.SHD_BLOBSCREEN) scr = window.SHD_BLOBSCREEN(bg, { beatsPer: 4 });
@@ -43,7 +91,7 @@ let dragging = false, sx = 0, sy = 0, tx = 0, ty = 0, x = 0, y = 0, vx = 0, vy =
 const need = () => Math.min(W, H) * .26; // how far to throw before it counts
 const dots = []; // trail stamps
 logo.addEventListener('pointerdown', e => {
-  if (done) return; dragging = true; pid = e.pointerId; logo.setPointerCapture(pid);
+  if (done) return; dragging = true; pid = e.pointerId; logo.setPointerCapture(pid); SFX.unlock(); SFX.buzz(); root.classList.add('woke');
   sx = e.clientX - tx; sy = e.clientY - ty; root.classList.add('grab'); lastP = { x: e.clientX, y: e.clientY, t: performance.now() };
 });
 logo.addEventListener('pointermove', e => {
@@ -52,6 +100,7 @@ logo.addEventListener('pointermove', e => {
   const now = performance.now(), dt = Math.max(8, now - lastP.t);
   const sp = Math.hypot(e.clientX - lastP.x, e.clientY - lastP.y) / dt;
   dots.push({ x: W / 2 + tx, y: H / 2 + ty, r: 26 + Math.min(70, sp * 40), life: 1, hue: dots.length % 3 });
+  SFX.sparkle(sp);
   lastP = { x: e.clientX, y: e.clientY, t: now, vx: (e.clientX - lastP.x) / dt, vy: (e.clientY - lastP.y) / dt };
 });
 const release = e => {
@@ -118,11 +167,12 @@ function drawTrail(t) {
   tg.globalAlpha = 1;
 }
 raf = requestAnimationFrame(frame);
+let calls = 0; const call = setInterval(() => { if (done || root.classList.contains('woke') || calls++ > 6) return clearInterval(call); try { SFX.unlock(); SFX.buzz(); } catch (_) { } root.classList.remove('buzz'); void root.offsetWidth; root.classList.add('buzz'); }, 2800);
 setTimeout(() => { try { logo.focus({ preventScroll: true }); } catch (_) { } }, 400);
 
 /* ---- going in: the logo flies off, the screen dithers shut along the throw, the archive opens, it dithers open ---- */
 function go(dx, dy) {
-  if (done) return; done = true; dragging = false; root.classList.add('out');
+  if (done) return; done = true; dragging = false; root.classList.add('out'); SFX.unlock(); SFX.rise();
   const L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
   tx = ux * Math.max(W, H) * 1.3; ty = uy * Math.max(W, H) * 1.3;
   try { sessionStorage.setItem('shd.walked', '1'); } catch (_) { }

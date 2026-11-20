@@ -36,7 +36,9 @@ function starAv(who) {
   return i;
 }
 let likes = {}; try { likes = JSON.parse(localStorage.getItem('shd.voiceLikes') || '{}'); } catch (_) { }
-const FONTS = ['vf-wet', 'vf-hand', 'vf-glitch', 'vf-marker', 'vf-bebas', 'vf-serif', 'vf-mono'];
+const FONTS = ['vf-wet', 'vf-hand', 'vf-glitch', 'vf-marker', 'vf-bebas', 'vf-serif', 'vf-mono', 'vf-syne', 'vf-type'];
+// v3.9.1: every comment is a different object: a notebook scrap, a black sticker, a receipt, a strip of red tape, a polaroid caption
+const KINDS = ['paper', 'tag', 'receipt', 'tape', 'polaroid'];
 
 function build() {
   const list = h('div', { class: 'vc-list', 'aria-live': 'polite' });
@@ -46,10 +48,10 @@ function build() {
     const id = (f.who + f.text).slice(0, 60);
     const heart = h('button', { type: 'button', class: 'vc-like' + (likes[id] ? ' on' : ''), 'aria-label': 'Like this' }, '♥', h('span', null, String(likes[id] || 0)));
     heart.onclick = e => { e.stopPropagation(); likes[id] = (likes[id] || 0) + 1; heart.classList.add('on', 'pop'); heart.querySelector('span').textContent = likes[id]; setTimeout(() => heart.classList.remove('pop'), 500); try { localStorage.setItem('shd.voiceLikes', JSON.stringify(likes)); } catch (_) { } };
-    const b = h('div', { class: `vc-b ${FONTS[(k + i) % FONTS.length]}${f.fan ? ' fan' : ''}`, style: `--r:${((k * 37 + i * 13) % 9 - 4) * .6}deg`, tabindex: '0', role: 'button', 'aria-label': `${f.who}: ${f.text}. Tap to blow it up.` },
+    const b = h('div', { class: `vc-b ${FONTS[(k + i) % FONTS.length]} vk-${KINDS[(k + i) % KINDS.length]}${f.fan ? ' fan' : ''}`, style: `--r:${((k * 37 + i * 13) % 9 - 4) * .6}deg`, tabindex: '0', role: 'button', 'aria-label': `${f.who}: ${f.text}. Tap to blow it up.` },
       starAv(f.who),
       h('div', { class: 'vc-tx' }, h('small', null, h('b', null, f.who), ' · ', f.tag), h('p', null, f.text)), heart);
-    const blow = () => { big.textContent = f.text; big.className = 'vc-big on ' + FONTS[(k + i + 2) % FONTS.length]; clearTimeout(big._t); big._t = setTimeout(() => big.classList.remove('on'), 2600); };
+    const blow = () => { big.textContent = ''; [...f.text].forEach((c, n) => { const sp = document.createElement('span'); sp.textContent = c; sp.style.setProperty('--n', n); big.append(sp); }); big.className = 'vc-big on ' + FONTS[(k + i + 2) % FONTS.length]; clearTimeout(big._t); big._t = setTimeout(() => big.classList.remove('on'), 2600); };
     b.addEventListener('click', blow); b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); blow(); } });
     return b;
   };
@@ -62,7 +64,8 @@ function build() {
   const loop = () => { clearTimeout(timer); if (!sec.isConnected) return; if (!paused && !document.hidden) push(); timer = setTimeout(loop, reduce ? 6000 : 2600); };
   const sec = h('section', { class: 'p-mod p-voices' },
     h('div', { class: 'p-head' }, h('small', null, 'コメント'), h('b', null, 'THE COMMENT SECTION'), h('span', null, 'REAL COMMENTS FROM MY TIKTOKS · TAP ONE TO BLOW IT UP · ♥ IT')),
-    h('div', { class: 'vc-wrap' }, h('div', { class: 'vc-strip', 'aria-hidden': 'true' }, ...AV.slice(0, 6).map(a => h('i', { style: `background-image:url('${abs(a.src)}')` }))), list, big,
+    h('div', { class: 'vc-wrap' }, h('video', { class: 'vc-wall', src: abs('assets/ui/art2/understand.mp4'), poster: abs('assets/ui/art2/understand.jpg'), muted: true, loop: true, playsinline: true, autoplay: !reduce, preload: 'metadata', 'aria-hidden': 'true' }),
+      h('div', { class: 'vc-strip', 'aria-hidden': 'true' }, h('div', { class: 'vc-reel' }, ...AV.concat(AV).map(a => h('i', { style: `background-image:url('${abs(a.src)}')` })))), list, big,
       h('div', { class: 'vc-ctrl' }, h('button', { type: 'button', class: 'vc-btn', onclick: e => { paused = !paused; e.currentTarget.textContent = paused ? '▶ play' : '❚❚ pause'; } }, '❚❚ pause'), h('button', { type: 'button', class: 'vc-btn', onclick: push }, 'next ▸'), h('a', { class: 'vc-btn red', href: 'https://www.tiktok.com/@' + String(CFG.tiktok || 'shedithers').replace(/^@/, ''), target: '_blank', rel: 'noopener' }, 'say something on tiktok ▸'))));
   sec.addEventListener('mouseenter', () => { paused = true; }); sec.addEventListener('mouseleave', () => { paused = false; });
   const io = new IntersectionObserver(es => { if (!sec.isConnected) { clearTimeout(timer); io.disconnect(); return; } if (es[0].isIntersecting) loop(); else clearTimeout(timer); }); io.observe(sec);
