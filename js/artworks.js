@@ -98,7 +98,7 @@ const ARTWORKS = [
   { id: 'sad-angels', file: 'sad-angels.png', w: 678, h: 828, title: 'SAD ANGELS NEED FRIENDS TOO', col: 'collage', date: '2026-11-20', medium: 'Digital collage', words: 'sad angels need friends too' },
   { id: 'untitled-red-sun', file: 'untitled-red-sun.mp4', type: 'video', w: 0, h: 0, title: 'WURRISUM', col: 'motion', date: '2026-11-20', medium: 'Moving image', words: 'a dude named worrisome' },
   { id: 'untitled-spiral', file: 'untitled-spiral.mp4', type: 'video', w: 0, h: 0, title: 'CONLOVED', col: 'motion', date: '2026-11-20', medium: 'Moving image', words: 'lost or loved? i can’t tell anymore.' },
-  { id: 'untitled-faces', file: 'untitled-faces.mp4', type: 'video', w: 0, h: 0, title: 'I TELL YOU, YOU HAVE TO DO IT', col: 'motion', date: '2026-11-20', medium: 'Moving image', words: 'i tell you, you have to do it' },
+  { id: 'untitled-faces', file: 'untitled-faces.mp4', type: 'video', w: 0, h: 0, title: 'WARPED WORDS', col: 'motion', date: '2026-11-20', medium: 'Moving image', words: 'understanding me is understanding we.' },
   { id: 'wake-up-1', file: 'wake-up-1.mp4', type: 'video', w: 0, h: 0, title: 'WAKE UP THEY ARE TAKING ALL THE COLOR AWAY', col: 'motion', date: '2026-11-20', medium: 'Moving image', words: 'are you in control?' },
   { id: 'wake-up-2', file: 'wake-up-2.mp4', type: 'video', w: 0, h: 0, title: 'WAKE UP THEY ARE TAKING ALL THE COLOR AWAY II', col: 'motion', date: '2026-11-20', medium: 'Moving image', words: 'everything will be okay' },
   { id: 'presented-by-shedithers', file: 'presented-by-shedithers.mp4', type: 'video', w: 0, h: 0, title: 'PRESENTED BY SHEDITHERS', col: 'motion', date: '2026-11-20', medium: 'Moving image', words: '' },

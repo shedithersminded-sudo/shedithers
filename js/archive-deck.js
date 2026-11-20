@@ -15,6 +15,7 @@ const STEP = 360 / N;
 const INKS = ['red', 'black', 'paper', 'teal', 'mustard', 'plum'];
 // readings: a riddle made from each piece, and its answer. pieces without one get a "finish the line" from their own words
 const RIDDLES = {
+  'untitled-faces': ['the words go round and round your head and never come out straight. what are they?', 'warped words. understanding me is understanding we.'],
   'untitled-spiral': ['i spin you around until you can\u2019t tell if you\u2019re lost or loved. what am i?', 'conloved. confused and loved at the same time.'],
   'untitled-red-sun': ['he burns all day about things that never happen. who is he?', 'wurrisum. a dude named worrisome.'],
   'untitled-map': ['i start as two and end as one, and i\u2019m drawn all over your head. what am i?', 'me, you, we.'],
