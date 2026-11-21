@@ -155,3 +155,4 @@ The drag intro and the blob screen, the deck, the comment section concept, NOW P
 - v4.3.0 (2026-11-20): worn torn book remaster for collection pages, bug run (menu bar layering, iPad menu + stickers, phone viewer width, leftover drink wording).
 - v4.3.1 (2026-11-20): panel titles fit their panels (INSTANT-PHOTO ran off the edge).
 - v4.3.2 (2026-11-20): intro drag sounds are breakcore instead of sparkles.
+- v4.3.3 (2026-11-21): SHESKETCHES (https://shedithersminded-sudo.github.io/shesketches/) is the third card in OTHER THINGS I MADE (section 11, lime accent, sketchbook drawing itself), plus a news line. Card titles size to their card.

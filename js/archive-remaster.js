@@ -196,7 +196,7 @@ let scT = 0; addEventListener('scroll', () => { if (!document.body.classList.con
 const vidIO = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { const v = e.target; v.muted = true; if (e.isIntersecting && !reduce) v.play().catch(() => { }); else v.pause(); }), { rootMargin: '80px 0px' }) : null;
 function watchWall() { document.querySelectorAll('video.vc-wall:not([data-io])').forEach(v => { v.dataset.io = '1'; v.muted = true; if (vidIO) vidIO.observe(v); }); }
 
-/* ---------- 11. OTHER THINGS I MADE: the two free studios side by side (Dither Lab for pictures, SHELOOPS for music) ---------- */
+/* ---------- 11. OTHER THINGS I MADE: the free studios side by side (Dither Lab for pictures, SHELOOPS for music, SHESKETCHES for drawing) ---------- */
 function loopsPanel() {
   const P = document.querySelector('.portal'); if (!P || P.querySelector('.p-made') || typeof ARTWORKS === 'undefined') return;
   const lab = P.querySelector('.p-lab'); if (!lab) return;
@@ -232,6 +232,23 @@ function loopsPanel() {
         <p>make beats, record your voice over them, mix it, design the cover. your songs stay on your computer. export them as wav or mp3 whenever you want.</p>
         <a class="mk-go" href="https://shedithersminded-sudo.github.io/sheloops/" target="_blank" rel="noopener">open sheloops <i aria-hidden="true">▸</i></a>
         <small class="mk-note">works best in chrome or edge.</small>
+      </article>
+      <article class="mk-card mk-sk">
+        <span class="mk-free" aria-hidden="true">FREE</span>
+        <div class="mk-art"><div class="sk-book" aria-hidden="true">
+          <div class="sk-page sk-l"><i class="sk-art" style="background-image:url('${A2('brave.webp')}')"></i><span class="sk-tape"></span></div>
+          <div class="sk-rings">${'<i></i>'.repeat(9)}</div>
+          <div class="sk-page sk-r">
+            <svg viewBox="0 0 120 150" class="sk-draw"><path d="M18 112c8-30 20-52 34-60s22 4 14 20-24 30-12 38 34-18 44-40M30 40c10-6 22-8 34-4M28 128c20 4 46 2 66-6"/></svg>
+            <span class="sk-word">doing it scared</span>
+            <i class="sk-pencil"></i>
+          </div>
+        </div></div>
+        <small class="mk-for">03 · for drawing</small>
+        <h3>SHESKETCHES</h3>
+        <p>a sketchbook that feels real. pick your book, draw with pencils, charcoal, ink, markers and paint, add stickers and tape, flip through it in 3D. export your pages or the whole book as a video.</p>
+        <a class="mk-go" href="https://shedithersminded-sudo.github.io/shesketches/" target="_blank" rel="noopener">open shesketches <i aria-hidden="true">▸</i></a>
+        <small class="mk-note">your books stay in your browser. works best in chrome or edge.</small>
       </article>
     </div>`;
   if (screen) { screen.setAttribute('aria-label', 'Open the Dither Lab'); sec.querySelector('.mk-lab .mk-art').append(screen); }

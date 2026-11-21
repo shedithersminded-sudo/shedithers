@@ -995,3 +995,29 @@ body[data-route=col] .page.right{clip-path:polygon(0 0,14% 1.8%,29% .2%,45% 2.2%
   #bar .brand small,#bar .brand-sub,#bar [class*=brand] small{display:none!important}
 }
 @media (min-width:761px) and (max-width:1100px){#bar .brand>span{display:none!important}}
+
+/* ===== v4.3.3: SHESKETCHES joins OTHER THINGS I MADE (third card, lime) ===== */
+@media (min-width:1101px){.mk-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:861px) and (max-width:1100px){.mk-row .mk-sk{grid-column:1/-1}}
+.mk-card.mk-sk{box-shadow:6px 6px 0 #d4ff00}
+.mk-card.mk-sk:hover{box-shadow:9px 9px 0 #d4ff00}
+.mk-sk .mk-go{box-shadow:4px 4px 0 #d4ff00}
+.mk-sk .mk-go:hover{box-shadow:6px 6px 0 #d4ff00}
+.mk-sk .mk-free{border-color:#d4ff00;color:#d4ff00;rotate:5deg}
+.sk-book{position:relative;display:flex;width:min(100%,300px);aspect-ratio:1.5;rotate:-4deg;filter:drop-shadow(0 16px 20px rgba(0,0,0,.6));transition:rotate .3s}
+.mk-sk:hover .sk-book{rotate:-1deg}
+.sk-page{position:relative;flex:1;background:#e9e3d1;overflow:hidden}
+.sk-l{border-radius:4px 0 0 4px;box-shadow:inset -14px 0 18px -10px rgba(0,0,0,.45)}
+.sk-r{border-radius:0 4px 4px 0;box-shadow:inset 14px 0 18px -10px rgba(0,0,0,.45);background:repeating-linear-gradient(180deg,transparent 0 13px,rgba(47,125,255,.22) 13px 14px),#e9e3d1}
+.sk-art{position:absolute;inset:10px;background:center/cover no-repeat;filter:grayscale(1) contrast(1.6) brightness(1.1);mix-blend-mode:multiply;opacity:.9}
+.sk-tape{position:absolute;left:50%;top:2px;width:54px;height:16px;translate:-50% 0;rotate:-6deg;background:rgba(212,255,0,.55)}
+.sk-rings{position:absolute;left:50%;top:6%;bottom:6%;width:14px;translate:-50% 0;z-index:2;display:flex;flex-direction:column;justify-content:space-between}
+.sk-rings i{display:block;height:7px;border:2px solid #3a3633;border-radius:6px;background:#0b0a09}
+.sk-draw{position:absolute;inset:8px 6px 22px;width:calc(100% - 12px);height:calc(100% - 30px)}
+.sk-draw path{fill:none;stroke:#0b0a09;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:420;stroke-dashoffset:420;animation:skDraw 6s ease-in-out infinite}
+@keyframes skDraw{0%{stroke-dashoffset:420}55%,85%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}
+.sk-word{position:absolute;left:10px;bottom:5px;font:400 13px 'Permanent Marker',cursive;color:#c3141c;rotate:-3deg}
+.sk-pencil{position:absolute;left:20%;top:70%;width:70px;height:9px;rotate:-38deg;transform-origin:0 50%;background:linear-gradient(90deg,#0b0a09 0 6px,#e9c98f 6px 14px,#d4ff00 14px 86%,#c3141c 86%);clip-path:polygon(0 50%,14px 0,100% 0,100% 100%,14px 100%);animation:skPen 6s ease-in-out infinite}
+@keyframes skPen{0%{left:14%;top:72%}15%{left:40%;top:36%}30%{left:56%;top:40%}45%{left:38%;top:70%}55%{left:82%;top:30%}70%,100%{left:86%;top:76%}}
+@media (prefers-reduced-motion:reduce){.sk-draw path,.sk-pencil{animation:none;stroke-dashoffset:0}}
+.mk-card{container-type:inline-size}.mk-card h3{font-size:min(44px,calc((100cqi - 40px)/9.6))}.mk-sk h3{font-size:min(44px,calc((100cqi - 40px)/11.9))}
