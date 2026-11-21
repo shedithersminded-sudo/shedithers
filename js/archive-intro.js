@@ -26,50 +26,112 @@ root.innerHTML = `
   <canvas class="dg-wipe" aria-hidden="true"></canvas>`;
 document.body.append(root); document.body.classList.add('dg-on');
 
-/* ---- sound, made right here with Web Audio (no files): a low bass buzz that calls you to the logo,
- * glitter sparkles while you drag it, a rising shimmer when you throw it. Browsers only allow sound after a touch,
- * so the buzz tries once on arrival and plays for sure on the first press. ---- */
+/* ---- sound, made right here with Web Audio (no files). v4.3.2: breakcore, no sparkles.
+ * a low buzz calls you to the logo. dragging it plays a chopped amen-style break at 172bpm over a soft,
+ * dreamy chord in a big reverb. the faster you drag, the harder it chops (snare rolls, stutters, drops)
+ * and the brighter the chord. throwing it fires a rising snare roll into a huge chord and a sub drop.
+ * Browsers only allow sound after a touch, so it all starts on the first press. ---- */
 const SFX = (() => {
   const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return { buzz() { }, sparkle() { }, rise() { }, unlock() { } };
-  let ctx = null, out = null, lastSp = 0;
-  const NOTES = [1318.5, 1568, 1760, 2093, 2349.3, 2637, 3136, 3520]; // a bright pentatonic for the glitter
-  function init() { if (ctx) return ctx; ctx = new AC(); out = ctx.createGain(); out.gain.value = .55; const comp = ctx.createDynamicsCompressor(); out.connect(comp); comp.connect(ctx.destination); return ctx; }
+  let ctx = null, out = null, drums = null, verb = null, noiseB = null;
+  const STEP = 60 / 172 / 4; // 16th notes at 172bpm
+  // the break: kick, snare, ghost snare (amen-ish), hats on every step
+  const K = [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0], S = [0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1], G = [0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0];
+  const CHORD = [146.83, 220, 277.18, 329.63, 369.99, 440], HIGH = [293.66, 369.99, 440, 554.37, 659.25, 739.99]; // Dmaj9, soft and open
+  function init() {
+    if (ctx) return ctx; ctx = new AC();
+    out = ctx.createGain(); out.gain.value = .32; const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -16; comp.ratio.value = 4; out.connect(comp); comp.connect(ctx.destination);
+    drums = ctx.createGain(); drums.gain.value = .4; drums.connect(out);
+    // reverb from a made-up room: 3s of fading stereo noise
+    verb = ctx.createConvolver(); const n = ctx.sampleRate * 3, ir = ctx.createBuffer(2, n, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3.2); }
+    verb.buffer = ir; const vg = ctx.createGain(); vg.gain.value = .45; verb.connect(vg); vg.connect(out);
+    noiseB = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); const nd = noiseB.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    return ctx;
+  }
   function unlock() { init(); if (ctx.state === 'suspended') ctx.resume().catch(() => { }); }
+  const env = (g, t, v, a, d) => { g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + a); g.gain.exponentialRampToValueAtTime(.0005, t + a + d); };
   function buzz() {
     init(); if (ctx.state !== 'running') return; const t = ctx.currentTime;
     const o = ctx.createOscillator(), o2 = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(), lfo = ctx.createOscillator(), lg = ctx.createGain();
     o.type = 'sawtooth'; o.frequency.value = 55; o2.type = 'square'; o2.frequency.value = 55.6;
     f.type = 'lowpass'; f.frequency.value = 180; f.Q.value = 6;
     lfo.frequency.value = 9; lg.gain.value = 60; lfo.connect(lg); lg.connect(f.frequency);
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.32, t + .05); g.gain.exponentialRampToValueAtTime(.001, t + .7);
+    env(g, t, .3, .05, .65);
     o.connect(f); o2.connect(f); f.connect(g); g.connect(out);
     [o, o2, lfo].forEach(n => { n.start(t); n.stop(t + .75); });
   }
-  function ping(freq, when, vol, len) {
-    const t = ctx.currentTime + when, o = ctx.createOscillator(), g = ctx.createGain(), pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
-    o.type = 'sine'; o.frequency.setValueAtTime(freq, t); o.frequency.exponentialRampToValueAtTime(freq * 1.004, t + len);
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .004); g.gain.exponentialRampToValueAtTime(.0008, t + len);
-    o.connect(g); if (pan) { pan.pan.value = Math.random() * 1.6 - .8; g.connect(pan); pan.connect(out); } else g.connect(out);
-    o.start(t); o.stop(t + len + .02);
+  // ---- drum voices ----
+  function kick(t, v = 1) {
+    const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine';
+    o.frequency.setValueAtTime(160, t); o.frequency.exponentialRampToValueAtTime(42, t + .12);
+    env(g, t, .95 * v, .002, .38); o.connect(g); g.connect(drums); o.start(t); o.stop(t + .45);
   }
-  function shimmer(when, len, from, to, vol) {
-    const t = ctx.currentTime + when, n = Math.floor(ctx.sampleRate * len), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0);
-    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
-    const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
-    src.buffer = b; f.type = 'bandpass'; f.Q.value = 3; f.frequency.setValueAtTime(from, t); f.frequency.exponentialRampToValueAtTime(to, t + len);
-    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + len);
-    src.connect(f); f.connect(g); g.connect(out); src.start(t);
+  function snare(t, v = 1, pitch = 1, wet = .25) {
+    const n = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(), o = ctx.createOscillator(), og = ctx.createGain(), s = ctx.createGain();
+    n.buffer = noiseB; n.playbackRate.value = pitch; f.type = 'bandpass'; f.frequency.value = 1900 * pitch; f.Q.value = .8;
+    env(g, t, .55 * v, .001, .16); n.connect(f); f.connect(g); g.connect(drums);
+    o.type = 'triangle'; o.frequency.setValueAtTime(210 * pitch, t); o.frequency.exponentialRampToValueAtTime(150 * pitch, t + .08);
+    env(og, t, .4 * v, .001, .09); o.connect(og); og.connect(drums);
+    s.gain.value = wet; g.connect(s); s.connect(verb);
+    n.start(t, Math.random() * .5, .3); o.start(t); o.stop(t + .15);
   }
-  function sparkle(speed) {
-    if (!ctx || ctx.state !== 'running') return; const now = performance.now(), gap = Math.max(45, 140 - speed * 60); if (now - lastSp < gap) return; lastSp = now;
-    const k = 1 + Math.min(2, speed | 0);
-    for (let i = 0; i < k; i++) ping(NOTES[Math.random() * NOTES.length | 0] * (Math.random() < .3 ? 2 : 1), i * .03, .07, .18 + Math.random() * .2);
-    if (Math.random() < .35) shimmer(0, .12, 6000, 9000, .025);
+  function hat(t, v = 1) {
+    const n = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    n.buffer = noiseB; f.type = 'highpass'; f.frequency.value = 7500; env(g, t, .16 * v, .001, .035);
+    n.connect(f); f.connect(g); g.connect(drums); n.start(t, Math.random() * .5, .08);
   }
-  function rise() {
+  function sub(t, f0, len) {
+    const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f0 * .5, t + len);
+    env(g, t, .5, .01, len); o.connect(g); g.connect(out); o.start(t); o.stop(t + len + .05);
+  }
+  // ---- the chord: detuned saws through a soft lowpass, mostly reverb ----
+  function chord(notes, t, vol, fade) {
+    const f = ctx.createBiquadFilter(), g = ctx.createGain(), wet = ctx.createGain(), oscs = [];
+    f.type = 'lowpass'; f.frequency.value = 700; f.Q.value = .7;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + fade);
+    wet.gain.value = .8; f.connect(g); g.connect(out); g.connect(wet); wet.connect(verb);
+    notes.forEach(fr => [-8, 7].forEach(c => { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = fr; o.detune.value = c + (Math.random() * 4 - 2); o.connect(f); o.start(t); oscs.push(o); }));
+    return { f, g, stop(at, rel) { at = Math.max(at, ctx.currentTime); if (g.gain.cancelAndHoldAtTime) g.gain.cancelAndHoldAtTime(at); else { g.gain.cancelScheduledValues(at); g.gain.setValueAtTime(Math.min(vol, g.gain.value), at); } g.gain.setTargetAtTime(0, at, rel / 4); oscs.forEach(o => o.stop(at + rel + .1)); } };
+  }
+  // ---- the loop: runs only while you're dragging ----
+  let seq = 0, nextT = 0, step = 0, energy = 0, lastMove = 0, pad = null, last = null;
+  function play(i, t) {
+    const e = energy;
+    if (e > .35 && Math.random() < .07) return; // a dropout: the break cuts for one step
+    hat(t, i % 2 ? .5 : 1);
+    if (K[i]) { kick(t); if (i === 0) sub(t, 73.42, .5); last = 'k'; }
+    if (S[i]) {
+      if (e > 1.1 && Math.random() < .45) { const n = e > 2 ? 6 : 4; for (let k = 0; k < n; k++) snare(t + k * STEP * 1.4 / n, .45 + k * .1, 1 + k * .06, .2); } // roll
+      else snare(t, 1, 1, e > .8 ? .45 : .25);
+      last = 's';
+    } else if (G[i]) snare(t, .3, 1.08, .1);
+    if (e > .6 && !K[i] && !S[i] && Math.random() < .18) { // stutter: the last hit repeats, pitched down
+      for (let k = 0; k < 3; k++) { if (last === 'k') kick(t + k * STEP / 3, .6); else snare(t + k * STEP / 3, .5, .8 - k * .1, .3); }
+    }
+  }
+  function tick() {
+    if (!ctx) return;
+    if (performance.now() - lastMove > 260) { stopLoop(.9); return; }
+    energy *= .96;
+    while (nextT < ctx.currentTime + .12) { play(step, nextT); nextT += STEP; step = (step + 1) % 16; }
+    if (pad) pad.f.frequency.setTargetAtTime(700 + energy * 1300, ctx.currentTime, .15);
+  }
+  function stopLoop(rel) { clearInterval(seq); seq = 0; if (pad) { pad.stop(ctx.currentTime, rel); pad = null; } }
+  function sparkle(speed) { // (kept the old name) called on every drag move
     if (!ctx || ctx.state !== 'running') return;
-    NOTES.concat(NOTES.map(n => n * 2)).forEach((n, i) => ping(n, i * .045, .06, .5));
-    shimmer(0, 1.1, 1500, 11000, .06);
+    lastMove = performance.now(); energy += (Math.min(3, speed) - energy) * .3;
+    if (!seq) { const t = ctx.currentTime + .03; nextT = t; step = 0; pad = chord(CHORD, t, .016, .5); seq = setInterval(tick, 25); }
+  }
+  function rise() { // the throw
+    if (!ctx || ctx.state !== 'running') return;
+    clearInterval(seq); seq = 0; const t = ctx.currentTime;
+    if (pad) { pad.f.frequency.setTargetAtTime(4200, t, .3); pad.stop(t + 1, .6); pad = null; }
+    let at = t; for (let k = 0; k < 18; k++) { snare(at, .35 + k * .035, 1 + k * .04, .3 + k * .02); at += .11 * Math.pow(.86, k) + .012; }
+    kick(at, 1.1); sub(at, 73.42, 1.6); snare(at, 1, .9, 1);
+    const big = chord(HIGH.concat(CHORD), Math.max(t, at - .25), .03, .3);
+    big.f.frequency.setValueAtTime(900, Math.max(t, at - .25)); big.f.frequency.exponentialRampToValueAtTime(3200, at + .4); big.f.frequency.exponentialRampToValueAtTime(800, at + 3);
+    big.stop(at + .9, 2.6);
   }
   return { buzz, sparkle, rise, unlock };
 })();
