@@ -499,4 +499,26 @@ try { localStorage.removeItem('shd.mess2'); localStorage.removeItem('shd.mess');
   addEventListener('hashchange', () => { if (ov) close(); });
   document.addEventListener('visibilitychange', () => { if (ov && !document.hidden) { const f = ov.querySelector('.dm-field'); for (let i = f.children.length; i < 6; i++) fly(true); } });
 })();
+
+/* ---------- 20. (v4.3.1) panel titles always fit their panel: if a title is wider than its box
+   (long words like INSTANT-PHOTO in a narrow column), shrink just that title until it fits ---------- */
+(() => {
+  let t = 0;
+  function fit() {
+    const bs = [...document.querySelectorAll('.portal .p-head b')];
+    bs.forEach(b => b.style.removeProperty('font-size'));
+    const plan = bs.map(b => {
+      const room = b.parentElement.clientWidth - 4, w = b.scrollWidth;
+      if (!room || w <= room) return null;
+      const fs = parseFloat(getComputedStyle(b).fontSize);
+      return [b, Math.max(15, Math.floor(fs * room / w * .96))];
+    });
+    plan.forEach(x => x && x[0].style.setProperty('font-size', x[1] + 'px', 'important'));
+  }
+  const soon = () => { clearTimeout(t); t = setTimeout(fit, 120); };
+  if (view) new MutationObserver(() => { const P = document.querySelector('.portal:not([data-fit])'); if (P) { P.dataset.fit = '1'; soon(); } }).observe(view, { childList: true, subtree: true });
+  addEventListener('resize', soon);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  soon();
+})();
 })();
