@@ -1,0 +1,34 @@
+# Netlify: static site, no build step. Publish the repo root.
+[build]
+  publish = "."
+  command = ""
+
+# Always re-check the service worker and HTML so updates appear right away.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# short links
+[[redirects]]
+  from = "/art"
+  to = "/archive.html"
+  status = 200
+  force = true
+[[redirects]]
+  from = "/art/"
+  to = "/art"
+  status = 301
+  force = true
+[[redirects]]
+  from = "/a"
+  to = "/archive.html"
+  status = 301
+[[redirects]]
+  from = "/lab"
+  to = "/"
+  status = 301

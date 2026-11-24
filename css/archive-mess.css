@@ -1,0 +1,83 @@
+/* SHEDITHERS Archive — messy layer. The .wall sits BEHIND content (z 1 < view z 2); art never gets covered. */
+.wall{position:absolute;left:0;top:0;width:100%;z-index:1;overflow:hidden;pointer-events:none}
+.w{position:absolute;transform:rotate(var(--r,0deg));pointer-events:auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:filter .2s}
+.w:hover{filter:brightness(1.15) drop-shadow(0 6px 10px rgba(0,0,0,.5))}
+.w.held{cursor:grabbing;z-index:5;filter:drop-shadow(0 14px 18px rgba(0,0,0,.6))}
+.w.drop{animation:wdrop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes wdrop{0%{transform:rotate(var(--r)) scale(1.12)}100%{transform:rotate(var(--r)) scale(1)}}
+.w.poked{animation:wpoke .5s var(--ease)}
+@keyframes wpoke{30%{transform:rotate(calc(var(--r) + 12deg)) scale(1.2)}65%{transform:rotate(calc(var(--r) - 8deg)) scale(.95)}}
+.w.star.poked{animation:wspin .8s var(--ease)}@keyframes wspin{to{transform:rotate(calc(var(--r) + 360deg))}}
+.w.heart.poked{animation:wbeat .7s}@keyframes wbeat{20%,60%{transform:rotate(var(--r)) scale(1.35)}40%{transform:rotate(var(--r)) scale(1)}}
+.w svg{width:100%;height:auto;display:block}
+.w.scrap{max-width:220px;padding:16px 16px 14px;background:var(--bg) var(--fiber);color:#1d1b16;box-shadow:0 8px 18px rgba(0,0,0,.35);clip-path:polygon(0 4%,10% 0,22% 3%,40% 0,58% 4%,76% 0,92% 3%,100% 0,98% 50%,100% 96%,80% 100%,60% 96%,38% 100%,18% 96%,0 100%,3% 50%)}
+.w.scrap .q{font:400 18px/1.15 var(--hand)}
+.w-tape{position:absolute;top:-6px;left:50%;width:62px;height:18px;margin-left:-31px;background:rgba(228,219,190,.8);transform:rotate(-4deg)}
+.w.quote{font-family:var(--hand);line-height:1;white-space:nowrap;opacity:.85;text-shadow:2px 2px 0 rgba(0,0,0,.4)}
+.w.star,.w.heart{opacity:.8}
+.w.splat{background:radial-gradient(circle at 40% 40%,var(--ink) 0 26%,transparent 27%),radial-gradient(circle at 70% 30%,var(--ink) 0 8%,transparent 9%),radial-gradient(circle at 20% 75%,var(--ink) 0 10%,transparent 11%),radial-gradient(circle at 78% 72%,var(--ink) 0 6%,transparent 7%),radial-gradient(circle at 55% 88%,var(--ink) 0 4%,transparent 5%),radial-gradient(circle at 10% 30%,var(--ink) 0 3%,transparent 4%);opacity:.6;border-radius:40%}
+.w.barb{opacity:.45}
+.w.scrib{opacity:.75}
+.w.tapebit{height:26px;background:rgba(228,219,190,.7);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.w.arrow{font:400 26px var(--hand);white-space:nowrap}
+.w.num{font:400 30px var(--bebas);color:#1d1b16;background:#d4ff00;padding:2px 8px;letter-spacing:.06em}
+.w.tag{font:400 24px var(--hand);white-space:nowrap;text-shadow:0 0 1px currentColor}
+.w.monitor{width:230px;padding:10px 10px 26px;background:#0b0b0a;border:3px solid #2e2c25;border-radius:12px 12px 8px 8px;box-shadow:0 14px 30px rgba(0,0,0,.6),inset 0 0 0 2px #000}
+.w.monitor video{display:block;width:100%;height:auto;border-radius:4px;pointer-events:none}
+.w.monitor b{position:absolute;left:12px;bottom:6px;font:600 9px var(--mono);letter-spacing:.14em;color:#ff3b3b;animation:blink 1.2s steps(2) infinite}
+.w.monitor .w-tape{top:-10px}
+.w.stamp{cursor:default}
+.w.sprayed{animation:spray .35s ease-out}
+@keyframes spray{from{transform:rotate(var(--r)) scale(.2);opacity:0}}
+
+/* let pointer events fall through the empty gaps of content down to the wall */
+.view,.board,.tickets,.desk,.book,.sheet-grid,.reel,.about{pointer-events:none}
+.view>*,.board>*,.tickets>*,.desk>*,.book>*,.sheet-grid>*,.reel>*,.about>*{pointer-events:auto}
+.desk>.sticky{pointer-events:auto}
+
+/* gate: the hands video behind the entrance */
+.gate-hands{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:.9;pointer-events:none}
+.gate-folder{z-index:1}
+
+/* MAKE A MESS */
+.mess-btn{position:fixed;right:max(16px,env(safe-area-inset-right));top:calc(var(--bar) + 62px);z-index:16;display:flex;align-items:center;gap:8px;min-height:42px;padding:0 14px;background:rgba(20,19,15,.85);border:2px dashed #ff4fa3;color:#ff4fa3;font:400 17px var(--bebas);letter-spacing:.14em;border-radius:22px;transform:rotate(2deg)}
+.mess-btn span svg{width:20px;height:20px}
+.mess-btn[aria-pressed=true]{background:#ff4fa3;color:#1d1b16;border-style:solid;animation:wob 1.2s ease-in-out infinite}
+@keyframes wob{50%{transform:rotate(-2deg)}}
+.clean-btn{position:fixed;right:max(16px,env(safe-area-inset-right));top:calc(var(--bar) + 112px);z-index:16;min-height:36px;padding:0 12px;background:#e9e3d1;color:#1d1b16;font:400 15px var(--bebas);letter-spacing:.12em;transform:rotate(-2deg);display:none}
+body.messing .clean-btn{display:block}
+body.messing{cursor:crosshair}
+body.messing .view{cursor:crosshair}
+body.zone .mess-btn,body.zone .clean-btn,body.zone .wall{opacity:0;pointer-events:none}
+
+/* ---------- messier pages (interface only; art windows counter-rotate to stay level) ---------- */
+.ticket{transform:rotate(var(--tr,0deg))}
+.ticket:nth-child(4n+1){--tr:-2deg}.ticket:nth-child(4n+2){--tr:1.6deg}.ticket:nth-child(4n+3){--tr:-.8deg}.ticket:nth-child(4n){--tr:2.6deg}
+.ticket:hover,.ticket:focus-visible{transform:rotate(0) translateY(-8px)}
+.ticket .t-window{transform:rotate(calc(var(--tr,0deg) * -1))}
+.ticket:hover .t-window{transform:none}
+.print{transform:rotate(var(--pr,0deg))}
+.print:nth-child(odd){--pr:-1.8deg}.print:nth-child(even){--pr:2.2deg}
+.print .print-mat{transform:rotate(calc(var(--pr,0deg) * -1))}
+.works-head h2,.col-head h2,.about-card h2{position:relative;display:inline-block}
+.works-head h2::after,.col-head h2::after{content:'';position:absolute;left:-4%;right:-6%;bottom:6%;height:.28em;background:var(--pink);opacity:.55;z-index:-1;transform:rotate(-1.5deg);border-radius:40% 10% 50% 20%}
+.chips a{border-radius:255px 15px 225px 15px/15px 225px 15px 255px;transform:rotate(-1deg)}
+.chips a:nth-child(even){transform:rotate(1.4deg)}
+.stamp,.back,.mini-tab{border-radius:255px 15px 225px 15px/15px 225px 15px 255px}
+.v-log{position:relative}
+.v-log::before{content:'';position:absolute;right:18px;bottom:60px;width:86px;height:86px;border-radius:50%;border:6px solid rgba(110,70,30,.18);pointer-events:none}
+.v-log::after{content:'';position:absolute;top:-8px;left:40%;width:80px;height:20px;background:rgba(228,219,190,.85);transform:rotate(4deg)}
+.strip-log{transform:rotate(-.6deg)}
+.page-head span:last-child{font-family:var(--hand);font-size:14px;color:#c0105e;opacity:1}
+
+@media (max-width:760px){
+  .mess-btn{top:auto;right:12px;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 192px);font-size:14px;min-height:38px}
+  .clean-btn{top:auto;right:12px;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 236px)}
+  .w.scrap{max-width:160px}.w.scrap .q{font-size:15px}
+  .w.monitor{width:150px}
+}
+@media (prefers-reduced-motion:reduce){.w,.w.drop,.w.poked,.mess-btn{animation:none!important}}
+
+/* centered content column on wide screens so the messy wall shows in the gutters */
+.tickets,.chips,.works-head,.desk,.col-head,.other-tabs,.alt-layout,.about,.strip-log{max-width:1240px;margin-left:auto;margin-right:auto}
+.works-head,.col-head{width:100%}

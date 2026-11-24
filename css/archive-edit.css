@@ -1,0 +1,61 @@
+/* THE EDIT — moving preview. Pieces move as whole frames (slide / rise / drop); the artwork itself is never filtered, cropped or rotated. */
+.works-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px 20px}
+.works-head p{flex:1;min-width:200px}
+.works-modes{display:flex;border:2px solid var(--paper);transform:rotate(-1deg)}
+.works-modes button{min-height:42px;padding:0 14px;font:400 18px var(--bebas);letter-spacing:.12em}
+.works-modes button[aria-checked=true]{background:var(--pink);color:var(--ink)}
+.edit-screen{position:relative;margin:4px auto 26px;max-width:1200px;padding:14px 14px 12px;background:#0b0a08;border:2px solid #2e2c25;border-radius:14px;box-shadow:0 30px 70px rgba(0,0,0,.6),inset 0 0 0 6px #14130f;transform:rotate(-.4deg)}
+.edit-hud{display:flex;justify-content:space-between;gap:10px;font:600 10px var(--mono);letter-spacing:.18em;color:#b9b29a;padding:2px 4px 10px}
+.edit-hud .rec{color:#ff3b3b;animation:blink 1.2s steps(2) infinite}
+.edit-tc{color:var(--lime)}
+.edit-stage{position:relative;display:flex;align-items:center;justify-content:center;gap:12px;height:min(62vh,620px);background:#000;overflow:hidden;cursor:pointer;border-radius:6px}
+.edit-cell{position:relative;flex:1;height:100%;display:grid;place-items:center;min-width:0;animation:cut .25s steps(2) both;animation-delay:calc(var(--j)*120ms)}
+.edit-cell img,.edit-cell video{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+@keyframes cut{from{opacity:0}}
+.shot-slide-l .edit-cell{animation:slideL .7s cubic-bezier(.2,.9,.2,1) both}
+.shot-slide-r .edit-cell{animation:slideR .7s cubic-bezier(.2,.9,.2,1) both}
+.shot-rise .edit-cell{animation:riseUp .8s cubic-bezier(.2,.9,.2,1) both}
+.shot-drop .edit-cell{animation:dropDn .6s cubic-bezier(.3,1.4,.4,1) both}
+.shot-split .edit-cell,.shot-triple .edit-cell{animation:slideL .6s cubic-bezier(.2,.9,.2,1) both;animation-delay:calc(var(--j)*140ms)}
+.shot-split .edit-cell:nth-child(odd){animation-name:slideR}
+@keyframes slideL{from{transform:translateX(70%);opacity:0}}
+@keyframes slideR{from{transform:translateX(-70%);opacity:0}}
+@keyframes riseUp{from{transform:translateY(60%);opacity:0}}
+@keyframes dropDn{from{transform:translateY(-60%);opacity:0}}
+.edit-flash{position:absolute;inset:0;z-index:3;pointer-events:none;background:#fff;animation:flash .22s ease-out forwards}
+.shot-slide-l .edit-flash,.shot-slide-r .edit-flash,.shot-rise .edit-flash{background:var(--pink);animation-duration:.16s}
+@keyframes flash{from{opacity:.55}to{opacity:0}}
+.edit-cap{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;min-height:56px;padding:12px 6px 4px}
+.edit-cap b{font:400 clamp(26px,3.4vw,44px)/1 var(--bebas);letter-spacing:.04em;color:var(--paper);animation:capIn .4s steps(4)}
+.edit-cap .marker{font:400 clamp(16px,2vw,22px)/1.2 var(--hand);color:var(--pink);transform:rotate(-1.5deg)}
+.edit-cap span{font:500 11px var(--mono);letter-spacing:.14em;color:#8d8a78}
+@keyframes capIn{from{clip-path:inset(0 100% 0 0)}}
+.edit-ctrl{display:flex;align-items:center;gap:8px;padding-top:6px}
+.edit-btn{min-width:46px;min-height:46px;border-radius:50%;background:var(--paper);color:var(--ink);font:400 22px/1 var(--bebas)}
+.edit-btn:hover{background:var(--pink)}
+.edit-cnt{font:600 11px var(--mono);letter-spacing:.14em;color:var(--lime);margin-left:6px}
+.edit-dots{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.edit-dots i{width:7px;height:7px;background:#3a382f}.edit-dots i.on{background:var(--lime)}
+/* drifting rows */
+.edit-rows{display:grid;gap:14px;margin:0 -20px;padding:4px 0 10px;overflow:hidden}
+.edit-row{overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.edit-track{display:flex;gap:14px;width:max-content;animation:drift var(--dur) linear infinite}
+.edit-row.rev .edit-track{animation-direction:reverse}
+.edit-row:hover .edit-track,.edit-row:focus-within .edit-track{animation-play-state:paused}
+@keyframes drift{to{transform:translateX(-50%)}}
+.edit-tile{flex:none;display:flex;flex-direction:column;gap:4px;width:170px;padding:7px 7px 6px;background:#f4f0e3;color:var(--ink);box-shadow:0 8px 18px rgba(0,0,0,.4);transition:transform .25s var(--ease)}
+.edit-tile:nth-child(3n){transform:rotate(-2deg)}.edit-tile:nth-child(3n+1){transform:rotate(1.5deg)}
+.edit-tile:hover,.edit-tile:focus-visible{translate:0 -6px}
+.et-win{position:relative;display:block;height:150px;background:#0f0e0b}
+.et-win img,.et-win video{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.edit-tile:nth-child(3n) .et-win{transform:rotate(2deg)}.edit-tile:nth-child(3n+1) .et-win{transform:rotate(-1.5deg)}
+.et-cap{font:600 9px var(--mono);letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:760px){
+  .edit-screen{margin:4px -6px 22px;padding:10px 8px;transform:none}
+  .edit-stage{height:min(58vh,520px)}
+  .shot-triple .edit-cell:nth-child(3){display:none}
+  .edit-dots{display:none}
+  .edit-rows{margin:0 -14px}
+  .edit-tile{width:130px}.et-win{height:116px}
+}
+@media (prefers-reduced-motion:reduce){.edit-track{animation:none}.edit-row{overflow-x:auto}}

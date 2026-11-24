@@ -1,0 +1,62 @@
+/* ===== artwork is READ-ONLY: never filter / crop / transform the art itself — only frames move ===== */
+.art-tile{display:flex;flex-direction:column;padding:0;aspect-ratio:auto;background:#1a1916;border:1px solid #3a3a34;border-radius:6px;overflow:hidden;transform:perspective(500px) rotateX(var(--rx,0)) rotateY(var(--ry,0));transition:transform .25s,border-color .2s,box-shadow .2s}
+.art-tile:hover{border-color:var(--pink);box-shadow:0 8px 22px rgba(0,0,0,.5)}
+.art-mat{display:grid;place-items:center;aspect-ratio:4/5;background:#0d0d0c;padding:6px}
+.art-mat img,.art-mat video{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;filter:none!important;animation:none!important;transform:none!important}
+.art-label{display:block;padding:5px 6px;font:600 8.5px var(--mono);letter-spacing:.1em;color:var(--acid);text-align:left;background:#121210;border-top:1px dashed #33332e}
+.art-tile span.art-label{position:static}
+.rise{animation:rise .5s var(--ease) both;animation-delay:calc(var(--i,0)*35ms)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+.btn,.tbtn,.seg button,.ex-tabs button,.drink{position:relative;overflow:hidden}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(1);opacity:0}}
+.preset{transform:perspective(500px) rotateX(var(--rx,0)) rotateY(var(--ry,0))}
+#rail button:hover svg,.rail-link:hover svg{animation:hop .4s var(--ease)}
+@keyframes hop{50%{transform:translateY(-3px) scale(1.12)}}
+.wordmark b{animation:wmgl 7s infinite steps(1)}
+@keyframes wmgl{0%,95%,100%{text-shadow:none}96%{text-shadow:2px 0 var(--pink),-2px 0 var(--acid)}98%{text-shadow:-2px 0 var(--pink),2px 0 var(--xray,#c3141c)}}
+
+/* intro: untouched prints dealt onto the table (the figure moves, never the image) */
+.boot-deck{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:1}
+.boot-print{position:absolute;margin:0;width:min(30vw,300px);background:#efeadc;padding:10px 10px 30px;box-shadow:0 18px 50px rgba(0,0,0,.7);opacity:0;transform:translate(calc(var(--x) * 2),40px) rotate(calc(var(--r) * 3)) scale(.9);transition:opacity .5s,transform .7s cubic-bezier(.2,1.2,.4,1)}
+.boot-print.on{opacity:1;transform:translateX(var(--x)) rotate(var(--r))}
+.boot-print img{display:block;width:100%;height:auto;filter:none}
+.boot-print figcaption{position:absolute;left:10px;bottom:8px;font:600 9px var(--mono);letter-spacing:.12em;color:#2a2620}
+.boot-print::before{content:'';position:absolute;top:-10px;left:50%;width:90px;height:22px;margin-left:-45px;background:rgba(220,212,190,.75);transform:rotate(-3deg);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+#boot.title .boot-deck{opacity:.0;transition:opacity .6s}
+#boot.montage .boot-inner{opacity:0}
+
+/* empty workspace: the reel plays untouched inside a monitor frame */
+.feed-frame{position:absolute;left:28px;top:50%;transform:translateY(-50%);margin:0;width:min(220px,22%);z-index:3;padding:8px 8px 26px;border-radius:12px;background:linear-gradient(180deg,#e9edf0,#9aa1a8 45%,#5b6268 55%,#c7ccd1);box-shadow:0 0 0 2px #23282c,0 20px 50px rgba(0,0,0,.7);cursor:var(--curp);transition:transform .3s}
+.feed-frame:hover{transform:translateY(-50%) rotate(-1.5deg) scale(1.03)}
+.feed-frame video{display:block;width:100%;height:auto;border-radius:6px;background:#000}
+.feed-frame figcaption{position:absolute;left:10px;bottom:6px;font:600 8px var(--mono);letter-spacing:.1em;color:#1b1e21}
+.feed-frame figcaption b{color:#c0105e;animation:blink 1.2s steps(2) infinite}
+.feed-open{position:absolute;right:10px;top:-11px;font:700 8px var(--mono);letter-spacing:.12em;background:var(--pink);color:#000;padding:3px 6px;border-radius:4px}
+@media (max-width:1100px){.feed-frame{display:none}}
+
+/* thank-you: the art is an untouched taped print next to the note */
+.ty-print{position:absolute;left:18px;top:22px;width:42%;margin:0;background:#efeadc;padding:8px 8px 22px;transform:rotate(-4deg);box-shadow:0 12px 30px rgba(0,0,0,.6);z-index:2}
+.ty-print img{display:block;width:100%;height:auto;filter:none}
+.ty-card .ty-paper{left:auto;right:-4%;top:50%;width:58%;transform:translateY(-50%) rotate(2deg)}
+.ty-card{background:radial-gradient(circle at 30% 30%,#2a2620,#0f0e0c)}
+
+/* moving edit preview (editor archive panel) — art stays whole + level; only cuts/HUD move */
+.er-screen{position:relative;display:block;width:100%;aspect-ratio:4/5;padding:0;background:#050505;border:2px solid #3a3a34;border-radius:10px;overflow:hidden;cursor:var(--curp)}
+.er-screen:hover{border-color:var(--pink)}
+.er-layer{position:absolute;inset:8px 8px 30px;opacity:0;transition:opacity .12s steps(2)}
+.er-layer.on{opacity:1}
+.er-layer img{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;filter:none!important;transform:none!important}
+.er-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;mix-blend-mode:difference}
+.er-flash.go{animation:erflash .18s steps(2)}
+@keyframes erflash{0%{opacity:.9}100%{opacity:0}}
+.er-rec{position:absolute;left:8px;top:6px;font:700 8.5px var(--mono);letter-spacing:.14em;color:#ff3b3b;animation:blink 1.2s steps(2) infinite;text-shadow:0 0 4px #000}
+.er-hud{position:absolute;right:8px;top:6px;font:600 8.5px var(--mono);letter-spacing:.08em;color:var(--acid);text-shadow:0 0 4px #000}
+.er-title{position:absolute;left:0;right:0;bottom:0;padding:6px 8px;font:600 9.5px var(--mono);letter-spacing:.12em;color:#fff;background:#000;border-top:1px dashed #333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.er-strip{margin-top:6px;overflow:hidden;border-radius:6px;background:#0c0c0b;border:1px solid #2c2c27;-webkit-mask:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.er-track{display:flex;gap:4px;padding:4px;width:max-content;animation:ertrack 60s linear infinite}
+.er-strip:hover .er-track{animation-play-state:paused}
+@keyframes ertrack{to{transform:translateX(-50%)}}
+.er-thumb{flex:none;width:44px;height:54px;padding:2px;background:#000;border:1px solid #333;border-radius:3px;position:relative}
+.er-thumb img{position:absolute;inset:2px;margin:auto;max-width:calc(100% - 4px);max-height:calc(100% - 4px);object-fit:contain}
+.er-thumb:hover{border-color:var(--pink)}
